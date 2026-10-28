@@ -250,7 +250,7 @@ export const GalleryCardsGrid: React.FC<GalleryCardsGridProps> = ({
 
           <div>
             <h3 className="font-display text-lg font-semibold text-mist-100">
-              {hasActiveFilters || allCards.length > 0 ? 'No matching characters' : 'Your library is waiting'}
+              {hasActiveFilters || allCards.length > 0 ? 'No matching characters' : 'No Character Cards Yet'}
             </h3>
             <p className="text-sm text-knight-400 mt-2 leading-relaxed max-w-sm mx-auto">
               {hasActiveFilters || allCards.length > 0
