@@ -1,16 +1,16 @@
 # Roadmap
 
-This roadmap is dependency-ordered. Items are planned until the code, tests and compatibility evidence show they are complete.
+This roadmap is dependency-ordered. Items remain planned until code, tests and compatibility evidence show they are complete.
 
 ## Phase 0 — Repository and product boundaries
 
 - [x] Establish `KarlMuzen/RoleplayForge` as the canonical public GitHub repository.
 - [x] Merge the initial repository upload into `main` (PR #1 was merged on 2026-10-28).
 - [x] Document the unified-workbench direction and conservative platform-support boundary.
-- [x] Confirm that the latest observed CI workflow run on `main` completed successfully for commit `485d5e2`.
-- [ ] Complete the app-facing rebrand. As of the checkpoint in `docs/PROJECT_STATUS.md`, `index.html`, in-app labels, package name and package repository metadata still use legacy CardCrucible values.
-- [ ] Add `npm run build` to CI and record a passing production build on the canonical repository.
-- [ ] Replace or update inherited starter/project metadata only after confirming backward compatibility and retaining original MIT attribution.
+- [x] Add `npm run build` to CI and verify a passing production PWA build.
+- [x] Implement the first Roleplay Forge visual/identity pass and update package/PWA metadata.
+- [ ] Complete the wider screen-by-screen redesign and manually verify it on an installed Android PWA.
+- [ ] Audit remaining legacy-facing wording and inherited project metadata while retaining MIT attribution.
 
 ## Phase 1 — Trustworthy foundation
 
@@ -19,7 +19,7 @@ This roadmap is dependency-ordered. Items are planned until the code, tests and 
 - [ ] Add property-based/fuzz tests for malformed or oversized inputs and user-facing error handling.
 - [ ] Review backup/restore, encrypted API-key storage, migration behavior and local data-loss paths.
 - [ ] Put source dates beside pricing estimates and make stale/unknown rates visible.
-- [ ] Add a release checklist covering tests, build, dependency audit, data migration and PWA smoke tests.
+- [ ] Add a release checklist covering tests, build, dependency audit, data migration and installed-PWA smoke tests.
 
 **Exit criteria:** core fixture round trips pass; unsupported fields are preserved or reported; a clean install, build, test and lint pass; known data-loss risks are documented.
 
