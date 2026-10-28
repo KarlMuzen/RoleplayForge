@@ -181,7 +181,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
             <div
               role="dialog"
               aria-label="Import Options"
-              className="absolute left-0 right-auto sm:left-0 sm:right-auto mt-2 w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] max-h-[min(70vh,32rem)] overflow-y-auto overscroll-contain bg-void-900/95 backdrop-blur-xl border border-knight-700/60 rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1"
+              className="fixed inset-x-4 bottom-24 mt-0 w-auto max-w-[calc(100vw-2rem)] max-h-[min(65vh,32rem)] overflow-y-auto overscroll-contain bg-void-900/98 backdrop-blur-xl border border-knight-700/60 rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1 sm:absolute sm:inset-x-auto sm:bottom-auto sm:left-0 sm:right-auto sm:mt-2 sm:w-[min(20rem,calc(100vw-2rem))] sm:max-h-[min(70vh,32rem)]"
             >
               <div className="px-3 py-1.5 text-[10px] font-mono font-semibold text-knight-500 uppercase tracking-wider">
                 Import Options
@@ -289,7 +289,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
             <div
               role="dialog"
               aria-label="Bulk Export Options"
-              className="absolute right-0 sm:left-0 sm:right-auto mt-2 w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] max-h-[min(70vh,32rem)] overflow-y-auto overscroll-contain bg-void-900/95 backdrop-blur-xl border border-knight-700/60 rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1"
+              className="fixed inset-x-4 bottom-24 mt-0 w-auto max-w-[calc(100vw-2rem)] max-h-[min(65vh,32rem)] overflow-y-auto overscroll-contain bg-void-900/98 backdrop-blur-xl border border-knight-700/60 rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1 sm:absolute sm:inset-x-auto sm:bottom-auto sm:left-0 sm:right-auto sm:mt-2 sm:w-[min(20rem,calc(100vw-2rem))] sm:max-h-[min(70vh,32rem)]"
             >
               <div className="px-3 py-1.5 text-[10px] font-mono font-semibold text-knight-500 uppercase tracking-wider">
                 Bulk Export Options
