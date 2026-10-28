@@ -77,12 +77,26 @@ describe('Library mobile controls', () => {
     render(<GalleryView />);
 
     expect(screen.getByRole('group', { name: 'Rating filter' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Tag filter' })).toBeInTheDocument();
 
-    for (const name of ['All Ratings', 'SFW', 'NSFW', 'Unrated', 'All Tags', '#fantasy']) {
-      const button = screen.getByRole('button', { name });
+    for (const name of ['All Ratings', 'SFW', 'NSFW', 'Unrated']) {
+      const button = screen.getByRole('button', { name, exact: true });
       expect(button.className).toContain('min-h-11');
     }
+
+    const tagsButton = screen.getByRole('button', { name: 'Tags', exact: true });
+    expect(tagsButton.className).toContain('min-h-11');
+    fireEvent.click(tagsButton);
+
+    const tagPicker = screen.getByRole('dialog', { name: 'Choose tag filter' });
+    expect(screen.getByLabelText('Filter by tag')).toBeInTheDocument();
+    for (const name of ['All tags', '#fantasy']) {
+      const button = screen.getByRole('button', { name, exact: true });
+      expect(button.className).toContain('min-h-11');
+    }
+
+    fireEvent.click(screen.getByRole('button', { name: '#fantasy', exact: true }));
+    expect(screen.queryByRole('dialog', { name: 'Choose tag filter' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Tags: fantasy' })).toBeInTheDocument();
   });
 });
 
