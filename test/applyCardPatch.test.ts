@@ -161,4 +161,69 @@ describe('applyCardPatch', () => {
 
     expect(useCardStore.getState().activeCard?.data.personality).toBe('Stoic and mysterious.');
   });
+  it('does not change the card or history when a multi-patch update fails', () => {
+    const redoEntry = { cardData: JSON.parse(JSON.stringify(sampleCard)) };
+    useCardStore.setState({
+      activeCard: sampleCard,
+      undoStack: [],
+      redoStack: [redoEntry],
+    });
+
+    const validPatch: CardPatch = {
+      field: 'personality',
+      action: 'replace',
+      value: 'A different personality.',
+      rationale: 'Valid first edit.',
+    };
+    const invalidPatch: CardPatch = {
+      field: 'lorebook_entry',
+      action: 'replace',
+      value: 'This must not be applied.',
+      lorebookEntryIndex: 99,
+      rationale: 'Invalid second edit.',
+    };
+
+    expect(() => {
+      useCardStore.getState().updateActiveCardData(
+        (prev) => [validPatch, invalidPatch].reduce((card, patch) => applyCardPatch(card, patch), prev),
+        { forceUndo: true }
+      );
+    }).toThrow(/out of bounds/i);
+
+    expect(useCardStore.getState().activeCard).toEqual(sampleCard);
+    expect(useCardStore.getState().undoStack).toEqual([]);
+    expect(useCardStore.getState().redoStack).toEqual([redoEntry]);
+  });
+
+  it('applies multiple patches as one forced undo step', () => {
+    useCardStore.setState({ activeCard: sampleCard, undoStack: [], redoStack: [] });
+
+    const patches: CardPatch[] = [
+      {
+        field: 'personality',
+        action: 'replace',
+        value: 'Measured and kind.',
+        rationale: 'Update personality.',
+      },
+      {
+        field: 'description',
+        action: 'append',
+        value: 'Carries a silver lantern.',
+        rationale: 'Add a detail.',
+      },
+    ];
+
+    useCardStore.getState().updateActiveCardData(
+      (prev) => patches.reduce((card, patch) => applyCardPatch(card, patch), prev),
+      { forceUndo: true }
+    );
+
+    expect(useCardStore.getState().activeCard?.data.personality).toBe('Measured and kind.');
+    expect(useCardStore.getState().activeCard?.data.description).toContain('Carries a silver lantern.');
+    expect(useCardStore.getState().undoStack).toHaveLength(1);
+
+    useCardStore.getState().undo();
+    expect(useCardStore.getState().activeCard).toEqual(sampleCard);
+  });
+
 });
