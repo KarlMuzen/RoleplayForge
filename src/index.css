@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void-950: var(--theme-void-950);
+  --color-void-900: var(--theme-void-900);
+  --color-void-800: var(--theme-void-800);
+
+  --color-maroon-950: var(--theme-maroon-950);
+  --color-maroon-900: var(--theme-maroon-900);
+  --color-maroon-800: var(--theme-maroon-800);
+  --color-maroon-700: #4d0009;
+  --color-maroon-600: #66000c;
+  --color-maroon-500: #83001a;
+  --color-maroon-400: #a8283f;
+  --color-maroon-300: var(--theme-maroon-300);
+  --color-maroon-text: var(--theme-maroon-text);
+
+  --color-amber-950: var(--theme-amber-950);
+  --color-amber-900: var(--theme-amber-900);
+  --color-amber-800: var(--theme-amber-800);
+  --color-amber-700: var(--theme-amber-700);
+  --color-amber-600: var(--theme-amber-600);
+  --color-amber-500: var(--theme-amber-500);
+  --color-amber-400: var(--theme-amber-400);
+  --color-amber-300: var(--theme-amber-300);
+  --color-amber-200: var(--theme-amber-200);
+
+  --color-knight-900: var(--theme-knight-900);
+  --color-knight-700: var(--theme-knight-700);
+  --color-knight-500: var(--theme-knight-500);
+  --color-knight-400: var(--theme-knight-400);
+  --color-knight-300: var(--theme-knight-300);
+
+  --color-mist-100: var(--theme-mist-100);
+  --color-mist-200: var(--theme-mist-200);
+  --color-mist-300: var(--theme-mist-300);
+}
+
+@layer base {
+  :root {
+    /* LIGHT MODE */
+    --theme-void-950: #f4f6f8; /* App bg */
+    --theme-void-900: #eef1f4; /* Secondary panels */
+    --theme-void-800: #ffffff; /* Cards, inputs */
+
+    --theme-maroon-950: #ffeef0; /* Subtle tinted panels */
+    --theme-maroon-900: #ffd3d9;
+    --theme-maroon-800: #ffaeb8;
+    --theme-maroon-300: #a8283f; /* Darker accent text for contrast on light bg (matches maroon-400) */
+    --theme-maroon-text: #83001a;
+
+    --theme-amber-950: #fef9c3; /* Light warm yellow/amber tint for bg-amber-950 */
+    --theme-amber-900: #fde68a; /* Light warm amber fill for bg-amber-900 */
+    --theme-amber-800: #f59e0b; /* Visible amber border for border-amber-800 */
+    --theme-amber-700: #d97706; /* Medium amber accent */
+    --theme-amber-600: #b45309; /* Dark amber for buttons */
+    --theme-amber-500: #92400e; /* Deep amber text/icon */
+    --theme-amber-400: #a15c00; /* High contrast dark amber for icons and labels */
+    --theme-amber-300: #854d0e; /* High contrast dark amber text for text-amber-300 */
+    --theme-amber-200: #713f12; /* High contrast dark brown/amber text for text-amber-200 */
+
+    --theme-knight-900: #e4e8e9;
+    --theme-knight-700: #d3d8d9; /* Borders */
+    --theme-knight-500: #9ba0ab;
+    --theme-knight-400: #6f7480; /* Muted text */
+    --theme-knight-300: #4a4e58;
+
+    --theme-mist-100: #0e0e0f; /* Primary text */
+    --theme-mist-200: #17171a;
+    --theme-mist-300: #202024;
+  }
+
+  .dark {
+    /* DARK MODE (Original palette) */
+    --theme-void-950: #0e0e0f;
+    --theme-void-900: #17171a;
+    --theme-void-800: #202024;
+
+    --theme-maroon-950: #1a0003;
+    --theme-maroon-900: #260005;
+    --theme-maroon-800: #390007;
+    --theme-maroon-300: #c8677a;
+    --theme-maroon-text: #d68a9a;
+
+    --theme-amber-950: #451a03;
+    --theme-amber-900: #78350f;
+    --theme-amber-800: #92400e;
+    --theme-amber-700: #b45309;
+    --theme-amber-600: #d97706;
+    --theme-amber-500: #f59e0b;
+    --theme-amber-400: #fbbf24;
+    --theme-amber-300: #fcd34d;
+    --theme-amber-200: #fde68a;
+
+    --theme-knight-900: #2b2d33;
+    --theme-knight-700: #4a4e58;
+    --theme-knight-500: #6f7480;
+    --theme-knight-400: #9ba0ab;
+    --theme-knight-300: #b6bac2;
+
+    --theme-mist-100: #f0f4f5;
+    --theme-mist-200: #e4e8e9;
+    --theme-mist-300: #d3d8d9;
+  }
+
+  html, body {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    background-color: var(--color-void-950);
+    color: var(--color-mist-100);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  
+  /* Input fields allow text selection */
+  input, textarea, [contenteditable="true"] {
+    user-select: text;
+  }
+}
+
+/* Fast touch response helper */
+.touch-fast {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Adaptive Panel & Subview Utilities */
+@utility subview-container {
+  background-color: var(--theme-void-950);
+  color: var(--theme-mist-100);
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+@utility panel-box {
+  background-color: var(--theme-void-900);
+  border: 1px solid var(--theme-knight-700);
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-knight-700);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-knight-500);
+}
+
+/* Toast Notification Keyframes */
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.animate-toast-enter {
+  animation: toast-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-toast-progress {
+  animation: toast-progress linear forwards;
+}
