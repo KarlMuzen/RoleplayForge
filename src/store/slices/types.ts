@@ -98,6 +98,11 @@ export interface ProfileSlice {
   setActiveProfileUuid: (uuid: string | null) => Promise<void> | void;
 }
 
+export type PassphraseSetupChoice =
+  | { kind: 'passphrase'; passphrase: string }
+  | { kind: 'passkey-only' }
+  | null;
+
 export interface SessionSlice {
   // Crypto & Session State
   isPassphraseSet: boolean;
@@ -110,7 +115,7 @@ export interface SessionSlice {
   isPasskeyEnrolled: boolean;
   decryptionRequest: { resolve: (pass: string | null) => void } | null;
   decryptionError: string | null;
-  passphraseSetupRequest: { resolve: (pass: string | null) => void } | null;
+  passphraseSetupRequest: { resolve: (choice: PassphraseSetupChoice) => void } | null;
   passphraseSetupError: string | null;
   checkPassphraseSetup: () => Promise<void>;
   setupPassphrase: (passphrase: string) => Promise<void>;
