@@ -3,7 +3,6 @@ import type { ConnectionProfile } from '../../db';
 import { useCardStore } from '../../store/useCardStore';
 import { useDialogStore } from '../../store/useDialogStore';
 import { useToastStore } from '../../store/useToastStore';
-import { PASSKEY_ONLY_SETUP_SENTINEL } from '../../utils/passkeyCrypto';
 import {
   ShieldCheck,
   Lock,
@@ -286,8 +285,8 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
               useCardStore.setState({
                 passphraseSetupRequest: {
                   resolve: async (choice) => {
-                    if (choice && choice !== PASSKEY_ONLY_SETUP_SENTINEL) {
-                      await setupPassphrase(choice);
+                    if (choice?.kind === 'passphrase') {
+                      await setupPassphrase(choice.passphrase);
                     }
                   },
                 },
