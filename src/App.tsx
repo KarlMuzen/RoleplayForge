@@ -14,6 +14,7 @@ import { PreFlightAuditModal } from './components/PreFlightAuditModal';
 import { ToastContainer } from './components/ToastContainer';
 import { WORKSPACE_TABS, LAB_TABS } from './constants/navigation';
 import { usePWAUpdate } from './hooks/usePWAUpdate';
+import { useHashRouting } from './routing/useHashRouting';
 
 const GalleryView = lazy(() => import('./components/GalleryView').then(module => ({ default: module.GalleryView })));
 const EditorView = lazy(() => import('./components/EditorView').then(module => ({ default: module.EditorView })));
@@ -26,6 +27,7 @@ const PayloadView = lazy(() => import('./components/PayloadView').then(module =>
 
 export default function App() {
   usePWAUpdate();
+  useHashRouting();
 
   const {
     activeTab,
@@ -49,6 +51,11 @@ export default function App() {
     loadAssistantChatsFromDb();
     useTokenTracker.getState().loadStats();
   }, [loadThemeFromDb, loadCardsFromDb, loadProfilesFromDb, checkPassphraseSetup, loadAssistantChatsFromDb]);
+
+  // Each screen starts at the top instead of inheriting the previous scroll position.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
 
   const isWorkspaceTab = WORKSPACE_TABS.includes(activeTab);
   const isLabTab = LAB_TABS.includes(activeTab);
@@ -103,4 +110,3 @@ export default function App() {
     </div>
   );
 }
-
