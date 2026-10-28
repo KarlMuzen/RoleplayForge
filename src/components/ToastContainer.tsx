@@ -5,7 +5,7 @@ import { CheckCircle2, Info, AlertTriangle, XCircle, X } from 'lucide-react';
 const ToastIcon: React.FC<{ type?: ToastItem['type'] }> = ({ type }) => {
   switch (type) {
     case 'info':
-      return <Info className="w-5 h-5 text-cyan-400 shrink-0" />;
+      return <Info className="w-5 h-5 text-maroon-400 shrink-0" />;
     case 'warning':
       return <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />;
     case 'error':
@@ -27,7 +27,7 @@ export const ToastContainer: React.FC = () => {
     <div
       aria-live="polite"
       aria-atomic="true"
-      className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-5 right-3 sm:right-5 z-[100] flex flex-col gap-2.5 max-w-sm w-full px-2 sm:px-0 pointer-events-none"
+      className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))] md:bottom-5 left-1/2 -translate-x-1/2 w-[94%] max-w-sm md:left-auto md:right-5 md:translate-x-0 md:w-full z-[100] flex flex-col gap-2.5 pointer-events-none"
     >
       {toasts.map((toast) => {
         const isSuccess = !toast.type || toast.type === 'success';
@@ -45,8 +45,8 @@ export const ToastContainer: React.FC = () => {
           borderClass = 'border-red-500/30 bg-void-900/95';
           glowClass = 'shadow-red-950/20';
         } else if (isInfo) {
-          borderClass = 'border-cyan-500/30 bg-void-900/95';
-          glowClass = 'shadow-cyan-950/20';
+          borderClass = 'border-maroon-500/35 bg-void-900/95';
+          glowClass = 'shadow-maroon-950/30';
         }
 
         return (
@@ -101,7 +101,7 @@ export const ToastContainer: React.FC = () => {
                     ? 'bg-amber-500/60'
                     : isError
                     ? 'bg-red-500/60'
-                    : 'bg-cyan-500/60'
+                    : 'bg-maroon-500/60'
                 }`}
               />
             ) : null}

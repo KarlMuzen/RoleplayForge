@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { canAutoFocusText } from '../../utils/touch';
 import { ChevronDown, Search, Tag } from 'lucide-react';
 
 export interface GalleryFilterBarProps {
@@ -41,7 +42,7 @@ export const GalleryFilterBar: React.FC<GalleryFilterBarProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('pointerdown', handlePointerDown);
-    tagSearchRef.current?.focus();
+    if (canAutoFocusText()) tagSearchRef.current?.focus();
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);

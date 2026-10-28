@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { isTouchDevice as checkTouchDevice } from '../utils/touch';
 
 export function useModalA11y(isOpen: boolean, onClose: () => void) {
   const ref = useRef<HTMLDivElement>(null);
@@ -45,7 +46,7 @@ export function useModalA11y(isOpen: boolean, onClose: () => void) {
     document.addEventListener('keydown', handleKeyDown);
 
     // Initial focus placement inside modal
-    const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    const isTouchDevice = checkTouchDevice();
 
     const timer = setTimeout(() => {
       if (!ref.current) return;
