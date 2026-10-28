@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Upload,
   Search,
@@ -57,6 +57,41 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
   onFileUpload,
   onCreateCard,
 }) => {
+  useEffect(() => {
+    if (!isImportDropdownOpen && !isExportDropdownOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (isImportDropdownOpen && !importDropdownRef.current?.contains(target)) setIsImportDropdownOpen(false);
+      if (isExportDropdownOpen && !exportDropdownRef.current?.contains(target)) setIsExportDropdownOpen(false);
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      if (isImportDropdownOpen) {
+        setIsImportDropdownOpen(false);
+        document.querySelector<HTMLButtonElement>('[aria-label="More Import Options"]')?.focus();
+      }
+      if (isExportDropdownOpen) {
+        setIsExportDropdownOpen(false);
+        document.querySelector<HTMLButtonElement>('[aria-label="More Export Options"]')?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [
+    isImportDropdownOpen,
+    isExportDropdownOpen,
+    importDropdownRef,
+    exportDropdownRef,
+    setIsImportDropdownOpen,
+    setIsExportDropdownOpen,
+  ]);
+
   return (
     <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 min-w-0">
       {/* Search Input */}
@@ -122,7 +157,10 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
             </button>
 
             <button
-              onClick={() => setIsImportDropdownOpen(!isImportDropdownOpen)}
+              onClick={() => {
+                setIsImportDropdownOpen(!isImportDropdownOpen);
+                setIsExportDropdownOpen(false);
+              }}
               disabled={isImporting}
               aria-haspopup="dialog"
               aria-expanded={isImportDropdownOpen}
@@ -142,9 +180,8 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
           {isImportDropdownOpen && (
             <div
               role="dialog"
-              aria-modal="true"
               aria-label="Import Options"
-              className="absolute right-0 sm:left-0 sm:right-auto mt-2 w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] max-h-[min(70vh,32rem)] overflow-y-auto overscroll-contain bg-void-900/95 backdrop-blur-xl border border-knight-700/60 rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1"
+              className="absolute left-0 right-auto sm:left-0 sm:right-auto mt-2 w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] max-h-[min(70vh,32rem)] overflow-y-auto overscroll-contain bg-void-900/95 backdrop-blur-xl border border-knight-700/60 rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1"
             >
               <div className="px-3 py-1.5 text-[10px] font-mono font-semibold text-knight-500 uppercase tracking-wider">
                 Import Options
@@ -155,7 +192,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   setIsImportDropdownOpen(false);
                   fileInputRef.current?.click();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
+                className="w-full min-h-11 flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
               >
                 <FileCode className="w-4 h-4 text-maroon-400 shrink-0" />
                 <div>
@@ -169,7 +206,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   setIsImportDropdownOpen(false);
                   zipInputRef.current?.click();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
+                className="w-full min-h-11 flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
               >
                 <Archive className="w-4 h-4 text-maroon-300 shrink-0" />
                 <div>
@@ -183,7 +220,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   setIsImportDropdownOpen(false);
                   folderInputRef.current?.click();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
+                className="w-full min-h-11 flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
               >
                 <FolderOpen className="w-4 h-4 text-maroon-400 shrink-0" />
                 <div>
@@ -197,7 +234,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   setIsImportDropdownOpen(false);
                   onOpenChubModal();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left border-t border-knight-800/60 pt-2.5 mt-1"
+                className="w-full min-h-11 flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left border-t border-knight-800/60 pt-2.5 mt-1"
               >
                 <Sparkles className="w-4 h-4 text-maroon-400 shrink-0" />
                 <div>
@@ -213,19 +250,25 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
         <div className="relative min-w-0" ref={exportDropdownRef}>
           <div className="flex items-center justify-between sm:justify-start bg-void-900 hover:bg-void-800 border border-mist-100/10 rounded-2xl transition-all shadow-sm w-full">
             <button
-              onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
+              onClick={() => {
+                setIsExportDropdownOpen(!isExportDropdownOpen);
+                setIsImportDropdownOpen(false);
+              }}
               disabled={cardsCount === 0}
               className="flex-1 flex items-center justify-center gap-2 px-2.5 sm:px-4 py-3 text-knight-200 text-sm font-medium rounded-l-2xl hover:text-white transition-colors touch-fast active:scale-95 disabled:opacity-50 min-w-0 min-h-11"
               title="Choose export options"
             >
               <Download className="w-4 h-4 text-maroon-400 shrink-0" />
               <span className="leading-tight whitespace-nowrap">
-                {selectedCount > 0 ? `Export (${selectedCount})` : 'Export Cards'}
+                {selectedCount > 0 ? `Export (${selectedCount})` : 'Export'}
               </span>
             </button>
 
             <button
-              onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
+              onClick={() => {
+                setIsExportDropdownOpen(!isExportDropdownOpen);
+                setIsImportDropdownOpen(false);
+              }}
               disabled={cardsCount === 0}
               aria-haspopup="dialog"
               aria-expanded={isExportDropdownOpen}
@@ -245,7 +288,6 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
           {isExportDropdownOpen && (
             <div
               role="dialog"
-              aria-modal="true"
               aria-label="Bulk Export Options"
               className="absolute right-0 sm:left-0 sm:right-auto mt-2 w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] max-h-[min(70vh,32rem)] overflow-y-auto overscroll-contain bg-void-900/95 backdrop-blur-xl border border-knight-700/60 rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1"
             >
@@ -259,7 +301,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   onBulkExportAllZip('png');
                 }}
                 disabled={cardsCount === 0}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left disabled:opacity-40"
+                className="w-full min-h-11 flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left disabled:opacity-40"
               >
                 <Archive className="w-4 h-4 text-maroon-400 shrink-0" />
                 <div>
@@ -274,7 +316,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                     setIsExportDropdownOpen(false);
                     onBulkExportSelectedZip('png');
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
+                  className="w-full min-h-11 flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
                 >
                   <Layers className="w-4 h-4 text-maroon-300 shrink-0" />
                   <div>
@@ -290,7 +332,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   onBulkExportAllZip('charx');
                 }}
                 disabled={cardsCount === 0}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left disabled:opacity-40"
+                className="w-full min-h-11 flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left disabled:opacity-40"
               >
                 <Archive className="w-4 h-4 text-knight-300 shrink-0" />
                 <div>
@@ -305,7 +347,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   onExportAllJsonBundle();
                 }}
                 disabled={cardsCount === 0}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left disabled:opacity-40"
+                className="w-full min-h-11 flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left disabled:opacity-40"
               >
                 <FileCode className="w-4 h-4 text-maroon-400 shrink-0" />
                 <div>
