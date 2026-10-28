@@ -3,8 +3,8 @@
 **Snapshot date:** 2026-10-29  
 **Canonical repository:** [KarlMuzen/RoleplayForge](https://github.com/KarlMuzen/RoleplayForge)  
 **Default branch:** `main`  
-**Latest verified implementation checkpoint:** [`38c0ae9b3201`](https://github.com/KarlMuzen/RoleplayForge/commit/38c0ae9b32018901a8710ed8efc30defbfae715d)  
-**Verified CI run:** [`40767481047`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40767481047)
+**Latest verified implementation checkpoint:** [`13d44425413d`](https://github.com/KarlMuzen/RoleplayForge/commit/13d44425413d0239a3e3b2b2f8efc98853806791)  
+**Verified CI run:** [`40767763788`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40767763788)
 
 ## Repository checkpoint
 
@@ -15,9 +15,9 @@
 - The app remains CardCrucible-derived. The deeper screen-by-screen redesign and manual installed-PWA validation are not complete.
 - The screenshot-driven Library/Guide fixes are implemented: readable mobile actions, viewport-safe/dismissible Import and Export menus, separate rating/tag filter rows with larger touch targets, removal of misleading bottom-nav dots, and a non-overlapping sticky Guide close control.
 - New API-key protection setup is passkey-first where the WebAuthn PRF path is supported, with a one-time offline recovery key that must be acknowledged as saved. Existing passphrase-encrypted vaults and the `enc.v1.` key format remain supported; passphrase setup remains the fallback.
-- A READY Vercel production-target deployment exists for current implementation commit `38c0ae9b32018901a8710ed8efc30defbfae715d`. Runtime headers/CSP and route fallback remain unverified because the connected Vercel integration cannot read protected page responses.
+- A READY Vercel production-target deployment exists for current `main` commit `13d44425413d0239a3e3b2b2f8efc98853806791` (documentation-only follow-up to the verified implementation). Runtime headers/CSP and route fallback remain unverified because the connected Vercel integration cannot read protected page responses.
 - P0 correctness work now includes transactional AI patch application, single-step undo with guarded Undo feedback, editor-history cleanup on card deletion, undoable snapshot restore, a touch/keyboard-accessible completeness checklist, corrected API-key encryption/passphrase copy, and invariants/regression tests. See the [UI/UX redesign spec and P0 log](UI_UX_REDESIGN_SPEC.md).
-- The current `main` head has a READY Vercel production-target deployment, but the connected Vercel integration cannot read protected page responses (403 at access-bypass stage). Deployed route fallback, response headers/CSP behavior remain unverified; Android installed-PWA smoke testing also remains outstanding.
+- The current `main` head `13d44425413d0239a3e3b2b2f8efc98853806791` has a READY Vercel production-target deployment. The latest CI run `40767763788` completed successfully. The connected Vercel integration cannot read protected page responses (403 at access-bypass stage); deployed route fallback, response headers/CSP behavior remain unverified. Android installed-PWA smoke testing remains outstanding.
 
 ## Confirmed implementation foundation
 

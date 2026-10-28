@@ -721,3 +721,18 @@ The [CI workflow for commit `38c0ae9`](https://github.com/KarlMuzen/RoleplayForg
 ### Remaining gates
 
 The latest implementation does not close the physical Android installed-PWA smoke test, runtime CSP/header verification, or host fallback validation. Those still require an authorized deployment response and a real Android run. The Forge navigation redesign has not begun.
+
+
+---
+
+## 17. Handoff checkpoint — 2026-10-29
+
+- **Repository:** [`KarlMuzen/RoleplayForge`](https://github.com/KarlMuzen/RoleplayForge), direct-to-`main` workflow.
+- **Current `main` head at checkpoint:** [`13d44425413d`](https://github.com/KarlMuzen/RoleplayForge/commit/13d44425413d0239a3e3b2b2f8efc98853806791), commit message `docs: reconcile project status with current passkey-first work`. This commit only reconciles status documentation; the implementation checkpoint is `38c0ae9b3201`.
+- **Latest CI:** [run `40767763788`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40767763788) completed successfully: lint/type checking, tests, and production PWA build all passed.
+- **Latest deployment:** Vercel reports READY for the current `main` commit. Do not interpret READY as proof of browser runtime behavior; SSO/access protection prevented verification of page responses.
+- **Implemented since the redesign spec was added:** screenshot-driven Library/Guide fixes; passkey-first vault setup with offline recovery key and passphrase fallback; P0 transactional patch application/undo, card-delete history cleanup, undoable snapshot restore, accessible completeness checklist, security-copy corrections and persistence regression tests. See §15–16 for the implementation log.
+- **Not verified yet:** live hosting route fallback, CSP/headers and theme bootstrap behavior; Android installed-PWA smoke test; public-facing browser runtime. Do not claim these have passed.
+- **Not started:** Forge navigation redesign. User explicitly wants to work on Forge navigation after the current Library/passkey/verification work.
+- **Next actions:** (1) run Android installed-PWA smoke test if the protected deployed build can be installed and accessed; (2) verify hosting fallback and response headers using an authorized response path; (3) otherwise record the access blocker without guessing; (4) begin Forge navigation redesign only after deciding whether these validation gates are feasible now.
+- **Guardrails:** verify `main` SHA before each direct commit; preserve DB name `CardCrucibleDB`, storage keys, `enc.v1.` format, passkey identifiers and sync payload identifiers; no hosting-origin rename or path-routing changes without a reviewed migration/fallback plan.
