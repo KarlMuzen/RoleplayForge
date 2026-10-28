@@ -45,7 +45,7 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
         <div>
           <h3 className="text-sm font-semibold text-mist-100 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-maroon-400" />
-            Master Passphrase & Key Encryption Security
+            API key protection
           </h3>
           <p className="text-xs text-knight-400">
             Client-side AES-256-GCM encryption for API keys stored in IndexedDB
@@ -58,9 +58,8 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
             Master Passphrase Active
           </span>
         ) : (
-          <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-950/80 border border-amber-800/80 text-amber-300 rounded-xl text-xs font-medium">
-            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-            No Passphrase Set
+          <span className="flex items-center gap-1.5 px-3 py-1 bg-void-800 border border-knight-700 text-knight-300 rounded-xl text-xs font-medium">
+            Not set up
           </span>
         )}
       </div>
@@ -236,7 +235,7 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
       ) : (
         <div className="space-y-3 bg-void-950/80 p-4 rounded-xl border border-knight-800">
           <p className="text-xs text-knight-300 leading-relaxed">
-            A Master Passphrase is required to save API keys securely. Roleplay Forge encrypts API keys client-side with <strong>AES-256-GCM</strong> before storing them in IndexedDB, using a key derived with <strong>PBKDF2 (600,000 iterations)</strong>. Card and lorebook content is not encrypted by this passphrase. Losing the passphrase can make saved API keys unrecoverable.
+            A passphrase is needed to save API keys. Roleplay Forge encrypts saved keys on this device with <strong>AES-256-GCM</strong>, using a key derived with <strong>PBKDF2 (600,000 iterations)</strong>, before storing them in IndexedDB. Card and lorebook content is not encrypted by this passphrase. A working, previously enrolled passkey can still unlock saved keys if you forget the passphrase; without one, there is no passphrase reset and saved keys may be unrecoverable.
           </p>
 
           <button
