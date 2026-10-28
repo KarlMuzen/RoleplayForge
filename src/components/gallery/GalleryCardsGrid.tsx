@@ -207,26 +207,28 @@ export const GalleryCardsGrid: React.FC<GalleryCardsGridProps> = ({
     <>
       {/* Bulk Operations Toolbar */}
       {selectedCardUuids.length > 0 && (
-        <div className="sticky top-2 z-20 flex flex-col sm:flex-row items-center justify-between p-3 bg-void-900/95 backdrop-blur-md border border-maroon-400/25 rounded-xl text-xs text-maroon-200 gap-3 min-w-0 shadow-lg shadow-black/10">
-          <span className="font-semibold">{selectedCardUuids.length} card(s) selected</span>
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+        <div className="sticky top-2 z-20 flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-3 bg-void-900/95 backdrop-blur-md border border-maroon-400/25 rounded-xl text-sm text-maroon-200 gap-3 min-w-0 shadow-lg shadow-black/10">
+          <span className="font-semibold text-center sm:text-left">
+            {selectedCardUuids.length} {selectedCardUuids.length === 1 ? 'card' : 'cards'} selected
+          </span>
+          <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto sm:items-center">
             <button
               onClick={() => handleBulkExportSelectedZip('png')}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 bg-maroon-500 hover:bg-maroon-600 text-white font-medium rounded-lg touch-fast"
+              className="min-h-11 flex items-center justify-center gap-1.5 px-3 py-2 border border-transparent bg-maroon-500 hover:bg-maroon-600 text-white text-sm font-medium whitespace-nowrap rounded-lg touch-fast"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-4 h-4 shrink-0" />
               Export ZIP
             </button>
             <button
               onClick={bulkDeleteCards}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 bg-red-900/80 hover:bg-red-800 border border-red-800 text-white font-medium rounded-lg touch-fast"
+              className="min-h-11 flex items-center justify-center gap-1.5 px-3 py-2 bg-red-900/80 hover:bg-red-800 border border-red-800 text-white text-sm font-medium whitespace-nowrap rounded-lg touch-fast"
             >
-              <Trash2 className="w-3.5 h-3.5" />
-              Delete Selected
+              <Trash2 className="w-4 h-4 shrink-0" />
+              Delete
             </button>
             <button
               onClick={clearCardSelections}
-              className="text-knight-400 hover:text-mist-100 ml-1 font-medium touch-fast"
+              className="col-span-2 sm:col-span-1 min-h-11 px-3 py-2 border border-knight-700/60 rounded-lg text-sm text-knight-300 hover:text-mist-100 font-medium touch-fast"
             >
               Cancel
             </button>
