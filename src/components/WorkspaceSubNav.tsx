@@ -13,6 +13,7 @@ const SUB_TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
 export const WorkspaceSubNav: React.FC = () => {
   const { activeTab, setActiveTab, activeCard, setChatPreviewOpen, setPreFlightAuditOpen, setIsOnboardingOpen } = useCardStore();
   const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+  const [showWarnings, setShowWarnings] = useState(false);
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
 
   const cardWarnings = validateCardCompleteness(activeCard);
@@ -59,9 +60,44 @@ export const WorkspaceSubNav: React.FC = () => {
                 {activeCard ? activeCard.data.name || 'Untitled' : 'No character selected'}
               </p>
               {isInvalid && (
-                <span title={`Incomplete Card:\n${cardWarnings.join('\n')}`}>
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                </span>
+                <div className="relative shrink-0">
+                  <button
+                    type="button"
+                    aria-label={`Incomplete card: ${cardWarnings.length} issues. Show checklist`}
+                    aria-expanded={showWarnings}
+                    aria-controls="card-completeness-checklist"
+                    onClick={() => setShowWarnings((open) => !open)}
+                    className="flex min-w-11 min-h-11 items-center justify-center rounded-lg text-amber-400 hover:bg-void-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 touch-fast"
+                  >
+                    <AlertTriangle className="w-4 h-4" aria-hidden="true" />
+                  </button>
+                  {showWarnings && (
+                    <section
+                      id="card-completeness-checklist"
+                      aria-labelledby="card-completeness-title"
+                      className="absolute left-0 top-full z-50 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-xl border border-knight-700 bg-void-950 p-3 shadow-xl"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 id="card-completeness-title" className="text-xs font-semibold text-mist-100">
+                          Incomplete card · {cardWarnings.length} {cardWarnings.length === 1 ? 'issue' : 'issues'}
+                        </h3>
+                        <button
+                          type="button"
+                          aria-label="Close card completeness checklist"
+                          onClick={() => setShowWarnings(false)}
+                          className="flex min-w-11 min-h-11 shrink-0 items-center justify-center rounded-lg text-knight-300 hover:bg-void-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"
+                        >
+                          <span aria-hidden="true">×</span>
+                        </button>
+                      </div>
+                      <ul className="mt-2 list-disc space-y-2 pl-4 text-xs leading-relaxed text-knight-200">
+                        {cardWarnings.map((warning, index) => (
+                          <li key={`${index}-${warning}`}>{warning}</li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+                </div>
               )}
             </div>
 
