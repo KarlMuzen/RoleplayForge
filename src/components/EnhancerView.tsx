@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Sparkles, ShieldAlert, ArrowRight, Wand2, History, Activity, Bot, Copy, Check, Zap, AlertCircle } from 'lucide-react';
 import { useCardStore } from '../store/useCardStore';
 import { useDialogStore } from '../store/useDialogStore';
+import { useToastStore } from '../store/useToastStore';
 import { sendLLMRequest } from '../services/llmAdapter';
 import { cardPatchSchema, cardPatchJsonSchema, type CardPatch } from '../schemas/patchSchema';
 import { applyCardPatch } from '../utils/applyCardPatch';
@@ -167,10 +168,56 @@ Propose field updates as structured patches.`;
   const handleApplyPatches = (selectedIndices: number[]) => {
     if (!generatedPatches) return;
     const patchesToApply = selectedIndices.map((i) => generatedPatches[i]);
-    useCardStore.getState().updateActiveCardData((prev) => {
-      return patchesToApply.reduce((acc, patch) => applyCardPatch(acc, patch), prev);
-    });
+    const store = useCardStore.getState();
+    const cardUuid = store.activeCardUuid;
+    if (!cardUuid || !store.activeCard) {
+      useToastStore.getState().showToast({
+        title: 'Could not apply suggested edits',
+        message: 'No active character is available. The suggestions were kept.',
+        type: 'error',
+      });
+      return;
+    }
+
+    const previousCardJson = JSON.stringify(store.activeCard);
+    try {
+      store.updateActiveCardData(
+        (prev) => patchesToApply.reduce((acc, patch) => applyCardPatch(acc, patch), prev),
+        { forceUndo: true }
+      );
+    } catch (err) {
+      useToastStore.getState().showToast({
+        title: 'Could not apply suggested edits',
+        message: err instanceof Error ? err.message : 'One or more edits could not be applied.',
+        type: 'error',
+        duration: 6000,
+      });
+      return;
+    }
+
     setGeneratedPatches(null);
+    useToastStore.getState().showToast({
+      title: `Applied ${patchesToApply.length} edits`,
+      message: 'Suggested edits applied to the active character.',
+      type: 'success',
+      duration: 6000,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          const current = useCardStore.getState();
+          const latestUndo = current.undoStack[current.undoStack.length - 1]?.cardData;
+          if (current.activeCardUuid !== cardUuid || JSON.stringify(latestUndo) !== previousCardJson) {
+            useToastStore.getState().showToast({
+              title: 'Newer changes exist',
+              message: 'Use the editor Undo control to review more recent changes first.',
+              type: 'warning',
+            });
+            return;
+          }
+          current.undo();
+        },
+      },
+    });
   };
 
   const handleCopySuggestions = async () => {
