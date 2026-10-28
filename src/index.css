@@ -11,7 +11,7 @@
     color-scheme: light;
     /* Soft parchment, oat, and warm ink. */
     --theme-void-950:#f7f4ee; --theme-void-900:#eee8de; --theme-void-800:#fffdf8;
-    --theme-maroon-950:#f8ebe5; --theme-maroon-900:#f0d7ce; --theme-maroon-800:#e5b7a8; --theme-maroon-700:#7b3529; --theme-maroon-600:#944332; --theme-maroon-500:#b55641; --theme-maroon-400:#c96e58; --theme-maroon-300:#a74f3c; --theme-maroon-text:#984632;
+    --theme-maroon-950:#f8ebe5; --theme-maroon-900:#f0d7ce; --theme-maroon-800:#e5b7a8; --theme-maroon-700:#7b3529; --theme-maroon-600:#944332; --theme-maroon-500:#a34c39; --theme-maroon-400:#a74f3c; --theme-maroon-300:#8f402f; --theme-maroon-text:#984632;
     --theme-amber-950:#fbf0ce; --theme-amber-900:#f4dfa1; --theme-amber-800:#d6a74f; --theme-amber-700:#a97624; --theme-amber-600:#95631d; --theme-amber-500:#815319; --theme-amber-400:#9a671e; --theme-amber-300:#76501c; --theme-amber-200:#684419;
     --theme-knight-900:#e6ded2; --theme-knight-700:#d8cfc1; --theme-knight-500:#a79d90; --theme-knight-400:#797166; --theme-knight-300:#514b43;
     --theme-mist-100:#292620; --theme-mist-200:#3b3730; --theme-mist-300:#514b43;
