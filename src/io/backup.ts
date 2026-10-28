@@ -219,6 +219,29 @@ export async function restoreFullBackup(
     throw new Error('Invalid backup file: Missing cards list.');
   }
 
+  const incomingSettings = backupData.settings || [];
+  const incomingSettingValue = (key: string) => incomingSettings.find((setting) => setting.key === key)?.value;
+  const hasIncomingPassphraseVault =
+    Boolean(incomingSettingValue('crypto_salt')) && Boolean(incomingSettingValue('crypto_hash'));
+  const hasIncomingPasskeyVault =
+    incomingSettingValue('crypto_mode') === 'passkey-only-v1' &&
+    Boolean(incomingSettingValue('passkey_credential_id')) &&
+    Boolean(incomingSettingValue('passkey_wrapped_key')) &&
+    Boolean(incomingSettingValue('passkey_prf_salt'));
+  const hasIncomingSecurityMetadata = incomingSettings.some((setting) =>
+    DEVICE_SECURITY_SETTING_KEYS.has(setting.key)
+  );
+
+  if (mode === 'overwrite' && hasIncomingSecurityMetadata && !hasIncomingPassphraseVault && !hasIncomingPasskeyVault) {
+    throw new Error('Backup contains incomplete API-key vault metadata. The restore was stopped to avoid mixing incompatible encryption settings.');
+  }
+
+  // Only a full overwrite backup that explicitly includes API-key protection metadata can
+  // safely restore encrypted API keys. In this case, keep the encrypted key records and switch
+  // the in-memory session to the imported vault after the database transaction completes.
+  const restoringIncomingVault =
+    mode === 'overwrite' && (hasIncomingPassphraseVault || hasIncomingPasskeyVault);
+
   let cardsCount = 0;
   let cardsSkipped = 0;
   let lorebooksCount = 0;
@@ -229,6 +252,13 @@ export async function restoreFullBackup(
       await db.cards.clear();
       await db.lorebooks.clear();
       await db.connectionProfiles.clear();
+
+      if (restoringIncomingVault) {
+        // Do not combine a source vault with stale credentials from the receiving device.
+        for (const key of DEVICE_SECURITY_SETTING_KEYS) {
+          await db.settings.delete(key);
+        }
+      }
     }
 
     if (Array.isArray(backupData.cards)) {
@@ -336,7 +366,7 @@ export async function restoreFullBackup(
           if (isRedacted) {
             rec.apiKey = undefined;
             keyNeedsReentry = true;
-          } else if (rec.apiKey && rec.apiKey.startsWith('enc.v1.')) {
+          } else if (rec.apiKey && rec.apiKey.startsWith('enc.v1.') && !restoringIncomingVault) {
             const cryptoKey = useCardStore.getState().cryptoKey;
             let canDecrypt = false;
             if (cryptoKey) {
@@ -392,6 +422,14 @@ export async function restoreFullBackup(
       }
     }
   });
+
+  if (restoringIncomingVault) {
+    // The old in-memory key must not be used against the newly restored vault.
+    const store = useCardStore.getState();
+    store.lockSession();
+    await store.checkPassphraseSetup();
+    await store.loadProfilesFromDb();
+  }
 
   return { cardsCount, lorebooksCount, profilesCount, cardsSkipped, errors };
 }
