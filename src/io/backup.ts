@@ -379,11 +379,7 @@ export async function restoreFullBackup(
           // encrypted API keys undecryptable.
           if (
             mode === 'merge' &&
-            (st.key === 'crypto_salt' ||
-              st.key === 'crypto_hash' ||
-              st.key === 'passkey_credential_id' ||
-              st.key === 'passkey_wrapped_key' ||
-              st.key === 'passkey_prf_salt')
+            DEVICE_SECURITY_SETTING_KEYS.has(st.key)
           ) {
             continue;
           }
