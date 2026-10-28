@@ -5,7 +5,6 @@ import { useDialogStore } from '../../store/useDialogStore';
 import { useToastStore } from '../../store/useToastStore';
 import {
   ShieldCheck,
-  ShieldAlert,
   Lock,
   Unlock,
   KeyRound,
