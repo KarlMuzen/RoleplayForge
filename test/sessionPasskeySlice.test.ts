@@ -156,7 +156,7 @@ describe('sessionSlice - Passkey Integration', () => {
       const recoveryCode = await useCardStore.getState().setupPasskeyProtection();
       expect(recoveryCode).not.toBeNull();
       await useCardStore.getState().confirmRecoveryKeySaved();
-      waitingRequest!.resolve('__ROLEPLAY_FORGE_PASSKEY_ONLY_SETUP__');
+      waitingRequest!.resolve({ kind: 'passkey-only' });
       useCardStore.setState({ passphraseSetupRequest: null, passphraseSetupError: null });
 
       await savePromise;
