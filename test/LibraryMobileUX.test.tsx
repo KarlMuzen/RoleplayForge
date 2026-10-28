@@ -82,22 +82,22 @@ describe('Library mobile controls', () => {
     expect(screen.getByRole('group', { name: 'Rating filter' })).toBeInTheDocument();
 
     for (const name of ['All Ratings', 'SFW', 'NSFW', 'Unrated']) {
-      const button = screen.getByRole('button', { name, exact: true });
+      const button = screen.getByRole('button', { name });
       expect(button.className).toContain('min-h-11');
     }
 
-    const tagsButton = screen.getByRole('button', { name: 'Tags', exact: true });
+    const tagsButton = screen.getByRole('button', { name: 'Tags' });
     expect(tagsButton.className).toContain('min-h-11');
     fireEvent.click(tagsButton);
 
     const tagPicker = screen.getByRole('dialog', { name: 'Choose tag filter' });
     expect(screen.getByLabelText('Filter by tag')).toBeInTheDocument();
     for (const name of ['All tags', '#fantasy']) {
-      const button = screen.getByRole('button', { name, exact: true });
+      const button = screen.getByRole('button', { name });
       expect(button.className).toContain('min-h-11');
     }
 
-    fireEvent.click(screen.getByRole('button', { name: '#fantasy', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '#fantasy' }));
     expect(screen.queryByRole('dialog', { name: 'Choose tag filter' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Tags: fantasy' })).toBeInTheDocument();
   });
