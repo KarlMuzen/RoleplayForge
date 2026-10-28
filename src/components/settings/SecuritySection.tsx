@@ -139,25 +139,52 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
               <button
                 onClick={async () => {
                   const confirmed = await useDialogStore.getState().showConfirm(
-                    'Removing your Master Passphrase will purge all stored API keys from IndexedDB for your security. Proceed?',
-                    'Remove Master Passphrase',
-                    { confirmText: 'Remove & Purge Keys', variant: 'danger' }
+                    isPasskeyOnly
+                      ? 'Resetting this passkey vault permanently removes all saved API keys from this device. You will need to re-enter them after setting up protection again. Proceed?'
+                      : 'Removing your Master Passphrase will purge all stored API keys from IndexedDB for your security. Proceed?',
+                    isPasskeyOnly ? 'Reset API key vault' : 'Remove Master Passphrase',
+                    { confirmText: isPasskeyOnly ? 'Reset & Purge Keys' : 'Remove & Purge Keys', variant: 'danger' }
                   );
                   if (confirmed) {
                     await clearPassphrase();
-                    useDialogStore.getState().showAlert('Master Passphrase removed and all stored API keys purged from disk.', 'Passphrase Removed', 'info');
+                    useDialogStore.getState().showAlert('API key protection removed and saved API keys purged from this device.', 'Protection Reset', 'info');
                   }
                 }}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-red-950/60 text-red-300 border border-knight-700 hover:border-red-800 rounded-xl text-xs font-medium transition-all"
               >
                 <KeyRound className="w-3.5 h-3.5" />
-                Remove Passphrase
+                {isPasskeyOnly ? 'Reset vault & purge keys' : 'Remove Passphrase'}
               </button>
             </div>
           </div>
 
-          {/* Optional Passkey (WebAuthn PRF) Fast Unlock */}
-          {isPasskeySupported && isUnlocked && (
+          {isPasskeyOnly && isUnlocked && !hasRecoveryKey && (
+            <div className="rounded-xl border border-amber-800/50 bg-amber-950/25 p-3 space-y-2">
+              <p className="text-xs leading-relaxed text-amber-200">
+                Your passkey vault does not have a confirmed recovery key. Create and save one now so you can recover if passkey access is lost.
+              </p>
+              <button
+                onClick={async () => {
+                  try {
+                    const code = await useCardStore.getState().setupRecoveryKey();
+                    if (!code) throw new Error('Unlock the vault first, then try again.');
+                  } catch (err) {
+                    useToastStore.getState().showToast({
+                      title: 'Could not create recovery key',
+                      message: err instanceof Error ? err.message : 'Recovery-key creation failed.',
+                      type: 'error',
+                    });
+                  }
+                }}
+                className="min-h-11 rounded-xl bg-amber-700 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white touch-fast"
+              >
+                Create recovery key
+              </button>
+            </div>
+          )}
+
+          {/* Optional passkey unlock for passphrase-protected vaults */}
+          {isPasskeySupported && isUnlocked && !isPasskeyOnly && (
             <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-void-950/80 rounded-xl border border-knight-800">
               <div className="space-y-1">
                 <div className="text-xs font-medium text-mist-100 flex items-center gap-2">
@@ -239,16 +266,18 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
       ) : (
         <div className="space-y-3 bg-void-950/80 p-4 rounded-xl border border-knight-800">
           <p className="text-xs text-knight-300 leading-relaxed">
-            A passphrase is needed to save API keys. Roleplay Forge encrypts saved keys on this device with <strong>AES-256-GCM</strong>, using a key derived with <strong>PBKDF2 (600,000 iterations)</strong>, before storing them in IndexedDB. Card and lorebook content is not encrypted by this passphrase. A working, previously enrolled passkey can still unlock saved keys if you forget the passphrase; without one, there is no passphrase reset and saved keys may be unrecoverable.
+            {isPasskeySupported
+              ? 'Use your device passkey to protect saved API keys. A one-time recovery key will be shown during setup; save it somewhere separate from this device.'
+              : 'Use a master passphrase to encrypt saved API keys on this device. Card and lorebook content is not encrypted by this setting.'}
           </p>
 
           <button
             onClick={() => {
               useCardStore.setState({
                 passphraseSetupRequest: {
-                  resolve: async (pass) => {
-                    if (pass) {
-                      await setupPassphrase(pass);
+                  resolve: async (choice) => {
+                    if (choice && choice !== PASSKEY_ONLY_SETUP_SENTINEL) {
+                      await setupPassphrase(choice);
                     }
                   },
                 },
@@ -256,8 +285,8 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
             }}
             className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-maroon-600 to-maroon-800 hover:from-maroon-500 hover:to-maroon-700 text-white rounded-xl text-xs font-semibold shadow-md transition-all"
           >
-            <ShieldCheck className="w-4 h-4" />
-            Establish Master Passphrase Now
+            {isPasskeySupported ? <Fingerprint className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
+            {isPasskeySupported ? 'Set up API key protection' : 'Set up master passphrase'}
           </button>
         </div>
       )}
