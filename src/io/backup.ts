@@ -4,6 +4,18 @@ import { decryptText } from '../utils/crypto';
 import { useCardStore } from '../store/useCardStore';
 import { buf2b64, b642buf } from '../utils/binaryEncoding';
 
+const DEVICE_SECURITY_SETTING_KEYS = new Set([
+  'crypto_salt',
+  'crypto_hash',
+  'crypto_mode',
+  'crypto_recovery_salt',
+  'crypto_recovery_wrapped_key',
+  'crypto_recovery_confirmed',
+  'passkey_credential_id',
+  'passkey_wrapped_key',
+  'passkey_prf_salt',
+]);
+
 export interface FullBackupData {
   version: number;
   exportedAt: string;
