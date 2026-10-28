@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Draft for review. Not approved. No application code changed. |
+| **Status** | Draft for review. Not approved. P0 implementation is underway; see §15 for changes and validation status. |
 | **Date** | 2026-10-29 |
 | **Repository** | `KarlMuzen/RoleplayForge`, branch `main` |
 | **Inspected commit** | `f17364140078d772363048584e0b3b760f80adf4` |
@@ -16,7 +16,7 @@ Every substantive claim carries one of three labels.
 - **[R] Recommendation** — proposed design or implementation direction. Not current behavior.
 - **[O] Open** — needs further inspection, testing, or deployment verification. Must not be treated as fact. Tracked in §13.
 
-Nothing here has been verified on a deployed site, on an Android device, or on Vercel or Cloudflare Pages. Files and components that were not read are listed in §13 and are not described beyond their file names.
+The initial draft was based on source inspection at the commit listed above. CI validation of subsequent P0 changes and remaining deployment/device verification are recorded in §15. Items not read are listed in §13 and are not described beyond their file names.
 
 Items reported from the earlier screenshot review (20 of 30 screens) that were not confirmed in source are labelled **[O]**.
 
@@ -667,4 +667,4 @@ Tablet rail and two-pane Studio; docked Assist at ≥1280px; path routes (**gate
 
 **Open** (not verified): everything labelled **[O]**, tracked in §13 — notably hosting fallback and headers on Vercel and Cloudflare Pages, deployed CSP effect, Android device behavior, the uninspected editor regeneration logic, Lab and Assistant internals, import/export and backup layers, PWA update behavior, cost fallback behavior, Library toolbar and empty-state details, token/CSS values, and all performance measurements.
 
-**Repository changes:** this commit adds this specification as `docs/UI_UX_REDESIGN_SPEC.md`. No application code was edited.
+**Initial repository change:** the first spec commit added only this document. Subsequent P0 changes are listed in §15. CI verifies the committed code paths; deployed-host and Android-device behavior remain unverified.
