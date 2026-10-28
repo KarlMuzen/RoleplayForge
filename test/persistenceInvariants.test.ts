@@ -8,13 +8,24 @@ import { encryptText, decryptText } from '../src/utils/crypto';
 import { createNewDefaultCard } from '../src/utils/cardDefaults';
 
 beforeEach(async () => {
+  const timeout = useCardStore.getState().saveTimeoutId;
+  if (timeout) clearTimeout(timeout);
   await db.settings.clear();
   localStorage.clear();
-  useCardStore.setState({ theme: 'dark' });
+  useCardStore.setState({
+    theme: 'dark',
+    activeCardUuid: null,
+    activeCard: null,
+    undoStack: [],
+    redoStack: [],
+    saveTimeoutId: null,
+  });
   useTokenTracker.setState({ stats: {}, loaded: true });
 });
 
 afterEach(async () => {
+  const timeout = useCardStore.getState().saveTimeoutId;
+  if (timeout) clearTimeout(timeout);
   await db.settings.clear();
   localStorage.clear();
   useTokenTracker.setState({ stats: {}, loaded: false });
@@ -57,6 +68,28 @@ describe('persisted format invariants', () => {
       'uuid',
     ]);
     expect(db.settings.schema.primKey.src).toBe('key');
+  });
+
+  it('keeps undo records wrapped in exactly the cardData field', () => {
+    const card = createNewDefaultCard('Undo invariant');
+    useCardStore.setState({
+      activeCardUuid: 'undo-invariant',
+      activeCard: card,
+      undoStack: [],
+      redoStack: [],
+    });
+
+    useCardStore.getState().updateActiveCardData(
+      (previous) => ({
+        ...previous,
+        data: { ...previous.data, description: 'Changed after the snapshot.' },
+      }),
+      { forceUndo: true },
+    );
+
+    const undoRecord = useCardStore.getState().undoStack[0];
+    expect(Object.keys(undoRecord)).toEqual(['cardData']);
+    expect(undoRecord.cardData.data.name).toBe('Undo invariant');
   });
 
   it('keeps theme, editor-history, assistant-chat, and cost-tracker identifiers stable', async () => {
