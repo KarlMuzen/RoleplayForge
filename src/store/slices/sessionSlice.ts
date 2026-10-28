@@ -67,6 +67,9 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     const key = await deriveKey(passphrase, salt, 600000);
     const hash = await hashKey(key);
     await db.transaction('rw', db.settings, db.connectionProfiles, async () => {
+      await db.settings.delete('crypto_mode');
+      await db.settings.delete('crypto_recovery_salt');
+      await db.settings.delete('crypto_recovery_wrapped_key');
       await db.settings.put({ key: 'crypto_salt', value: buf2hex(salt) });
       await db.settings.put({ key: 'crypto_hash', value: hash });
 
@@ -82,6 +85,10 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
 
     set({
       isPassphraseSet: true,
+      isPasskeyOnly: false,
+      hasRecoveryKey: false,
+      pendingRecoveryCode: null,
+      isPasskeyEnrolled: false,
       isUnlocked: true,
       cryptoKey: key,
       passphraseSetupRequest: null,
