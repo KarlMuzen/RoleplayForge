@@ -1,0 +1,246 @@
+import React, { useState } from 'react';
+import type { ConnectionProfile } from '../../db';
+import { useCardStore } from '../../store/useCardStore';
+import { useDialogStore } from '../../store/useDialogStore';
+import { useToastStore } from '../../store/useToastStore';
+import {
+  ShieldCheck,
+  ShieldAlert,
+  Lock,
+  Unlock,
+  KeyRound,
+  Fingerprint,
+} from 'lucide-react';
+
+export interface SecuritySectionProps {
+  isPassphraseSet: boolean;
+  isUnlocked: boolean;
+  lockSession: () => void;
+  clearPassphrase: () => Promise<void>;
+  setupPassphrase: (pass: string) => Promise<void>;
+  isPasskeySupported: boolean;
+  isPasskeyEnrolled: boolean;
+  enrollPasskeyUnlock: () => Promise<boolean>;
+  removePasskeyUnlock: () => Promise<void>;
+  profiles: ConnectionProfile[];
+}
+
+export const SecuritySection: React.FC<SecuritySectionProps> = ({
+  isPassphraseSet,
+  isUnlocked,
+  lockSession,
+  clearPassphrase,
+  setupPassphrase,
+  isPasskeySupported,
+  isPasskeyEnrolled,
+  enrollPasskeyUnlock,
+  removePasskeyUnlock,
+  profiles,
+}) => {
+  const [isPasskeyLoading, setIsPasskeyLoading] = useState(false);
+
+  return (
+    <div className="bg-void-900 border border-knight-700/40 rounded-2xl p-4 md:p-6 space-y-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-knight-700/40 pb-3">
+        <div>
+          <h3 className="text-sm font-semibold text-mist-100 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-maroon-400" />
+            Master Passphrase & Key Encryption Security
+          </h3>
+          <p className="text-xs text-knight-400">
+            Zero-knowledge client-side AES-256-GCM encryption for API keys in local storage
+          </p>
+        </div>
+
+        {isPassphraseSet ? (
+          <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-950/80 border border-emerald-800/80 text-emerald-400 rounded-xl text-xs font-medium">
+            <Lock className="w-3.5 h-3.5" />
+            Master Passphrase Active
+          </span>
+        ) : (
+          <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-950/80 border border-amber-800/80 text-amber-300 rounded-xl text-xs font-medium">
+            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+            Passphrase Setup Mandated
+          </span>
+        )}
+      </div>
+
+      {isPassphraseSet ? (
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-void-950/80 rounded-xl border border-knight-800">
+            <div className="space-y-1">
+              <div className="text-xs font-medium text-mist-100 flex items-center gap-2">
+                <span>Session Status:</span>
+                {isUnlocked ? (
+                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                    <Unlock className="w-3.5 h-3.5" /> Unlocked (Active Memory Session)
+                  </span>
+                ) : (
+                  <span className="text-amber-400 font-semibold flex items-center gap-1">
+                    <Lock className="w-3.5 h-3.5" /> Session Locked
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-knight-400">
+                Keys are encrypted via PBKDF2 (600,000 rounds of SHA-256). Decrypted keys exist purely in volatile memory.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {isUnlocked ? (
+                <button
+                  onClick={() => {
+                    lockSession();
+                    useDialogStore.getState().showAlert('Session locked. API keys purged from active memory.', 'Session Locked', 'info');
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-knight-700 text-mist-100 border border-knight-700 rounded-xl text-xs font-medium transition-all"
+                >
+                  <Lock className="w-3.5 h-3.5 text-maroon-400" />
+                  Lock Session
+                </button>
+              ) : (
+                <button
+                  onClick={async () => {
+                    if (profiles.length > 0) {
+                      try {
+                        await useCardStore.getState().getDecryptedApiKey(profiles[0], true);
+                      } catch {
+                        // Handled
+                      }
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-maroon-600 hover:bg-maroon-500 text-white rounded-xl text-xs font-medium transition-all"
+                >
+                  <Unlock className="w-3.5 h-3.5" />
+                  Unlock Session
+                </button>
+              )}
+
+              <button
+                onClick={async () => {
+                  const confirmed = await useDialogStore.getState().showConfirm(
+                    'Removing your Master Passphrase will purge all stored API keys from IndexedDB for your security. Proceed?',
+                    'Remove Master Passphrase',
+                    { confirmText: 'Remove & Purge Keys', variant: 'danger' }
+                  );
+                  if (confirmed) {
+                    await clearPassphrase();
+                    useDialogStore.getState().showAlert('Master Passphrase removed and all stored API keys purged from disk.', 'Passphrase Removed', 'info');
+                  }
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-red-950/60 text-red-300 border border-knight-700 hover:border-red-800 rounded-xl text-xs font-medium transition-all"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                Remove Passphrase
+              </button>
+            </div>
+          </div>
+
+          {/* Optional Passkey (WebAuthn PRF) Fast Unlock */}
+          {isPasskeySupported && isUnlocked && (
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-void-950/80 rounded-xl border border-knight-800">
+              <div className="space-y-1">
+                <div className="text-xs font-medium text-mist-100 flex items-center gap-2">
+                  <Fingerprint className="w-4 h-4 text-maroon-400" />
+                  <span>Passkey Unlock (Biometrics / Security Key):</span>
+                  {isPasskeyEnrolled ? (
+                    <span className="text-emerald-400 font-semibold text-[10px] bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded-full">
+                      Enrolled
+                    </span>
+                  ) : (
+                    <span className="text-knight-400 font-normal text-[10px] bg-void-800 border border-knight-700 px-2 py-0.5 rounded-full">
+                      Not Enrolled
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-knight-400">
+                  Fast unlock alternative using WebAuthn PRF. The master passphrase remains the sole root of trust.
+                </p>
+              </div>
+
+              <div>
+                {isPasskeyEnrolled ? (
+                  <button
+                    onClick={async () => {
+                      const confirmed = await useDialogStore.getState().showConfirm(
+                        'Remove passkey unlock for this device? You can re-enroll at any time while the session is unlocked.',
+                        'Remove Passkey',
+                        { confirmText: 'Remove Passkey', variant: 'danger' }
+                      );
+                      if (confirmed) {
+                        await removePasskeyUnlock();
+                        useToastStore.getState().showToast({
+                          title: 'Passkey Removed',
+                          message: 'Passkey unlock removed from this device.',
+                          type: 'info',
+                        });
+                      }
+                    }}
+                    disabled={isPasskeyLoading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-red-950/60 text-red-300 border border-knight-700 hover:border-red-800 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                  >
+                    <Fingerprint className="w-3.5 h-3.5" />
+                    Remove Passkey
+                  </button>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      setIsPasskeyLoading(true);
+                      try {
+                        const success = await enrollPasskeyUnlock();
+                        if (success) {
+                          useToastStore.getState().showToast({
+                            title: 'Passkey Enrolled',
+                            message: 'Passkey unlock enabled. You can now use biometrics or security keys to unlock API keys.',
+                            type: 'success',
+                          });
+                        } else {
+                          useToastStore.getState().showToast({
+                            title: 'Enrollment Failed',
+                            message: 'Passkey enrollment was cancelled or your device does not support WebAuthn PRF.',
+                            type: 'warning',
+                          });
+                        }
+                      } finally {
+                        setIsPasskeyLoading(false);
+                      }
+                    }}
+                    disabled={isPasskeyLoading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-maroon-600 to-maroon-800 hover:from-maroon-500 hover:to-maroon-700 text-white rounded-xl text-xs font-medium shadow-sm transition-all disabled:opacity-50"
+                  >
+                    <Fingerprint className="w-3.5 h-3.5" />
+                    {isPasskeyLoading ? 'Enrolling...' : 'Enroll Passkey'}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-3 bg-void-950/80 p-4 rounded-xl border border-knight-800">
+          <p className="text-xs text-knight-300 leading-relaxed">
+            To prevent credentials from being stored in plaintext in local storage, CardCrucible mandates a Master Passphrase to encrypt all API keys saved in local IndexedDB. Keys are encrypted with <strong>AES-256-GCM</strong> using <strong>PBKDF2 key derivation (600,000 iterations)</strong>.
+          </p>
+
+          <button
+            onClick={() => {
+              useCardStore.setState({
+                passphraseSetupRequest: {
+                  resolve: async (pass) => {
+                    if (pass) {
+                      await setupPassphrase(pass);
+                    }
+                  },
+                },
+              });
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-maroon-600 to-maroon-800 hover:from-maroon-500 hover:to-maroon-700 text-white rounded-xl text-xs font-semibold shadow-md transition-all"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            Establish Master Passphrase Now
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};

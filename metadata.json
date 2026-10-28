@@ -1,0 +1,8 @@
+{
+  "name": "CardCrucible",
+  "description": "A comprehensive toolkit for creating and managing detailed character profiles for AI roleplayers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
