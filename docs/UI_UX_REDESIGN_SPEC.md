@@ -681,14 +681,14 @@ The design remains a draft. Code changes do not close a deployment/device verifi
 - **P0-6 / P0-7 — History safety:** single and bulk card deletion remove only the matching `editor_history_<uuid>` key in the deletion transaction. Snapshot restore keeps the pre-restore state undoable and updates the persisted history and active record.
 - **P0-5 — Security copy and unlock:** replaced “zero-knowledge” and “local storage” phrasing with accurate IndexedDB/AES-GCM/PBKDF2 descriptions, clarified passphrase timing and passkey-based unlock, and added an unlock path that works with zero connection profiles.
 - **P0-4 — Accessible completeness checklist:** replaced the title-only warning with a touch-sized checklist button, labelled issue list, close control, Escape dismissal with focus return, and outside-tap dismissal.
-- **P0-8 / P0-10 — Maintenance and tests:** removed the internal “Phase 6” badge, aligned the testing-strategy document with CI, and added persistence invariant tests for the database/schema, settings keys, usage-record shape, and encrypted-key prefix.
+- **P0-8 / P0-10 — Maintenance and tests:** removed the internal “Phase 6” badge, aligned the testing-strategy document with CI, and added persistence invariant tests for the database/schema, settings keys, undo-record shape, usage-record shape, and encrypted-key prefix.
 
-The [CI workflow for commit `db1c251`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40757546067) passed lint, tests, and the production PWA build. Its tests cover patch atomicity and undo, delete/history cleanup, snapshot restore, zero-profile unlock, completeness checklist behavior, and persistence invariants.
+The [CI workflow for commit `c34814e`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40757971294) passed lint, tests, and the production PWA build. Its tests cover patch atomicity and undo, delete/history cleanup, snapshot restore, zero-profile unlock, completeness checklist behavior, and persistence invariants.
 
 ### Still open — do not infer from CI
 
 - **V-01 / V-02 — Hosting fallback:** Vercel reports project `rpforge` with SSO protection enabled for generated domains. The connected Vercel fetch attempt was denied with HTTP 403 before the route could be tested. Root/deep-link first visit and refresh therefore remain unverified; no routing changes were made.
-- **V-03 — Response headers:** `public/_headers` is the Cloudflare Pages convention. Vercel documents custom response headers through `vercel.json`; no `vercel.json` or project route rules were found. Runtime headers still need checking from the intended public origin.
+- **V-03 — Response headers:** `public/_headers` is the [Cloudflare Pages header convention](https://developers.cloudflare.com/pages/configuration/headers/). Vercel documents custom response headers through [`vercel.json`](https://vercel.com/docs/headers); no `vercel.json` or project route rules were found. Runtime headers still need checking from the intended public origin.
 - **V-04 / P0-2 — CSP/theme bootstrap:** the inline theme script and `script-src 'self'` in `public/_headers` remain. Because deployed header delivery and console behavior could not be observed, neither CSP nor bootstrap was changed.
 - **P0-9 / V-21 — Android smoke test:** installed-PWA back, keyboard, safe-area, theme-color, update, and uninstall/reinstall behavior still require a physical Android test.
 
