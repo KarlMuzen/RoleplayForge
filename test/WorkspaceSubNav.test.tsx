@@ -51,5 +51,18 @@ describe('WorkspaceSubNav completeness checklist', () => {
     expect(screen.queryByRole('region', {
       name: new RegExp(`Incomplete card · ${warnings.length} issues`),
     })).not.toBeInTheDocument();
+
+    fireEvent.click(toggle);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('region', {
+      name: new RegExp(`Incomplete card · ${warnings.length} issues`),
+    })).not.toBeInTheDocument();
+    expect(toggle).toHaveFocus();
+
+    fireEvent.click(toggle);
+    fireEvent.pointerDown(document.body);
+    expect(screen.queryByRole('region', {
+      name: new RegExp(`Incomplete card · ${warnings.length} issues`),
+    })).not.toBeInTheDocument();
   });
 });
