@@ -103,7 +103,7 @@ export const createProfileSlice: StateCreator<CardStore, [], [], ProfileSlice> =
           if (!pass) {
             set({ passphraseSetupRequest: null, passphraseSetupError: null });
             throw new Error(
-              'A Master Passphrase is required to encrypt and safely store API keys in local storage.'
+              'A master passphrase is required to encrypt API keys before storing them in IndexedDB on this device.'
             );
           }
 
