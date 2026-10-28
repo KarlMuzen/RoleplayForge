@@ -18,7 +18,6 @@ beforeEach(async () => {
     selectedTag: null,
     selectedCardUuids: [],
     isLoadingCards: false,
-    isImporting: false,
     isOnboardingOpen: true,
   });
 });
@@ -38,7 +37,7 @@ describe('Library mobile controls', () => {
     fireEvent.click(importToggle);
     const importMenu = screen.getByRole('dialog', { name: 'Import Options' });
     expect(importToggle).toHaveAttribute('aria-expanded', 'true');
-    expect(importMenu.className).toContain('right-0');
+    expect(importMenu.className).toContain('left-0');
     expect(importMenu.className).toContain('max-w-[calc(100vw-2rem)]');
     expect(importMenu.className).toContain('overflow-y-auto');
 
