@@ -109,6 +109,50 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     return false;
   },
 
+  requestSessionUnlock: async () => {
+    if (get().isUnlocked && get().cryptoKey) return true;
+
+    const MAX_ATTEMPTS = 3;
+    let attempts = 0;
+    while (attempts < MAX_ATTEMPTS) {
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
+      const pass = await Promise.race([
+        new Promise<string | null>((resolve) => {
+          set({ decryptionRequest: { resolve } });
+        }),
+        new Promise<null>((resolve) => {
+          timeoutId = setTimeout(() => resolve(null), 60000);
+        }),
+      ]);
+      if (timeoutId) clearTimeout(timeoutId);
+
+      // A passkey can unlock the session and resolve the same dialog with an empty string.
+      if (get().isUnlocked && get().cryptoKey) {
+        set({ decryptionRequest: null, decryptionError: null });
+        return true;
+      }
+      if (!pass) {
+        set({ decryptionRequest: null, decryptionError: null });
+        return false;
+      }
+
+      if (await get().unlockSession(pass)) {
+        set({ decryptionRequest: null, decryptionError: null });
+        return true;
+      }
+
+      attempts++;
+      if (attempts < MAX_ATTEMPTS) {
+        set({
+          decryptionError: `Incorrect passphrase. Please try again. (${MAX_ATTEMPTS - attempts} attempts left)`,
+        });
+      }
+    }
+
+    set({ decryptionRequest: null, decryptionError: null });
+    return false;
+  },
+
   enrollPasskeyUnlock: async () => {
     const { isUnlocked, cryptoKey } = get();
     if (!isUnlocked || !cryptoKey) return false;
