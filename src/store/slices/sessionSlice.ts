@@ -27,6 +27,9 @@ function requestPersistentStorageOnce() {
 
 export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> = (set, get) => ({
   isPassphraseSet: false,
+  isPasskeyOnly: false,
+  hasRecoveryKey: false,
+  pendingRecoveryCode: null,
   isUnlocked: false,
   cryptoKey: null,
   isPasskeySupported: isPasskeySupported(),
@@ -44,9 +47,16 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     const passkeyCredRec = await db.settings.get('passkey_credential_id');
     const passkeyWrappedRec = await db.settings.get('passkey_wrapped_key');
     const passkeySaltRec = await db.settings.get('passkey_prf_salt');
+    const recoverySaltRec = await db.settings.get('crypto_recovery_salt');
+    const recoveryWrappedRec = await db.settings.get('crypto_recovery_wrapped_key');
+    const modeRec = await db.settings.get('crypto_mode');
+    const isPasskeyOnly = modeRec?.value === 'passkey-only-v1'
+      && !!(passkeyCredRec?.value && passkeyWrappedRec?.value && passkeySaltRec?.value);
 
     set({
-      isPassphraseSet: !!(saltRec && hashRec),
+      isPassphraseSet: !!(saltRec && hashRec) || isPasskeyOnly,
+      isPasskeyOnly,
+      hasRecoveryKey: !!(recoverySaltRec?.value && recoveryWrappedRec?.value),
       isPasskeySupported: isPasskeySupported(),
       isPasskeyEnrolled: !!(passkeyCredRec?.value && passkeyWrappedRec?.value && passkeySaltRec?.value),
     });
