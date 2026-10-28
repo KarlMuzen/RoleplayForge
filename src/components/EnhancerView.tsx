@@ -238,9 +238,6 @@ Propose field updates as structured patches.`;
           <div>
             <h1 className="text-xl font-bold text-mist-100 flex items-center gap-2">
               Character Enhancer
-              <span className="text-xs font-mono font-medium px-2 py-0.5 bg-maroon-950 text-maroon-300 border border-maroon-800/60 rounded-full">
-                Phase 6
-              </span>
             </h1>
             <p className="text-xs text-knight-400 mt-1 max-w-xl">
               Automated card optimization using Crucible diagnostic scores to fix lorebook leaks, formatting issues, and personality drift.
