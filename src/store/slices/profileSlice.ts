@@ -1,6 +1,7 @@
 import type { StateCreator } from 'zustand';
 import { db } from '../../db';
 import { encryptText } from '../../utils/crypto';
+import { PASSKEY_ONLY_SETUP_SENTINEL } from '../../utils/passkeyCrypto';
 import { validateAndCleanBaseUrl } from '../../services/llmAdapter';
 import { useToastStore } from '../useToastStore';
 import type { CardStore, ProfileSlice } from './types';
@@ -105,6 +106,17 @@ export const createProfileSlice: StateCreator<CardStore, [], [], ProfileSlice> =
             throw new Error(
               'A master passphrase is required to encrypt API keys before storing them in IndexedDB on this device.'
             );
+          }
+
+          if (pass === PASSKEY_ONLY_SETUP_SENTINEL) {
+            key = get().cryptoKey;
+            if (!get().isPasskeyOnly || !get().isUnlocked || !key) {
+              set({ passphraseSetupRequest: null, passphraseSetupError: null });
+              throw new Error('Passkey vault setup did not complete successfully.');
+            }
+            set({ passphraseSetupRequest: null, passphraseSetupError: null });
+            success = true;
+            break;
           }
 
           if (pass.length < 4) {
