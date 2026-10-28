@@ -106,7 +106,7 @@ export const GalleryFilterBar: React.FC<GalleryFilterBarProps> = ({
               id="library-tag-picker"
               role="dialog"
               aria-label="Choose tag filter"
-              className="absolute right-0 z-40 mt-2 w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] max-h-[min(65vh,28rem)] overflow-hidden rounded-2xl border border-knight-700/70 bg-void-900/98 p-3 shadow-2xl"
+              className="absolute left-0 sm:left-auto sm:right-0 z-40 mt-2 w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] max-h-[min(65vh,28rem)] overflow-hidden rounded-2xl border border-knight-700/70 bg-void-900/98 p-3 shadow-2xl"
             >
               <label htmlFor="library-tag-search" className="mb-2 block text-xs font-semibold text-knight-300">Filter by tag</label>
               <div className="relative">
