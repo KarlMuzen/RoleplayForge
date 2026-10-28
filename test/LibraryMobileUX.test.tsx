@@ -17,7 +17,6 @@ beforeEach(async () => {
     searchQuery: '',
     selectedTag: null,
     selectedCardUuids: [],
-    selectedRatingFilter: 'all',
     isLoadingCards: false,
     isImporting: false,
     isOnboardingOpen: true,
@@ -33,7 +32,7 @@ describe('Library mobile controls', () => {
     render(<GalleryView />);
 
     expect(screen.getByRole('button', { name: 'New character' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Import', exact: true })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Import' })).toBeInTheDocument();
 
     const importToggle = screen.getByRole('button', { name: 'More Import Options' });
     fireEvent.click(importToggle);
@@ -71,7 +70,7 @@ describe('Library mobile controls', () => {
     expect(screen.getByRole('group', { name: 'Filter by tag' })).toBeInTheDocument();
 
     for (const name of ['All Ratings', 'SFW', 'NSFW', 'Unrated', 'All Tags', '#fantasy']) {
-      const button = screen.getByRole('button', { name, exact: true });
+      const button = screen.getByRole('button', { name });
       expect(button.className).toContain('min-h-11');
     }
   });
