@@ -49,6 +49,7 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     const passkeySaltRec = await db.settings.get('passkey_prf_salt');
     const recoverySaltRec = await db.settings.get('crypto_recovery_salt');
     const recoveryWrappedRec = await db.settings.get('crypto_recovery_wrapped_key');
+    const recoveryConfirmedRec = await db.settings.get('crypto_recovery_confirmed');
     const modeRec = await db.settings.get('crypto_mode');
     const isPasskeyOnly = modeRec?.value === 'passkey-only-v1'
       && !!(passkeyCredRec?.value && passkeyWrappedRec?.value && passkeySaltRec?.value);
@@ -56,7 +57,7 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     set({
       isPassphraseSet: !!(saltRec && hashRec) || isPasskeyOnly,
       isPasskeyOnly,
-      hasRecoveryKey: !!(recoverySaltRec?.value && recoveryWrappedRec?.value),
+      hasRecoveryKey: !!(recoverySaltRec?.value && recoveryWrappedRec?.value && recoveryConfirmedRec?.value === true),
       isPasskeySupported: isPasskeySupported(),
       isPasskeyEnrolled: !!(passkeyCredRec?.value && passkeyWrappedRec?.value && passkeySaltRec?.value),
     });
@@ -70,6 +71,7 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
       await db.settings.delete('crypto_mode');
       await db.settings.delete('crypto_recovery_salt');
       await db.settings.delete('crypto_recovery_wrapped_key');
+      await db.settings.delete('crypto_recovery_confirmed');
       await db.settings.put({ key: 'crypto_salt', value: buf2hex(salt) });
       await db.settings.put({ key: 'crypto_hash', value: hash });
 
@@ -153,6 +155,7 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
         key: 'crypto_recovery_wrapped_key',
         value: buf2hex(recoveryWrappedBytes),
       });
+      await db.settings.put({ key: 'crypto_recovery_confirmed', value: false });
     });
 
     set({
@@ -168,6 +171,37 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     requestPersistentStorageOnce();
     await get().loadProfilesFromDb();
     return recoveryCode;
+  },
+
+  setupRecoveryKey: async () => {
+    const { isPasskeyOnly, isUnlocked, cryptoKey } = get();
+    if (!isPasskeyOnly || !isUnlocked || !cryptoKey) return null;
+
+    const rawVaultKey = new Uint8Array(await crypto.subtle.exportKey('raw', cryptoKey));
+    const recoveryKeyBytes = crypto.getRandomValues(new Uint8Array(32));
+    const recoveryKeyRaw = buf2hex(recoveryKeyBytes).toUpperCase();
+    const recoveryCode = recoveryKeyRaw.match(/.{1,4}/g)!.join('-');
+    const recoverySalt = await generateSalt();
+    const wrappingKey = await deriveKey(recoveryKeyRaw, recoverySalt, 600000);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, wrappingKey, rawVaultKey);
+    const wrappedBytes = new Uint8Array(iv.length + ciphertext.byteLength);
+    wrappedBytes.set(iv, 0);
+    wrappedBytes.set(new Uint8Array(ciphertext), iv.length);
+
+    await db.transaction('rw', db.settings, async () => {
+      await db.settings.put({ key: 'crypto_recovery_salt', value: buf2hex(recoverySalt) });
+      await db.settings.put({ key: 'crypto_recovery_wrapped_key', value: buf2hex(wrappedBytes) });
+      await db.settings.put({ key: 'crypto_recovery_confirmed', value: false });
+    });
+    set({ hasRecoveryKey: false, pendingRecoveryCode: recoveryCode });
+    return recoveryCode;
+  },
+
+  confirmRecoveryKeySaved: async () => {
+    if (!get().isPasskeyOnly || !get().pendingRecoveryCode) return;
+    await db.settings.put({ key: 'crypto_recovery_confirmed', value: true });
+    set({ hasRecoveryKey: true, pendingRecoveryCode: null });
   },
 
   unlockSession: async (passphrase: string) => {
@@ -373,6 +407,7 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
       await db.settings.delete('crypto_mode');
       await db.settings.delete('crypto_recovery_salt');
       await db.settings.delete('crypto_recovery_wrapped_key');
+      await db.settings.delete('crypto_recovery_confirmed');
       await db.settings.delete('passkey_credential_id');
       await db.settings.delete('passkey_wrapped_key');
       await db.settings.delete('passkey_prf_salt');
