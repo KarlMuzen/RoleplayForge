@@ -80,7 +80,7 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
                 )}
               </div>
               <p className="text-[11px] text-knight-400">
-                Keys are encrypted via PBKDF2 (600,000 rounds of SHA-256). Decrypted keys exist purely in volatile memory.
+                API keys are encrypted with AES-GCM using a key derived by PBKDF2 (600,000 rounds of SHA-256). Decrypted keys exist only in volatile memory for the active session.
               </p>
             </div>
 
