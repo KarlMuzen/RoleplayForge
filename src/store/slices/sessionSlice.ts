@@ -98,6 +98,78 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     await get().loadProfilesFromDb();
   },
 
+  setupPasskeyProtection: async () => {
+    if (!get().isPasskeySupported) return null;
+
+    // Create a random vault key: users do not need to invent a master passphrase.
+    const rawMasterKey = crypto.getRandomValues(new Uint8Array(32));
+    const key = await crypto.subtle.importKey(
+      'raw',
+      rawMasterKey,
+      { name: 'AES-GCM', length: 256 },
+      true,
+      ['encrypt', 'decrypt']
+    );
+
+    // The passkey wraps the vault key through the WebAuthn PRF extension.
+    const passkey = await enrollPasskey(rawMasterKey);
+    if (!passkey) return null;
+
+    // Generate a 256-bit offline recovery code and store only a wrapped vault key.
+    const recoveryKeyBytes = crypto.getRandomValues(new Uint8Array(32));
+    const recoveryKeyRaw = buf2hex(recoveryKeyBytes).toUpperCase();
+    const recoveryCode = recoveryKeyRaw.match(/.{1,4}/g)!.join('-');
+    const recoverySalt = await generateSalt();
+    const recoveryWrappingKey = await deriveKey(recoveryKeyRaw, recoverySalt, 600000);
+    const recoveryIv = crypto.getRandomValues(new Uint8Array(12));
+    const recoveryCiphertext = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv: recoveryIv },
+      recoveryWrappingKey,
+      rawMasterKey
+    );
+    const recoveryWrappedBytes = new Uint8Array(recoveryIv.length + recoveryCiphertext.byteLength);
+    recoveryWrappedBytes.set(recoveryIv, 0);
+    recoveryWrappedBytes.set(new Uint8Array(recoveryCiphertext), recoveryIv.length);
+
+    await db.transaction('rw', db.settings, db.connectionProfiles, async () => {
+      // Preserve the no-plaintext-at-rest invariant for any existing profile.
+      const profiles = await db.connectionProfiles.toArray();
+      for (const profile of profiles) {
+        if (profile.id && profile.apiKey && !profile.apiKey.startsWith('enc.v1.')) {
+          await db.connectionProfiles.update(profile.id, {
+            apiKey: await encryptText(profile.apiKey, key),
+          });
+        }
+      }
+
+      await db.settings.delete('crypto_salt');
+      await db.settings.delete('crypto_hash');
+      await db.settings.put({ key: 'crypto_mode', value: 'passkey-only-v1' });
+      await db.settings.put({ key: 'passkey_credential_id', value: passkey.credentialIdB64 });
+      await db.settings.put({ key: 'passkey_wrapped_key', value: passkey.wrappedKeyHex });
+      await db.settings.put({ key: 'passkey_prf_salt', value: passkey.prfSaltHex });
+      await db.settings.put({ key: 'crypto_recovery_salt', value: buf2hex(recoverySalt) });
+      await db.settings.put({
+        key: 'crypto_recovery_wrapped_key',
+        value: buf2hex(recoveryWrappedBytes),
+      });
+    });
+
+    set({
+      isPassphraseSet: true,
+      isPasskeyOnly: true,
+      hasRecoveryKey: true,
+      isPasskeyEnrolled: true,
+      isUnlocked: true,
+      cryptoKey: key,
+      pendingRecoveryCode: recoveryCode,
+      passphraseSetupError: null,
+    });
+    requestPersistentStorageOnce();
+    await get().loadProfilesFromDb();
+    return recoveryCode;
+  },
+
   unlockSession: async (passphrase: string) => {
     const saltRec = await db.settings.get('crypto_salt');
     const hashRec = await db.settings.get('crypto_hash');
