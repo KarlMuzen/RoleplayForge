@@ -2,17 +2,18 @@
 
 ## Current CI boundary
 
-The current GitHub Actions workflow runs:
+The GitHub Actions workflow in `.github/workflows/ci.yml` runs these checks on pushes and pull requests targeting `main`:
 
 ```bash
 npm ci
 npm run lint
 npm test
+npm run build
 ```
 
-The latest observed run for `main` commit `485d5e2` completed successfully on 2026-10-28. `npm run lint` includes TypeScript checking and ESLint. The workflow does **not** currently run `npm run build`; build status therefore remains unverified by CI until the workflow is updated and passes. See [project status](PROJECT_STATUS.md).
+`npm run lint` includes TypeScript checking and ESLint. CI runs the production PWA build after the tests pass. Check the latest [GitHub Actions run](https://github.com/KarlMuzen/RoleplayForge/actions) for the status of the current commit; do not infer current status from an earlier run.
 
-Run the full local release check before tagging a release:
+Run the same checks locally before tagging a release:
 
 ```bash
 npm ci
