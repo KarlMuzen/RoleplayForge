@@ -158,27 +158,37 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
             </div>
           </div>
 
-          {isPasskeyOnly && isUnlocked && !hasRecoveryKey && (
-            <div className="rounded-xl border border-amber-800/50 bg-amber-950/25 p-3 space-y-2">
-              <p className="text-xs leading-relaxed text-amber-200">
-                Your passkey vault does not have a confirmed recovery key. Create and save one now so you can recover if passkey access is lost.
+          {isPasskeyOnly && isUnlocked && (
+            <div className={`rounded-xl border p-3 space-y-2 ${hasRecoveryKey ? 'border-knight-800 bg-void-950/70' : 'border-amber-800/50 bg-amber-950/25'}`}>
+              <p className={`text-xs leading-relaxed ${hasRecoveryKey ? 'text-knight-300' : 'text-amber-200'}`}>
+                {hasRecoveryKey
+                  ? 'A recovery key is configured. Keep your offline copy current. Replacing it invalidates the old key as soon as you generate a new one.'
+                  : 'Your passkey vault does not have a confirmed recovery key. Create and save one now so you can recover if passkey access is lost.'}
               </p>
               <button
                 onClick={async () => {
+                  if (hasRecoveryKey) {
+                    const confirmed = await useDialogStore.getState().showConfirm(
+                      'A new recovery key will immediately invalidate the old one. Continue only if you can save the new key somewhere separate from this device.',
+                      'Replace Recovery Key',
+                      { confirmText: 'Generate New Key', variant: 'danger' }
+                    );
+                    if (!confirmed) return;
+                  }
                   try {
                     const code = await useCardStore.getState().setupRecoveryKey();
                     if (!code) throw new Error('Unlock the vault first, then try again.');
                   } catch (err) {
                     useToastStore.getState().showToast({
-                      title: 'Could not create recovery key',
+                      title: hasRecoveryKey ? 'Could not replace recovery key' : 'Could not create recovery key',
                       message: err instanceof Error ? err.message : 'Recovery-key creation failed.',
                       type: 'error',
                     });
                   }
                 }}
-                className="min-h-11 rounded-xl bg-amber-700 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white touch-fast"
+                className={`min-h-11 rounded-xl px-4 py-2.5 text-sm font-semibold text-white touch-fast ${hasRecoveryKey ? 'bg-void-800 hover:bg-void-700 border border-knight-700' : 'bg-amber-700 hover:bg-amber-600'}`}
               >
-                Create recovery key
+                {hasRecoveryKey ? 'Replace recovery key' : 'Create recovery key'}
               </button>
             </div>
           )}
