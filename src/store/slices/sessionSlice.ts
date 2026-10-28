@@ -198,6 +198,51 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     return false;
   },
 
+  unlockWithRecoveryCode: async (recoveryCode: string) => {
+    try {
+      const saltRec = await db.settings.get('crypto_recovery_salt');
+      const wrappedRec = await db.settings.get('crypto_recovery_wrapped_key');
+      if (!saltRec?.value || !wrappedRec?.value) return false;
+
+      const normalizedCode = recoveryCode.replace(/[^a-fA-F0-9]/g, '').toUpperCase();
+      if (!/^[A-F0-9]{64}$/.test(normalizedCode)) return false;
+
+      const wrappedBytes = hex2buf(wrappedRec.value);
+      if (wrappedBytes.length < 28) return false;
+      const recoverySalt = hex2buf(saltRec.value);
+      const wrappingKey = await deriveKey(normalizedCode, recoverySalt, 600000);
+      const iv = wrappedBytes.slice(0, 12);
+      const ciphertext = wrappedBytes.slice(12);
+      const rawVaultKey = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv },
+        wrappingKey,
+        ciphertext
+      );
+      if (rawVaultKey.byteLength !== 32) return false;
+
+      const importedKey = await crypto.subtle.importKey(
+        'raw',
+        rawVaultKey,
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+      );
+      const hashRec = await db.settings.get('crypto_hash');
+      if (hashRec?.value && (await hashKey(importedKey)) !== hashRec.value) return false;
+
+      set({
+        isUnlocked: true,
+        cryptoKey: importedKey,
+        decryptionRequest: null,
+        decryptionError: null,
+      });
+      requestPersistentStorageOnce();
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
   requestSessionUnlock: async () => {
     if (get().isUnlocked && get().cryptoKey) return true;
 
