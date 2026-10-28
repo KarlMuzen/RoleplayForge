@@ -99,7 +99,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
         <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-knight-500 shrink-0 pointer-events-none" />
         <input
           type="text"
-          placeholder="Search characters by name, creator, or tag..."
+          placeholder="Search name, creator or tag…"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full min-w-0 pl-11 pr-4 py-3 bg-void-900 border border-mist-100/5 rounded-2xl text-mist-100 placeholder-knight-500 text-sm focus:outline-none focus:ring-1 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50 shadow-inner transition-all touch-fast truncate"
