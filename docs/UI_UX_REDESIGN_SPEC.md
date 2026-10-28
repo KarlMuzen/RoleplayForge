@@ -693,3 +693,31 @@ The [CI workflow for commit `c34814e`](https://github.com/KarlMuzen/RoleplayForg
 - **P0-9 / V-21 — Android smoke test:** installed-PWA back, keyboard, safe-area, theme-color, update, and uninstall/reinstall behavior still require a physical Android test.
 
 Path-based routing, CSP changes, origin/database renames, orphan-history sweeping, and P1 navigation redesign remain gated and have not been started.
+
+
+---
+
+## 16. Screenshot follow-up — 2026-10-29
+
+### Library and Guide adjustments
+
+- **Library actions:** the New action occupies a full row on narrow screens; Import and Export remain labelled instead of truncating to single letters. Action and dropdown targets are sized for touch.
+- **Import/export menus:** menus are constrained to viewport width and height, scroll when necessary, dismiss on outside tap or Escape, and do not use modal semantics for non-modal popovers. Opening one closes the other.
+- **Filters:** rating controls use a labelled group and larger targets. Rating and tag controls are separated into distinct rows; the tag row can scroll independently.
+- **Bottom navigation:** removed coral dots that appeared merely because an active card existed. These were not meaningful notification states. Labels were increased from 10px to 12px.
+- **Guide:** the close button is now in a sticky toolbar outside the title badge, avoiding overlap; the Guide content has its own scroll container, and section navigation targets are touch-sized.
+- **Floating rotation icon in the user screenshots:** treated as the Android system auto-rotate suggestion rather than an app-owned control; no matching application component was found.
+
+### Passkey-first saved-API-key protection
+
+- New setup on supported devices offers passkey protection as the primary action, backed by WebAuthn PRF, instead of asking the user to invent a master passphrase by default.
+- Setup creates a random vault key and wraps it for passkey use. A one-time offline recovery key is also generated; setup is not considered complete until the user acknowledges saving it.
+- Locked passkey-only vaults can be unlocked with the passkey or the offline recovery key. Settings supports creating or replacing the recovery key; replacing it warns that the previous key stops working, and the replacement must be confirmed.
+- Where the required passkey/PRF flow is unavailable or cancelled, users can choose the existing master-passphrase setup. Existing passphrase-protected vaults remain in that mode; their persisted API key format remains `enc.v1.`. Removing/resetting protection explicitly warns that saved API keys will be purged.
+- Regression tests cover passkey-only setup, recovery confirmation, recovery unlock restoring the same key, and saving a new API key in the existing encrypted format.
+
+The [CI workflow for commit `d50fe65`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40765174875) passed lint, tests, and the production PWA build. Vercel also reported a READY production-target deployment for that commit. The deployment remains SSO-protected in the connected environment, so this does **not** close the outstanding runtime route/header/CSP checks.
+
+### Remaining gates
+
+The latest implementation does not close the physical Android installed-PWA smoke test, runtime CSP/header verification, or host fallback validation. Those still require an authorized deployment response and a real Android run. The Forge navigation redesign has not begun.
