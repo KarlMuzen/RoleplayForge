@@ -263,7 +263,6 @@ export const Navigation: React.FC = () => {
         <div className="w-full bg-void-900/95 backdrop-blur-xl border border-knight-700/50 shadow-2xl rounded-[1.35rem] px-2 py-2 flex justify-around items-center select-none">
           {primaryItems.map((item) => {
             const isActive = activeSection === item.id;
-            const hasSubItems = item.id === 'workspace' || item.id === 'lab';
             return (
               <button
                 key={item.id}
@@ -274,14 +273,8 @@ export const Navigation: React.FC = () => {
                 }`}
               >
                 <span className="flex items-center justify-center">{item.icon}</span>
-                <span className="text-[10px] leading-none font-medium">{item.label}</span>
-                {hasSubItems && (
-                  <>
-                    {activeCard && !isActive && (
-                      <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-maroon-400" />
-                    )}
-                  </>
-                )}
+                <span className="text-xs leading-none font-medium">{item.label}</span>
+                
               </button>
             );
           })}
