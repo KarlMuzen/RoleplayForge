@@ -1,10 +1,9 @@
 import type { StateCreator } from 'zustand';
 import { db } from '../../db';
 import { encryptText } from '../../utils/crypto';
-import { PASSKEY_ONLY_SETUP_SENTINEL } from '../../utils/passkeyCrypto';
 import { validateAndCleanBaseUrl } from '../../services/llmAdapter';
 import { useToastStore } from '../useToastStore';
-import type { CardStore, ProfileSlice } from './types';
+import type { CardStore, PassphraseSetupChoice, ProfileSlice } from './types';
 
 export const createProfileSlice: StateCreator<CardStore, [], [], ProfileSlice> = (set, get) => ({
   profiles: [],
@@ -94,31 +93,32 @@ export const createProfileSlice: StateCreator<CardStore, [], [], ProfileSlice> =
         // Prompt user to establish a Master Passphrase to encrypt the API key.
         let success = false;
         while (!success) {
-          const pass = await Promise.race([
-            new Promise<string | null>((resolve) => {
+          const choice = await Promise.race([
+            new Promise<PassphraseSetupChoice>((resolve) => {
               set({ passphraseSetupRequest: { resolve } });
             }),
             new Promise<null>((resolve) => setTimeout(() => resolve(null), 60000)),
           ]);
 
-          if (!pass) {
+          if (!choice) {
             set({ passphraseSetupRequest: null, passphraseSetupError: null });
             throw new Error(
-              'A master passphrase is required to encrypt API keys before storing them in IndexedDB on this device.'
+              'A master passphrase or supported passkey is required before API keys can be stored.'
             );
           }
 
-          if (pass === PASSKEY_ONLY_SETUP_SENTINEL) {
+          if (choice.kind === 'passkey-only') {
             key = get().cryptoKey;
-            if (!get().isPasskeyOnly || !get().isUnlocked || !key) {
+            if (!get().isPasskeyOnly || !get().isUnlocked || !key || !get().hasRecoveryKey) {
               set({ passphraseSetupRequest: null, passphraseSetupError: null });
-              throw new Error('Passkey vault setup did not complete successfully.');
+              throw new Error('Passkey vault setup or recovery-key confirmation did not complete.');
             }
             set({ passphraseSetupRequest: null, passphraseSetupError: null });
             success = true;
             break;
           }
 
+          const pass = choice.passphrase;
           if (pass.length < 4) {
             set({ passphraseSetupError: 'Passphrase must be at least 4 characters long.' });
             continue;
