@@ -48,7 +48,7 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
             Master Passphrase & Key Encryption Security
           </h3>
           <p className="text-xs text-knight-400">
-            Zero-knowledge client-side AES-256-GCM encryption for API keys in local storage
+            Client-side AES-256-GCM encryption for API keys stored in IndexedDB
           </p>
         </div>
 
@@ -60,7 +60,7 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
         ) : (
           <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-950/80 border border-amber-800/80 text-amber-300 rounded-xl text-xs font-medium">
             <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-            Passphrase Setup Mandated
+            No Passphrase Set
           </span>
         )}
       </div>
@@ -101,12 +101,29 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
               ) : (
                 <button
                   onClick={async () => {
-                    if (profiles.length > 0) {
-                      try {
-                        await useCardStore.getState().getDecryptedApiKey(profiles[0], true);
-                      } catch {
-                        // Handled
+                    try {
+                      const unlocked = await useCardStore.getState().requestSessionUnlock();
+                      if (unlocked) {
+                        useToastStore.getState().showToast({
+                          title: 'Session unlocked',
+                          message: profiles.length === 0
+                            ? 'You can now add a connection profile and save encrypted API keys.'
+                            : 'Encrypted API keys can now be used in this session.',
+                          type: 'success',
+                        });
+                      } else {
+                        useToastStore.getState().showToast({
+                          title: 'Session remains locked',
+                          message: 'Unlock was cancelled or the passphrase could not be verified.',
+                          type: 'warning',
+                        });
                       }
+                    } catch (err) {
+                      useToastStore.getState().showToast({
+                        title: 'Could not unlock session',
+                        message: err instanceof Error ? err.message : 'Unlock failed.',
+                        type: 'error',
+                      });
                     }
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-maroon-600 hover:bg-maroon-500 text-white rounded-xl text-xs font-medium transition-all"
@@ -219,7 +236,7 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
       ) : (
         <div className="space-y-3 bg-void-950/80 p-4 rounded-xl border border-knight-800">
           <p className="text-xs text-knight-300 leading-relaxed">
-            To prevent credentials from being stored in plaintext in local storage, Roleplay Forge mandates a Master Passphrase to encrypt all API keys saved in local IndexedDB. Keys are encrypted with <strong>AES-256-GCM</strong> using <strong>PBKDF2 key derivation (600,000 iterations)</strong>.
+            A Master Passphrase is required to save API keys securely. Roleplay Forge encrypts API keys client-side with <strong>AES-256-GCM</strong> before storing them in IndexedDB, using a key derived with <strong>PBKDF2 (600,000 iterations)</strong>. Card and lorebook content is not encrypted by this passphrase. Losing the passphrase can make saved API keys unrecoverable.
           </p>
 
           <button
