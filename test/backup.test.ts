@@ -2,7 +2,7 @@
 import '../test/setup';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { db, type StoredCard, type StoredLorebook } from '../src/db';
-import { restoreFullBackup, type FullBackupData } from '../src/io/backup';
+import { createFullBackupJson, restoreFullBackup, type FullBackupData } from '../src/io/backup';
 
 function createMockStoredCard(uuid: string, name: string, tags: string[] = []): StoredCard {
   return {
@@ -74,6 +74,10 @@ describe('backup - restoreFullBackup security and merge behavior', () => {
       { key: 'passkey_credential_id', value: 'INCOMING_PASSKEY_CRED_999' },
       { key: 'passkey_wrapped_key', value: 'INCOMING_WRAPPED_KEY_999' },
       { key: 'passkey_prf_salt', value: 'INCOMING_PRF_SALT_999' },
+      { key: 'crypto_mode', value: 'passkey-only-v1' },
+      { key: 'crypto_recovery_salt', value: 'INCOMING_RECOVERY_SALT_999' },
+      { key: 'crypto_recovery_wrapped_key', value: 'INCOMING_RECOVERY_WRAP_999' },
+      { key: 'crypto_recovery_confirmed', value: true },
       { key: 'storage_version', value: '2' },
     ],
   };
@@ -85,6 +89,10 @@ describe('backup - restoreFullBackup security and merge behavior', () => {
     await db.settings.put({ key: 'passkey_credential_id', value: 'LOCAL_PASSKEY_CRED_123' });
     await db.settings.put({ key: 'passkey_wrapped_key', value: 'LOCAL_WRAPPED_KEY_123' });
     await db.settings.put({ key: 'passkey_prf_salt', value: 'LOCAL_PRF_SALT_123' });
+    await db.settings.put({ key: 'crypto_mode', value: 'passkey-only-v1' });
+    await db.settings.put({ key: 'crypto_recovery_salt', value: 'LOCAL_RECOVERY_SALT_123' });
+    await db.settings.put({ key: 'crypto_recovery_wrapped_key', value: 'LOCAL_RECOVERY_WRAP_123' });
+    await db.settings.put({ key: 'crypto_recovery_confirmed', value: true });
 
     // Seed local database with an existing card that shares uuid 'card-111'
     await db.cards.add(createMockStoredCard('card-111', 'Local Existing Card 1', ['local']));
@@ -108,6 +116,10 @@ describe('backup - restoreFullBackup security and merge behavior', () => {
     expect(credId?.value).toBe('LOCAL_PASSKEY_CRED_123');
     expect(wrapKey?.value).toBe('LOCAL_WRAPPED_KEY_123');
     expect(prfSalt?.value).toBe('LOCAL_PRF_SALT_123');
+    expect((await db.settings.get('crypto_mode'))?.value).toBe('passkey-only-v1');
+    expect((await db.settings.get('crypto_recovery_salt'))?.value).toBe('LOCAL_RECOVERY_SALT_123');
+    expect((await db.settings.get('crypto_recovery_wrapped_key'))?.value).toBe('LOCAL_RECOVERY_WRAP_123');
+    expect((await db.settings.get('crypto_recovery_confirmed'))?.value).toBe(true);
 
     // Non-security settings (like storage_version) are merged
     const storageVer = await db.settings.get('storage_version');
@@ -157,10 +169,47 @@ describe('backup - restoreFullBackup security and merge behavior', () => {
     expect(credId?.value).toBe('INCOMING_PASSKEY_CRED_999');
     expect(wrapKey?.value).toBe('INCOMING_WRAPPED_KEY_999');
     expect(prfSalt?.value).toBe('INCOMING_PRF_SALT_999');
+    expect((await db.settings.get('crypto_mode'))?.value).toBe('passkey-only-v1');
+    expect((await db.settings.get('crypto_recovery_salt'))?.value).toBe('INCOMING_RECOVERY_SALT_999');
+    expect((await db.settings.get('crypto_recovery_wrapped_key'))?.value).toBe('INCOMING_RECOVERY_WRAP_999');
+    expect((await db.settings.get('crypto_recovery_confirmed'))?.value).toBe(true);
 
     // Old card was cleared, only incoming cards remain
     const allCards = await db.cards.toArray();
     expect(allCards.length).toBe(2);
     expect(allCards.find((c) => c.uuid === 'card-old-to-wipe')).toBeUndefined();
   });
+  it('omits device-bound vault credentials from default backups and includes them only by explicit opt-in', async () => {
+    const sensitiveSettings = [
+      { key: 'crypto_salt', value: 'salt' },
+      { key: 'crypto_hash', value: 'hash' },
+      { key: 'crypto_mode', value: 'passkey-only-v1' },
+      { key: 'crypto_recovery_salt', value: 'recovery-salt' },
+      { key: 'crypto_recovery_wrapped_key', value: 'wrapped-recovery-key' },
+      { key: 'crypto_recovery_confirmed', value: true },
+      { key: 'passkey_credential_id', value: 'credential-id' },
+      { key: 'passkey_wrapped_key', value: 'wrapped-vault-key' },
+      { key: 'passkey_prf_salt', value: 'prf-salt' },
+    ];
+    await db.settings.bulkPut([
+      ...sensitiveSettings,
+      { key: 'app_theme', value: 'dark' },
+    ]);
+
+    const ordinary = JSON.parse(await createFullBackupJson(false)) as FullBackupData;
+    const ordinaryKeys = (ordinary.settings || []).map((setting) => setting.key);
+    expect(ordinaryKeys).toContain('app_theme');
+    for (const setting of sensitiveSettings) {
+      expect(ordinaryKeys).not.toContain(setting.key);
+      expect(JSON.stringify(ordinary)).not.toContain(String(setting.value));
+    }
+
+    const withKeys = JSON.parse(await createFullBackupJson(true)) as FullBackupData;
+    const includedKeys = (withKeys.settings || []).map((setting) => setting.key);
+    for (const setting of sensitiveSettings) {
+      expect(includedKeys).toContain(setting.key);
+    }
+  });
+
+
 });
