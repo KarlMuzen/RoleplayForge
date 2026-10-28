@@ -77,4 +77,20 @@ describe('sessionSlice - Passkey Integration', () => {
     expect(await db.settings.get('passkey_wrapped_key')).toBeUndefined();
     expect(await db.settings.get('passkey_prf_salt')).toBeUndefined();
   });
+  it('unlocks the session through a passphrase prompt when there are no connection profiles', async () => {
+    await useCardStore.getState().setupPassphrase('test-passphrase-123');
+    useCardStore.getState().lockSession();
+    expect(await db.connectionProfiles.toArray()).toHaveLength(0);
+
+    const unlockPromise = useCardStore.getState().requestSessionUnlock();
+    const request = useCardStore.getState().decryptionRequest;
+    expect(request).not.toBeNull();
+    request!.resolve('test-passphrase-123');
+
+    await expect(unlockPromise).resolves.toBe(true);
+    expect(useCardStore.getState().isUnlocked).toBe(true);
+    expect(useCardStore.getState().cryptoKey).not.toBeNull();
+    expect(await db.connectionProfiles.toArray()).toHaveLength(0);
+  });
+
 });
