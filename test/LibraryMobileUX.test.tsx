@@ -41,6 +41,7 @@ describe('Library mobile controls', () => {
     await useCardStore.getState().loadCardsFromDb();
     render(<GalleryView />);
 
+    expect(screen.getByPlaceholderText('Search name, creator or tag…')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'New character' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Import' })).toBeInTheDocument();
 
@@ -48,6 +49,7 @@ describe('Library mobile controls', () => {
     fireEvent.click(importToggle);
     const importMenu = screen.getByRole('dialog', { name: 'Import Options' });
     expect(importToggle).toHaveAttribute('aria-expanded', 'true');
+    expect(importMenu.className).toContain('fixed inset-x-4 bottom-24');
     expect(importMenu.className).toContain('left-0');
     expect(importMenu.className).toContain('max-w-[calc(100vw-2rem)]');
     expect(importMenu.className).toContain('overflow-y-auto');
@@ -58,6 +60,7 @@ describe('Library mobile controls', () => {
     fireEvent.click(exportToggle);
     const exportMenu = screen.getByRole('dialog', { name: 'Bulk Export Options' });
     expect(exportToggle).toHaveAttribute('aria-expanded', 'true');
+    expect(exportMenu.className).toContain('fixed inset-x-4 bottom-24');
     expect(exportMenu.className).toContain('max-h-[min(70vh,32rem)]');
   });
 
