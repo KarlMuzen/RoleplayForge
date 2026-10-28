@@ -9,6 +9,9 @@
 
 import { buf2b64, b642buf, buf2hex, hex2buf } from './binaryEncoding';
 
+// Internal hand-off value used only between the setup dialog and the profile-save flow.
+export const PASSKEY_ONLY_SETUP_SENTINEL = '__ROLEPLAY_FORGE_PASSKEY_ONLY_SETUP__';
+
 export { buf2b64, b642buf, buf2hex, hex2buf };
 
 export interface PasskeyEnrollmentResult {
