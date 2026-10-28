@@ -65,7 +65,10 @@ export interface CardSlice {
   createVariant: (sourceUuid: string, label?: string) => Promise<string>;
   saveActiveCard: () => Promise<void>;
   saveActiveCardMetadata: () => Promise<void>;
-  updateActiveCardData: (updater: (prev: CharacterCardV3) => CharacterCardV3) => void;
+  updateActiveCardData: (
+    updater: (prev: CharacterCardV3) => CharacterCardV3,
+    options?: { forceUndo?: boolean }
+  ) => void;
   updateActiveCardTestSuites: (testSuites: CrucibleVector[]) => Promise<void>;
   updateActiveCardScenarios: (scenarios: CrucibleScenario[]) => Promise<void>;
   undo: () => void;
