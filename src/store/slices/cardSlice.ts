@@ -285,27 +285,27 @@ export const createCardSlice: StateCreator<CardStore, [], [], CardSlice> = (set,
     }
   },
 
-  updateActiveCardData: (updater) => {
+  updateActiveCardData: (updater, options = {}) => {
     const currentCard = get().activeCard;
     if (!currentCard) return;
 
-    const now = Date.now();
-    const shouldPushUndo = get().undoStack.length === 0 || now - lastUndoPushTime > 500;
-    lastUndoPushTime = now;
-
-    if (shouldPushUndo) {
-      set((state) => ({
-        undoStack: [...state.undoStack, { cardData: JSON.parse(JSON.stringify(currentCard)) }].slice(
-          -MAX_UNDO_STACK_SIZE
-        ),
-        redoStack: [],
-      }));
-    } else {
-      set({ redoStack: [] });
-    }
-
+    // Compute the complete edit before touching undo/redo. If the updater throws,
+    // the card and its history remain unchanged.
     const nextCard = updater(currentCard);
-    set({ activeCard: nextCard });
+    const now = Date.now();
+    const shouldPushUndo =
+      options.forceUndo === true || get().undoStack.length === 0 || now - lastUndoPushTime > 500;
+    lastUndoPushTime = options.forceUndo === true ? 0 : now;
+
+    set((state) => ({
+      activeCard: nextCard,
+      undoStack: shouldPushUndo
+        ? [...state.undoStack, { cardData: JSON.parse(JSON.stringify(currentCard)) }].slice(
+            -MAX_UNDO_STACK_SIZE
+          )
+        : state.undoStack,
+      redoStack: [],
+    }));
     get().triggerAutosave();
   },
 
@@ -393,41 +393,76 @@ export const createCardSlice: StateCreator<CardStore, [], [], CardSlice> = (set,
   },
 
   deleteCard: async (uuid) => {
-    const record = await db.cards.where('uuid').equals(uuid).first();
-    if (record && record.id) {
-      await db.cards.delete(record.id);
-      if (get().activeCardUuid === uuid) {
-        set({ activeCardUuid: null, activeCard: null, activeCardRecord: null });
-      }
-
-      // Cleanup assistant chat for deleted character
-      const updatedChats = { ...get().assistantChats };
-      delete updatedChats[uuid];
-      set({ assistantChats: updatedChats });
-      try {
-        await db.settings.put({ key: 'assistant_chats', value: updatedChats });
-      } catch (e) {
-        console.error('Failed to clean up assistant chat for deleted card:', e);
-        useToastStore.getState().showToast({
-          title: 'Failed to update assistant chat history',
-          message: e instanceof Error ? e.message : 'Database error',
-          type: 'error',
-        });
-      }
-
-      await get().loadCardsFromDb();
+    const initialState = get();
+    if (initialState.activeCardUuid === uuid && initialState.saveTimeoutId) {
+      clearTimeout(initialState.saveTimeoutId);
     }
+
+    // Remove the card and its potentially large undo history atomically.
+    await db.transaction('rw', db.cards, db.settings, async () => {
+      await db.cards.where('uuid').equals(uuid).delete();
+      await db.settings.delete(`editor_history_${uuid}`);
+    });
+
+    if (get().activeCardUuid === uuid) {
+      lastUndoPushTime = 0;
+      set({
+        activeCardUuid: null,
+        activeCard: null,
+        activeCardRecord: null,
+        activeCardEmbeddedAssets: {},
+        isAssetsDirty: false,
+        undoStack: [],
+        redoStack: [],
+        saveTimeoutId: null,
+      });
+    }
+
+    // Cleanup assistant chat for deleted character.
+    const updatedChats = { ...get().assistantChats };
+    delete updatedChats[uuid];
+    set({ assistantChats: updatedChats });
+    try {
+      await db.settings.put({ key: 'assistant_chats', value: updatedChats });
+    } catch (e) {
+      console.error('Failed to clean up assistant chat for deleted card:', e);
+      useToastStore.getState().showToast({
+        title: 'Failed to update assistant chat history',
+        message: e instanceof Error ? e.message : 'Database error',
+        type: 'error',
+      });
+    }
+
+    await get().loadCardsFromDb();
   },
 
   bulkDeleteCards: async () => {
-    const uuids = get().selectedCardUuids;
+    const { selectedCardUuids: uuids, activeCardUuid, saveTimeoutId } = get();
+    const deletingActiveCard = !!activeCardUuid && uuids.includes(activeCardUuid);
+    if (deletingActiveCard && saveTimeoutId) clearTimeout(saveTimeoutId);
+
     const updatedChats = { ...get().assistantChats };
-    for (const uuid of uuids) {
-      const record = await db.cards.where('uuid').equals(uuid).first();
-      if (record && record.id) {
-        await db.cards.delete(record.id);
+    // Delete selected records and only their editor histories in one transaction.
+    await db.transaction('rw', db.cards, db.settings, async () => {
+      for (const uuid of uuids) {
+        await db.cards.where('uuid').equals(uuid).delete();
+        await db.settings.delete(`editor_history_${uuid}`);
+        delete updatedChats[uuid];
       }
-      delete updatedChats[uuid];
+    });
+
+    if (deletingActiveCard) {
+      lastUndoPushTime = 0;
+      set({
+        activeCardUuid: null,
+        activeCard: null,
+        activeCardRecord: null,
+        activeCardEmbeddedAssets: {},
+        isAssetsDirty: false,
+        undoStack: [],
+        redoStack: [],
+        saveTimeoutId: null,
+      });
     }
     set({ selectedCardUuids: [], assistantChats: updatedChats });
     try {
@@ -468,13 +503,46 @@ export const createCardSlice: StateCreator<CardStore, [], [], CardSlice> = (set,
     if (!record || !record.id || !record.snapshots) return;
 
     const snapshot = record.snapshots.find((s) => s.id === snapshotId);
-    if (!snapshot) return;
+    if (!snapshot || get().activeCardUuid !== activeCardUuid) return;
 
-    // Create deep copy to avoid reference issues
-    const restoredData = JSON.parse(JSON.stringify(snapshot.cardData));
-    await db.cards.update(record.id, { cardData: restoredData });
+    const stateBeforeRestore = get();
+    const currentCard = stateBeforeRestore.activeCard;
+    if (!currentCard) return;
+
+    const restoredData: CharacterCardV3 = JSON.parse(JSON.stringify(snapshot.cardData));
+    const now = Math.floor(Date.now() / 1000);
+    restoredData.data.modification_date = now;
+    const undoStack = [
+      ...stateBeforeRestore.undoStack,
+      { cardData: JSON.parse(JSON.stringify(currentCard)) },
+    ].slice(-MAX_UNDO_STACK_SIZE);
+
+    const updateFields: Partial<StoredCard> = {
+      name: restoredData.data.name,
+      tags: restoredData.data.tags || [],
+      creator: restoredData.data.creator || '',
+      modification_date: now,
+      cardData: restoredData,
+    };
+
+    // Persist restored data and undo history together so the restore is recoverable.
+    await db.transaction('rw', db.cards, db.settings, async () => {
+      await db.cards.update(record.id!, updateFields);
+      await db.settings.put({
+        key: `editor_history_${activeCardUuid}`,
+        value: { undoStack, redoStack: [] },
+      });
+    });
+
     lastUndoPushTime = 0;
-    set({ activeCard: restoredData, undoStack: [], redoStack: [] });
+    if (get().activeCardUuid === activeCardUuid) {
+      set({
+        activeCard: restoredData,
+        activeCardRecord: { ...record, ...updateFields },
+        undoStack,
+        redoStack: [],
+      });
+    }
     await get().loadCardsFromDb();
   },
 
