@@ -55,7 +55,10 @@ export async function createFullBackupJson(includeApiKeys: boolean = false): Pro
   const cards = await db.cards.toArray();
   const lorebooks = await db.lorebooks.toArray();
   const connectionProfiles = await db.connectionProfiles.toArray();
-  const settings = await db.settings.toArray();
+  // Device-bound vault credentials travel only when the user explicitly includes API keys.
+  const settings = (await db.settings.toArray()).filter(
+    (setting) => includeApiKeys || !DEVICE_SECURITY_SETTING_KEYS.has(setting.key)
+  );
 
   const serializableCards = cards.map((card) => {
     if (!card.embeddedAssets) return card;
