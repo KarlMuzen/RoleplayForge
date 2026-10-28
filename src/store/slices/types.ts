@@ -115,6 +115,8 @@ export interface SessionSlice {
   checkPassphraseSetup: () => Promise<void>;
   setupPassphrase: (passphrase: string) => Promise<void>;
   setupPasskeyProtection: () => Promise<string | null>;
+  setupRecoveryKey: () => Promise<string | null>;
+  confirmRecoveryKeySaved: () => Promise<void>;
   unlockSession: (passphrase: string) => Promise<boolean>;
   unlockWithRecoveryCode: (recoveryCode: string) => Promise<boolean>;
   requestSessionUnlock: () => Promise<boolean>;
