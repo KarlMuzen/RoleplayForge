@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCardStore } from '../store/useCardStore';
 import { useModalA11y } from '../hooks/useModalA11y';
+import { canAutoFocusText } from '../utils/touch';
 import { ShieldCheck, Eye, EyeOff, X, KeyRound, Loader2, Fingerprint, Copy, CheckCircle2 } from 'lucide-react';
 
 export const PassphraseSetupModal: React.FC = () => {
@@ -234,7 +235,7 @@ export const PassphraseSetupModal: React.FC = () => {
                       placeholder="Enter a strong passphrase"
                       disabled={isProcessing || isPasskeyProcessing}
                       className="w-full min-h-11 bg-void-950 border border-knight-700/60 rounded-xl px-4 py-2.5 text-sm text-mist-200 focus:outline-none focus:border-maroon-500/50 focus:ring-1 focus:ring-maroon-500/50 transition-all pr-12 disabled:opacity-50"
-                      autoFocus={!isPasskeySupported}
+                      autoFocus={canAutoFocusText() && !isPasskeySupported}
                     />
                     <button
                       type="button"
