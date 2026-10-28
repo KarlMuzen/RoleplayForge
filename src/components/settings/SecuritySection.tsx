@@ -3,6 +3,7 @@ import type { ConnectionProfile } from '../../db';
 import { useCardStore } from '../../store/useCardStore';
 import { useDialogStore } from '../../store/useDialogStore';
 import { useToastStore } from '../../store/useToastStore';
+import { PASSKEY_ONLY_SETUP_SENTINEL } from '../../utils/passkeyCrypto';
 import {
   ShieldCheck,
   Lock,
@@ -37,6 +38,8 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
   profiles,
 }) => {
   const [isPasskeyLoading, setIsPasskeyLoading] = useState(false);
+  const isPasskeyOnly = useCardStore((state) => state.isPasskeyOnly);
+  const hasRecoveryKey = useCardStore((state) => state.hasRecoveryKey);
 
   return (
     <div className="bg-void-900 border border-knight-700/40 rounded-2xl p-4 md:p-6 space-y-4 shadow-sm">
@@ -54,7 +57,7 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
         {isPassphraseSet ? (
           <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-950/80 border border-emerald-800/80 text-emerald-400 rounded-xl text-xs font-medium">
             <Lock className="w-3.5 h-3.5" />
-            Master Passphrase Active
+            {isPasskeyOnly ? 'Passkey protection active' : 'Master Passphrase Active'}
           </span>
         ) : (
           <span className="flex items-center gap-1.5 px-3 py-1 bg-void-800 border border-knight-700 text-knight-300 rounded-xl text-xs font-medium">
@@ -80,7 +83,9 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
                 )}
               </div>
               <p className="text-[11px] text-knight-400">
-                API keys are encrypted with AES-GCM using a key derived by PBKDF2 (600,000 rounds of SHA-256). Decrypted keys exist only in volatile memory for the active session.
+                {isPasskeyOnly
+                  ? 'API keys are encrypted on this device with a random vault key protected by your passkey. Decrypted keys exist only in the active session.'
+                  : 'API keys are encrypted with AES-GCM using a key derived by PBKDF2 (600,000 rounds of SHA-256). Decrypted keys exist only in the active session.'}
               </p>
             </div>
 
