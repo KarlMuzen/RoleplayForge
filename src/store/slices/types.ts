@@ -112,6 +112,7 @@ export interface SessionSlice {
   checkPassphraseSetup: () => Promise<void>;
   setupPassphrase: (passphrase: string) => Promise<void>;
   unlockSession: (passphrase: string) => Promise<boolean>;
+  requestSessionUnlock: () => Promise<boolean>;
   enrollPasskeyUnlock: () => Promise<boolean>;
   unlockWithPasskeyAction: () => Promise<boolean>;
   removePasskeyUnlock: () => Promise<void>;
