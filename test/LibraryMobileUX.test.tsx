@@ -28,6 +28,17 @@ afterEach(async () => {
 
 describe('Library mobile controls', () => {
   it('keeps the New, Import and Export actions readable and anchors menus to the trigger edge', async () => {
+    const card = createNewDefaultCard('Export menu fixture');
+    await db.cards.add({
+      uuid: 'export-menu-fixture',
+      name: card.data.name,
+      creator: card.data.creator || '',
+      tags: [],
+      modification_date: Date.now(),
+      cardData: card,
+      embeddedAssets: {},
+    });
+    await useCardStore.getState().loadCardsFromDb();
     render(<GalleryView />);
 
     expect(screen.getByRole('button', { name: 'New character' })).toBeInTheDocument();
@@ -65,8 +76,8 @@ describe('Library mobile controls', () => {
 
     render(<GalleryView />);
 
-    expect(screen.getByRole('group', { name: 'Filter by content rating' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Filter by tag' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Rating filter' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Tag filter' })).toBeInTheDocument();
 
     for (const name of ['All Ratings', 'SFW', 'NSFW', 'Unrated', 'All Tags', '#fantasy']) {
       const button = screen.getByRole('button', { name });
