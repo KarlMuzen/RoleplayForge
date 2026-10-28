@@ -1,10 +1,10 @@
 # Project Status
 
-**Snapshot date:** 2026-10-28  
+**Snapshot date:** 2026-10-29  
 **Canonical repository:** [KarlMuzen/RoleplayForge](https://github.com/KarlMuzen/RoleplayForge)  
 **Default branch:** `main`  
-**Observed UI implementation commit:** [`f5da42931a76`](https://github.com/KarlMuzen/RoleplayForge/commit/f5da42931a7624aa11c01042a520fed3d1075209)  
-**Verified CI run:** [`40745488947`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40745488947)
+**Latest P0 checkpoint:** [`bc4c4ff73a11`](https://github.com/KarlMuzen/RoleplayForge/commit/bc4c4ff73a11469789de41fb4b3c508105b969b3)  
+**Verified CI run:** [`40758255358`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40758255358)
 
 ## Repository checkpoint
 
@@ -13,6 +13,8 @@
 - The current CI workflow successfully runs dependency installation, lint/type checking, automated tests and a production PWA build.
 - The first review-driven Roleplay Forge UI pass is in place: warm parchment/charcoal theme, early theme bootstrap, app and package identity, PWA manifest/icon generation, labeled mobile navigation, contextual help, reduced-motion/accessibility refinements, and Library/AI patch-review improvements.
 - The app remains CardCrucible-derived. The deeper screen-by-screen redesign and manual installed-PWA validation are not complete.
+- P0 correctness work now includes transactional AI patch application, single-step undo with guarded Undo feedback, editor-history cleanup on card deletion, undoable snapshot restore, a touch/keyboard-accessible completeness checklist, corrected API-key encryption/passphrase copy, and invariants/regression tests. See the [UI/UX redesign spec and P0 log](UI_UX_REDESIGN_SPEC.md).
+- The current `main` head has a READY Vercel production-target deployment, but the connected Vercel integration cannot read protected page responses (403 at access-bypass stage). Deployed route fallback, response headers/CSP behavior remain unverified; Android installed-PWA smoke testing also remains outstanding.
 
 ## Confirmed implementation foundation
 
