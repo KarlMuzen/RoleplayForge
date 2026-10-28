@@ -14,6 +14,8 @@ export const WorkspaceSubNav: React.FC = () => {
   const { activeTab, setActiveTab, activeCard, setChatPreviewOpen, setPreFlightAuditOpen, setIsOnboardingOpen } = useCardStore();
   const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
   const [showWarnings, setShowWarnings] = useState(false);
+  const checklistRef = useRef<HTMLDivElement | null>(null);
+  const checklistTriggerRef = useRef<HTMLButtonElement | null>(null);
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
 
   const cardWarnings = validateCardCompleteness(activeCard);
@@ -35,6 +37,29 @@ export const WorkspaceSubNav: React.FC = () => {
     window.addEventListener('resize', updateIndicator);
     return () => window.removeEventListener('resize', updateIndicator);
   }, [updateIndicator]);
+
+  useEffect(() => {
+    if (!showWarnings) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowWarnings(false);
+        checklistTriggerRef.current?.focus();
+      }
+    };
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!checklistRef.current?.contains(event.target as Node)) {
+        setShowWarnings(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [showWarnings]);
 
   return (
     <div className="sticky top-0 z-20 bg-void-950/95 backdrop-blur-md border-b border-knight-700/40 px-3 sm:px-4 py-2 transition-all">
@@ -60,8 +85,9 @@ export const WorkspaceSubNav: React.FC = () => {
                 {activeCard ? activeCard.data.name || 'Untitled' : 'No character selected'}
               </p>
               {isInvalid && (
-                <div className="relative shrink-0">
+                <div ref={checklistRef} className="relative shrink-0">
                   <button
+                    ref={checklistTriggerRef}
                     type="button"
                     aria-label={`Incomplete card: ${cardWarnings.length} issues. Show checklist`}
                     aria-expanded={showWarnings}
