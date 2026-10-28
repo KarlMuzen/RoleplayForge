@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { db, type StoredCard } from '../db';
 import { useDialogStore } from '../store/useDialogStore';
+import { useToastStore } from '../store/useToastStore';
 import { generateCharacterLogoBytes } from '../utils/logoGenerator';
 import { getCardCoverUrl } from './GalleryView';
 
@@ -240,19 +241,59 @@ IMPORTANT DIRECTIVES:
     if (!msg || !msg.patches || !activeCard) return;
 
     const patchesToApply = selectedIndices.map((i) => msg.patches![i]);
-    useCardStore.getState().updateActiveCardData((prev) => {
-      return patchesToApply.reduce((acc, patch) => applyCardPatch(acc, patch), prev);
-    });
+    const store = useCardStore.getState();
+    const cardUuid = store.activeCardUuid;
+    if (!cardUuid || !store.activeCard) {
+      useToastStore.getState().showToast({
+        title: 'Could not apply suggested edits',
+        message: 'No active character is available. The suggestions were kept.',
+        type: 'error',
+      });
+      return;
+    }
+
+    const previousCardJson = JSON.stringify(store.activeCard);
+    try {
+      store.updateActiveCardData(
+        (prev) => patchesToApply.reduce((acc, patch) => applyCardPatch(acc, patch), prev),
+        { forceUndo: true }
+      );
+    } catch (err) {
+      useToastStore.getState().showToast({
+        title: 'Could not apply suggested edits',
+        message: err instanceof Error ? err.message : 'One or more edits could not be applied.',
+        type: 'error',
+        duration: 6000,
+      });
+      return;
+    }
 
     updateMessages((prev) =>
       prev.map((m, i) => (i === msgIdx ? { ...m, patches: undefined } : m))
     );
 
-    useDialogStore.getState().showAlert(
-      `Successfully applied ${patchesToApply.length} patch(es) to "${activeCard.data.name || 'Character'}".`,
-      'Patches Applied',
-      'info'
-    );
+    useToastStore.getState().showToast({
+      title: `Applied ${patchesToApply.length} edits`,
+      message: `Suggested edits applied to "${store.activeCard.data.name || 'Character'}".`,
+      type: 'success',
+      duration: 6000,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          const current = useCardStore.getState();
+          const latestUndo = current.undoStack[current.undoStack.length - 1]?.cardData;
+          if (current.activeCardUuid !== cardUuid || JSON.stringify(latestUndo) !== previousCardJson) {
+            useToastStore.getState().showToast({
+              title: 'Newer changes exist',
+              message: 'Use the editor Undo control to review more recent changes first.',
+              type: 'warning',
+            });
+            return;
+          }
+          current.undo();
+        },
+      },
+    });
   };
 
   const handleDismissMessagePatches = (msgIdx: number) => {
