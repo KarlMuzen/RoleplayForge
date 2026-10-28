@@ -716,7 +716,7 @@ Path-based routing, CSP changes, origin/database renames, orphan-history sweepin
 - Where the required passkey/PRF flow is unavailable or cancelled, users can choose the existing master-passphrase setup. Existing passphrase-protected vaults remain in that mode; their persisted API key format remains `enc.v1.`. Removing/resetting protection explicitly warns that saved API keys will be purged.
 - Regression tests cover passkey-only setup, recovery confirmation, recovery unlock restoring the same key, and saving a new API key in the existing encrypted format.
 
-The [CI workflow for commit `d50fe65`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40765174875) passed lint, tests, and the production PWA build. Vercel also reported a READY production-target deployment for that commit. The deployment remains SSO-protected in the connected environment, so this does **not** close the outstanding runtime route/header/CSP checks.
+The [CI workflow for commit `38c0ae9`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40767481047) passed lint, tests, and the production PWA build after correcting the typed passkey-only setup test. Vercel also reported a READY production-target deployment for that commit. The deployment remains SSO-protected in the connected environment, so this does **not** close the outstanding runtime route/header/CSP checks.
 
 ### Remaining gates
 
