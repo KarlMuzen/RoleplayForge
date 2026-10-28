@@ -78,11 +78,11 @@ export const PortraitGuard: React.FC = () => {
       >
         {/* Animated Phone Rotate Graphic */}
         <div className="relative w-20 h-20 flex items-center justify-center">
-          <div className="absolute inset-0 bg-maroon-600/20 rounded-full animate-ping opacity-40" />
+
           <div className="w-16 h-16 bg-maroon-950 border border-maroon-700/80 rounded-2xl flex items-center justify-center text-maroon-400 shadow-lg">
-            <Smartphone className="w-8 h-8 animate-bounce" />
+            <Smartphone className="w-8 h-8" />
           </div>
-          <RotateCcw className="w-6 h-6 text-mist-100 absolute -top-1 -right-1 animate-spin" style={{ animationDuration: '6s' }} />
+          <RotateCcw className="w-6 h-6 text-mist-100 absolute -top-1 -right-1" />
         </div>
 
         <div className="space-y-2">
@@ -91,7 +91,7 @@ export const PortraitGuard: React.FC = () => {
             Portrait Mode Required
           </h2>
           <p className="text-xs text-knight-300 leading-relaxed max-w-sm">
-            CardCrucible studio controls are optimized for portrait orientation. Please rotate your device back to upright portrait mode.
+            Roleplay Forge studio controls are optimized for portrait orientation. Please rotate your device back to upright portrait mode.
           </p>
         </div>
 

@@ -9,6 +9,7 @@ import {
   FolderOpen,
   Sparkles,
   Layers,
+  Plus,
 } from 'lucide-react';
 
 export interface GalleryToolbarProps {
@@ -31,6 +32,7 @@ export interface GalleryToolbarProps {
   onBulkExportSelectedZip: (format?: 'png' | 'json' | 'charx') => void;
   onExportAllJsonBundle: () => void;
   onFileUpload: (files: FileList | null) => void;
+  onCreateCard: () => void;
 }
 
 export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
@@ -53,6 +55,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
   onBulkExportSelectedZip,
   onExportAllJsonBundle,
   onFileUpload,
+  onCreateCard,
 }) => {
   return (
     <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 min-w-0">
@@ -98,13 +101,20 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
           className="hidden"
         />
 
+
+        {/* Start a new character without leaving the Library first. */}
+        <button onClick={onCreateCard} className="flex-1 sm:flex-initial min-w-0 min-h-10 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-3 rounded-2xl bg-maroon-500 hover:bg-maroon-600 text-white text-xs sm:text-sm font-semibold transition-colors touch-fast active:scale-95">
+          <Plus className="w-4 h-4 shrink-0" />
+          <span className="leading-tight truncate"><span className="sm:hidden">New</span><span className="hidden sm:inline">New character</span></span>
+        </button>
+
         {/* Import Dropdown Button */}
         <div className="relative flex-1 sm:flex-initial min-w-0" ref={importDropdownRef}>
           <div className="flex items-center justify-between sm:justify-start bg-void-900 hover:bg-void-800 border border-mist-100/10 rounded-2xl transition-all shadow-sm w-full">
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isImporting}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-3 text-knight-200 text-xs sm:text-sm font-medium rounded-l-2xl hover:text-white transition-colors touch-fast active:scale-95 disabled:opacity-50 min-w-0"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-3 text-knight-200 text-xs sm:text-sm font-medium rounded-l-2xl hover:text-mist-100 transition-colors touch-fast active:scale-95 disabled:opacity-50 min-w-0"
               title="Import Character Card(s) (.png, .json, .charx, .zip)"
             >
               <Upload className="w-4 h-4 text-maroon-400 shrink-0" />
@@ -161,7 +171,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                 }}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
               >
-                <Archive className="w-4 h-4 text-amber-400 shrink-0" />
+                <Archive className="w-4 h-4 text-maroon-300 shrink-0" />
                 <div>
                   <div className="font-semibold">Bulk ZIP Archive Import</div>
                   <div className="text-[10px] text-knight-400">Extract & import all cards in a .zip</div>
@@ -175,7 +185,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                 }}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
               >
-                <FolderOpen className="w-4 h-4 text-emerald-400 shrink-0" />
+                <FolderOpen className="w-4 h-4 text-maroon-400 shrink-0" />
                 <div>
                   <div className="font-semibold">Bulk Folder Import</div>
                   <div className="text-[10px] text-knight-400">Select an entire folder of cards</div>
@@ -189,9 +199,9 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                 }}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left border-t border-knight-800/60 pt-2.5 mt-1"
               >
-                <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
+                <Sparkles className="w-4 h-4 text-maroon-400 shrink-0" />
                 <div>
-                  <div className="font-semibold text-cyan-300">Import from Chub.ai</div>
+                  <div className="font-semibold text-maroon-300">Import from Chub.ai</div>
                   <div className="text-[10px] text-knight-400">Paste Chub URL or Character ID</div>
                 </div>
               </button>
@@ -203,18 +213,12 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
         <div className="relative flex-1 sm:flex-initial min-w-0" ref={exportDropdownRef}>
           <div className="flex items-center justify-between sm:justify-start bg-void-900 hover:bg-void-800 border border-mist-100/10 rounded-2xl transition-all shadow-sm w-full">
             <button
-              onClick={() => {
-                if (selectedCount > 0) {
-                  onBulkExportSelectedZip('png');
-                } else {
-                  onBulkExportAllZip('png');
-                }
-              }}
+              onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
               disabled={cardsCount === 0}
               className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-3 text-knight-200 text-xs sm:text-sm font-medium rounded-l-2xl hover:text-white transition-colors touch-fast active:scale-95 disabled:opacity-50 min-w-0"
-              title={selectedCount > 0 ? `Export Selected (${selectedCount}) as ZIP` : 'Export All Cards as ZIP'}
+              title="Choose export options"
             >
-              <Download className="w-4 h-4 text-emerald-400 shrink-0" />
+              <Download className="w-4 h-4 text-maroon-400 shrink-0" />
               <span className="leading-tight truncate">
                 {selectedCount > 0 ? `Export (${selectedCount})` : 'Export Cards'}
               </span>
@@ -255,9 +259,9 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   onBulkExportAllZip('png');
                 }}
                 disabled={cardsCount === 0}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-emerald-950/60 hover:text-emerald-300 transition-colors text-left disabled:opacity-40"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left disabled:opacity-40"
               >
-                <Archive className="w-4 h-4 text-emerald-400 shrink-0" />
+                <Archive className="w-4 h-4 text-maroon-400 shrink-0" />
                 <div>
                   <div className="font-semibold">Export All Cards (.png ZIP)</div>
                   <div className="text-[10px] text-knight-400">Pack all {cardsCount} cards into a PNG ZIP</div>
@@ -270,9 +274,9 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                     setIsExportDropdownOpen(false);
                     onBulkExportSelectedZip('png');
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-amber-950/60 hover:text-amber-300 transition-colors text-left"
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
                 >
-                  <Layers className="w-4 h-4 text-amber-400 shrink-0" />
+                  <Layers className="w-4 h-4 text-maroon-300 shrink-0" />
                   <div>
                     <div className="font-semibold">Export Selected ({selectedCount}) ZIP</div>
                     <div className="text-[10px] text-knight-400">Pack currently selected cards into .zip</div>
@@ -286,9 +290,9 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   onBulkExportAllZip('charx');
                 }}
                 disabled={cardsCount === 0}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-purple-950/60 hover:text-purple-300 transition-colors text-left disabled:opacity-40"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left disabled:opacity-40"
               >
-                <Archive className="w-4 h-4 text-purple-400 shrink-0" />
+                <Archive className="w-4 h-4 text-knight-300 shrink-0" />
                 <div>
                   <div className="font-semibold">Export All Cards (.charx ZIP)</div>
                   <div className="text-[10px] text-knight-400">Export as CHARX format archives</div>
@@ -301,9 +305,9 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                   onExportAllJsonBundle();
                 }}
                 disabled={cardsCount === 0}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-cyan-950/60 hover:text-cyan-300 transition-colors text-left disabled:opacity-40"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left disabled:opacity-40"
               >
-                <FileCode className="w-4 h-4 text-cyan-400 shrink-0" />
+                <FileCode className="w-4 h-4 text-maroon-400 shrink-0" />
                 <div>
                   <div className="font-semibold">Export All as JSON Bundle</div>
                   <div className="text-[10px] text-knight-400">Export array of card specifications</div>

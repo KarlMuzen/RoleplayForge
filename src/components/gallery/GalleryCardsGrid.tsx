@@ -73,7 +73,7 @@ export const SortableCard: React.FC<SortableCardProps> = ({
           return;
         onClick(card.uuid);
       }}
-      className={`group relative rounded-2xl overflow-hidden transition-all flex flex-col bg-void-900 touch-none cursor-pointer ${
+      className={`group relative rounded-2xl overflow-hidden transition-all flex flex-col bg-void-900 cursor-pointer ${
         isDragging
           ? 'opacity-30 scale-95 border-2 border-dashed border-maroon-400'
           : ''
@@ -86,10 +86,10 @@ export const SortableCard: React.FC<SortableCardProps> = ({
       <div
         {...attributes}
         {...listeners}
-        className="drag-handle absolute top-2 left-2 z-20 min-w-10 min-h-10 flex items-center justify-center rounded-full bg-black/50 text-knight-300 hover:text-white hover:bg-black/80 backdrop-blur-md cursor-grab active:cursor-grabbing border border-knight-700/40 opacity-80 group-hover:opacity-100 transition-all shadow-md touch-none"
+        className="drag-handle absolute top-2 left-2 z-20 min-w-10 min-h-10 flex items-center justify-center rounded-full bg-black/50 text-white hover:text-white hover:bg-black/80 backdrop-blur-md cursor-grab active:cursor-grabbing border border-knight-700/40 opacity-80 group-hover:opacity-100 transition-all shadow-md touch-none"
         title="Drag to reorder card"
       >
-        <GripVertical className="w-4 h-4 text-knight-300 group-hover:text-maroon-300" />
+        <GripVertical className="w-4 h-4 text-white group-hover:text-maroon-300" />
       </div>
 
       <button
@@ -125,19 +125,19 @@ export const SortableCard: React.FC<SortableCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90 pointer-events-none" />
 
         <div className="absolute bottom-3 left-3 right-3 flex flex-col items-start gap-1.5 pointer-events-none">
-          <h4 className="font-semibold text-[15px] truncate leading-tight text-mist-100 drop-shadow-md w-full">
+          <h4 className="font-semibold text-[15px] truncate leading-tight text-white drop-shadow-md w-full">
             {card.name || 'Untitled'}
           </h4>
           <div className="flex flex-wrap gap-1">
             {card.variantOf ? (
               <span
-                className="px-2 py-0.5 rounded-md bg-purple-950/80 text-purple-300 text-[10px] font-medium border border-purple-800/60 backdrop-blur-md truncate max-w-[130px]"
+                className="px-2 py-0.5 rounded-md bg-black/55 text-white text-[10px] font-medium border border-white/20 backdrop-blur-md truncate max-w-[130px]"
                 title={`Variant of ${parentCard?.name || 'parent'}${card.variantLabel ? ` (${card.variantLabel})` : ''}`}
               >
                 Variant of {parentCard?.name || 'parent'}
               </span>
             ) : variantCount > 0 ? (
-              <span className="px-2 py-0.5 rounded-md bg-indigo-950/80 text-indigo-300 text-[10px] font-medium border border-indigo-800/60 backdrop-blur-md">
+              <span className="px-2 py-0.5 rounded-md bg-black/55 text-white text-[10px] font-medium border border-white/20 backdrop-blur-md">
                 {variantCount} {variantCount === 1 ? 'variant' : 'variants'}
               </span>
             ) : null}
@@ -179,6 +179,8 @@ export interface GalleryCardsGridProps {
   fileInputRef?: React.RefObject<HTMLInputElement | null>;
   createNewCard: (name?: string) => Promise<string>;
   setActiveTab: (tab: TabType) => void;
+  hasActiveFilters: boolean;
+  onClearFilters: () => void;
 }
 
 export const GalleryCardsGrid: React.FC<GalleryCardsGridProps> = ({
@@ -198,17 +200,19 @@ export const GalleryCardsGrid: React.FC<GalleryCardsGridProps> = ({
   fileInputRef: _fileInputRef,
   createNewCard,
   setActiveTab,
+  hasActiveFilters,
+  onClearFilters,
 }) => {
   return (
     <>
       {/* Bulk Operations Toolbar */}
       {selectedCardUuids.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between p-3 bg-maroon-400/10 border border-maroon-400/20 rounded-xl text-xs text-maroon-200 gap-3 min-w-0">
+        <div className="sticky top-2 z-20 flex flex-col sm:flex-row items-center justify-between p-3 bg-void-900/95 backdrop-blur-md border border-maroon-400/25 rounded-xl text-xs text-maroon-200 gap-3 min-w-0 shadow-lg shadow-black/10">
           <span className="font-semibold">{selectedCardUuids.length} card(s) selected</span>
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <button
               onClick={() => handleBulkExportSelectedZip('png')}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 bg-gradient-to-b from-maroon-500 to-maroon-600 hover:from-maroon-400 hover:to-maroon-500 text-white font-medium rounded-lg touch-fast"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 bg-maroon-500 hover:bg-maroon-600 text-white font-medium rounded-lg touch-fast"
             >
               <Download className="w-3.5 h-3.5" />
               Export ZIP
@@ -243,22 +247,33 @@ export const GalleryCardsGrid: React.FC<GalleryCardsGridProps> = ({
           <div className="w-12 h-12 rounded-2xl bg-maroon-400/10 text-maroon-400 flex items-center justify-center mx-auto shadow-inner shadow-maroon-400/10">
             <Sparkles className="w-6 h-6" />
           </div>
+
           <div>
-            <h3 className="text-base font-semibold text-mist-100">No Character Cards Found</h3>
-            <p className="text-xs text-knight-400 mt-2 leading-relaxed">
-              Import existing <span className="text-maroon-400 font-mono">PNG / JSON / CHARX</span> cards from your collection, or build a new character from scratch.
+            <h3 className="font-display text-lg font-semibold text-mist-100">
+              {hasActiveFilters || allCards.length > 0 ? 'No matching characters' : 'Your library is waiting'}
+            </h3>
+            <p className="text-sm text-knight-400 mt-2 leading-relaxed max-w-sm mx-auto">
+              {hasActiveFilters || allCards.length > 0
+                ? 'Nothing matches these filters yet. Try a different search or reset the filters to see your full collection.'
+                : <>Import existing <span className="text-maroon-400 font-mono">PNG / JSON / CHARX</span> cards, or create a character to start building your library.</>}
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-2 pt-4">
-            <button
-              onClick={async () => {
-                await createNewCard('New Character');
-                setActiveTab('editor');
-              }}
-              className="px-4 py-2.5 bg-gradient-to-b from-maroon-500 to-maroon-600 hover:from-maroon-400 hover:to-maroon-500 text-white text-xs font-medium rounded-xl shadow-md shadow-maroon-950/50 touch-fast transition-colors"
-            >
-              Create Character
-            </button>
+          <div className="flex flex-wrap justify-center gap-2 pt-3">
+            {hasActiveFilters || allCards.length > 0 ? (
+              <button onClick={onClearFilters} className="px-4 py-2.5 bg-void-800 hover:bg-void-700 text-mist-100 text-sm font-medium rounded-xl border border-knight-700/70 touch-fast transition-colors">
+                Clear filters
+              </button>
+            ) : (
+              <button
+                onClick={async () => {
+                  await createNewCard('New Character');
+                  setActiveTab('editor');
+                }}
+                className="px-4 py-2.5 bg-maroon-500 hover:bg-maroon-600 text-white text-sm font-medium rounded-xl touch-fast transition-colors"
+              >
+                Create character
+              </button>
+            )}
           </div>
         </div>
       ) : (

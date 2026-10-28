@@ -371,14 +371,14 @@ export const CrucibleView: React.FC = () => {
       targetBudget: budget,
     } = trustReportData;
 
-    const reportText = `🔥 **CardCrucible Report** 🛡️
+    const reportText = `🔥 **Roleplay Forge Report** 🛡️
 **Character:** ${characterName}
 **Jailbreak Resilience:** Survived ${pPassed}/${pTested} vectors
 **Character Consistency:** ${driftString}
 **Tested On:** ${modelString}
 **Token Efficiency:** ${cardTokens} / ${budget}
 
-*Generated via CardCrucible Studio*`;
+*Generated via Roleplay Forge Studio*`;
 
     navigator.clipboard.writeText(reportText);
     setCopiedReport(true);
@@ -392,7 +392,7 @@ export const CrucibleView: React.FC = () => {
       const pngBytes = await renderTrustBadgeCanvasBytes(trustReportData);
       const blob = new Blob([pngBytes], { type: 'image/png' });
       const safeName = (trustReportData.characterName || 'card').toLowerCase().replace(/[^a-z0-9_-]/g, '_');
-      const fileName = `${safeName}_crucible_badge.png`;
+      const fileName = `${safeName}_forge_test_badge.png`;
       const file = new File([blob], fileName, { type: 'image/png' });
 
       if (

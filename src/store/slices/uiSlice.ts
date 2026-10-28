@@ -17,6 +17,13 @@ export const createUISlice: StateCreator<CardStore, [], [], UISlice> = (set) => 
       } else {
         document.documentElement.classList.remove('dark');
       }
+      try {
+        window.localStorage.setItem('roleplay-forge-theme', theme);
+      } catch {
+        // The IndexedDB preference remains authoritative when storage is unavailable.
+      }
+      document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+        ?.setAttribute('content', theme === 'dark' ? '#191816' : '#f7f4ee');
     } catch (e) {
       console.error('Failed to load theme:', e);
     }
@@ -28,6 +35,13 @@ export const createUISlice: StateCreator<CardStore, [], [], UISlice> = (set) => 
     } else {
       document.documentElement.classList.remove('dark');
     }
+    try {
+      window.localStorage.setItem('roleplay-forge-theme', theme);
+    } catch {
+      // Theme still applies in-session; IndexedDB remains the persistent source.
+    }
+    document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'dark' ? '#191816' : '#f7f4ee');
     try {
       await db.settings.put({ key: 'app_theme', value: theme });
     } catch (e) {

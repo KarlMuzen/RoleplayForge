@@ -9,7 +9,6 @@ import { ChatPreviewModal } from './components/ChatPreviewModal';
 import { AlertDialogModal } from './components/AlertDialogModal';
 import { WorkspaceSubNav } from './components/WorkspaceSubNav';
 import { LabSubNav } from './components/LabSubNav';
-import { PortraitGuard } from './components/PortraitGuard';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PreFlightAuditModal } from './components/PreFlightAuditModal';
 import { ToastContainer } from './components/ToastContainer';
@@ -100,7 +99,6 @@ export default function App() {
       <DecryptionModal />
       <PassphraseSetupModal />
       <AlertDialogModal />
-      <PortraitGuard />
       <ToastContainer />
     </div>
   );

@@ -1,15 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useCardStore, type TabType } from '../store/useCardStore';
-import { ShieldAlert, Sparkles, MessageSquare, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, Sparkles, MessageSquare, AlertTriangle, HelpCircle } from 'lucide-react';
 import { validateCardCompleteness } from '../utils/validation';
 
 const SUB_TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
-  { id: 'crucible', label: 'Crucible', icon: <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> },
+  { id: 'crucible', label: 'Stress tests', icon: <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> },
   { id: 'enhancer', label: 'Enhancer', icon: <Sparkles className="w-3.5 h-3.5 shrink-0" /> },
 ];
 
 export const LabSubNav: React.FC = () => {
-  const { activeTab, setActiveTab, activeCard, setChatPreviewOpen } = useCardStore();
+  const { activeTab, setActiveTab, activeCard, setChatPreviewOpen, setIsOnboardingOpen } = useCardStore();
   const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -50,7 +50,7 @@ export const LabSubNav: React.FC = () => {
             </div>
             <div className="min-w-0 flex items-center gap-1.5">
               <span className="text-[10px] uppercase font-mono font-bold text-maroon-400/90 tracking-wider shrink-0">
-                Lab
+                Test
               </span>
               <span className="text-knight-600 text-xs">•</span>
               <p className="text-xs font-semibold text-mist-100 truncate">
@@ -63,6 +63,8 @@ export const LabSubNav: React.FC = () => {
               )}
             </div>
           </div>
+          <button onClick={() => setIsOnboardingOpen(true)} aria-label="Help and documentation" title="Help and documentation" className="flex items-center justify-center min-w-9 min-h-9 rounded-lg text-knight-400 hover:text-mist-100 hover:bg-void-800 transition-colors touch-fast"><HelpCircle className="w-4 h-4" /></button>
+
 
           {activeCard && (
             <button

@@ -84,7 +84,7 @@ export const TranscriptViewer: React.FC<TranscriptViewerProps> = ({
                     )}
                   </span>
                   <div
-                    className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap break-words ${
+                    className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap break-words select-text ${
                       isUser
                         ? 'bg-knight-800/90 text-mist-100 rounded-tr-none border border-knight-700/60'
                         : 'bg-void-900 text-mist-200 rounded-tl-none border border-knight-800/80 font-serif'

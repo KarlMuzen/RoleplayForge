@@ -2,7 +2,7 @@
 
 Roleplay Forge is the planned evolution of this CardCrucible-derived, local-first browser application into one workbench for authoring, organizing, converting and testing AI roleplay assets. The aim is to give creators a reliable place to manage character cards, lorebooks, generation presets and repeatable model evaluations without overstating cross-platform compatibility.
 
-> **Repository state (2026-10-28):** The source currently contains the CardCrucible implementation and its existing features. The intended Roleplay Forge direction is documented here, but the app-facing title, in-app legacy labels and package/repository metadata have not yet been fully migrated. This documentation does not claim that the product rebrand or roadmap features are already implemented.
+> **Repository state (2026-10-28):** The first Roleplay Forge UI pass is on `main`: the app title, navigation, guide/security copy, theme palette, package identity and PWA manifest have been updated. The implementation remains CardCrucible-derived, and deeper Library/editor redesign plus device validation are still in progress. CI verifies lint/type checking, tests and a production PWA build; Android installed-PWA behavior still needs a manual smoke test.
 
 ## Current foundation
 
@@ -74,7 +74,7 @@ npm test
 npm run build
 ```
 
-The Vite development server normally uses port 3000. The repository's current CI workflow runs dependency installation, lint/type checking and tests. It does **not** currently run `npm run build`; a successful CI run should not be reported as a production-build verification until that check is added and passes.
+The Vite development server normally uses port 3000. The current CI workflow runs dependency installation, lint/type checking, automated tests and `npm run build` (which regenerates PWA icons from `public/forge-mark.svg`). A green CI run verifies the production bundle for that commit, but it does not replace the installed-PWA smoke test on Android.
 
 ## Contribution and release rules
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Check, CheckCheck, X, FileEdit, BookOpen } from 'lucide-react';
+import { Sparkles, Check, X, FileEdit, BookOpen } from 'lucide-react';
 import type { CharacterCardV3, CharacterCardV3Data } from '../schemas/cardSchema';
 import type { CardPatch } from '../schemas/patchSchema';
 
@@ -59,10 +59,6 @@ export const PatchPreviewPanel: React.FC<PatchPreviewPanelProps> = ({
     if (indices.length > 0) {
       onApply(indices);
     }
-  };
-
-  const handleApplyAll = () => {
-    onApply(patches.map((_, i) => i));
   };
 
   const getPatchFieldInfo = (patch: CardPatch) => {
@@ -189,7 +185,7 @@ export const PatchPreviewPanel: React.FC<PatchPreviewPanelProps> = ({
                   <div className="text-[10px] font-mono uppercase tracking-wider text-knight-400 font-semibold flex items-center justify-between">
                     <span>Current Value</span>
                   </div>
-                  <div className="text-xs text-knight-300 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed custom-scrollbar">
+                  <div className="text-xs text-knight-300 font-mono whitespace-pre-wrap leading-relaxed select-text">
                     {fieldInfo.currentValue}
                   </div>
                 </div>
@@ -199,7 +195,7 @@ export const PatchPreviewPanel: React.FC<PatchPreviewPanelProps> = ({
                   <div className="text-[10px] font-mono uppercase tracking-wider text-maroon-300 font-semibold flex items-center justify-between">
                     <span>{patch.action === 'append' ? 'Appended Content' : 'Proposed Replacement'}</span>
                   </div>
-                  <div className="text-xs text-mist-100 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed custom-scrollbar">
+                  <div className="text-xs text-mist-100 font-mono whitespace-pre-wrap leading-relaxed select-text">
                     {patch.value}
                   </div>
                 </div>
@@ -229,20 +225,13 @@ export const PatchPreviewPanel: React.FC<PatchPreviewPanelProps> = ({
             type="button"
             onClick={handleApplySelected}
             disabled={selectedIndices.size === 0}
-            className="px-4 py-2 bg-gradient-to-r from-maroon-600 to-maroon-700 hover:from-maroon-500 hover:to-maroon-600 text-white rounded-xl text-xs font-semibold shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 touch-fast active:scale-95"
+            className="px-4 py-2 bg-maroon-500 hover:bg-maroon-600 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 touch-fast active:scale-95"
           >
             <Check className="w-3.5 h-3.5" />
-            <span>Apply Selected ({selectedIndices.size})</span>
+            <span>Apply {selectedIndices.size} edits</span>
           </button>
 
-          <button
-            type="button"
-            onClick={handleApplyAll}
-            className="px-4 py-2 bg-gradient-to-r from-maroon-500 to-maroon-600 hover:from-maroon-400 hover:to-maroon-500 text-white rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 touch-fast active:scale-95"
-          >
-            <CheckCheck className="w-3.5 h-3.5 text-emerald-300" />
-            <span>Apply All</span>
-          </button>
+
         </div>
       </div>
     </div>

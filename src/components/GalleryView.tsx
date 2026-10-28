@@ -9,7 +9,8 @@ import { useModalA11y } from '../hooks/useModalA11y';
 
 import {
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragStartEvent,
@@ -104,11 +105,8 @@ export const GalleryView: React.FC = () => {
   }) as React.RefObject<HTMLDivElement>;
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -389,7 +387,7 @@ export const GalleryView: React.FC = () => {
     const url = URL.createObjectURL(zipContent);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `minitavern_cards_all_${Date.now()}.zip`;
+    a.download = `roleplay_forge_cards_all_${Date.now()}.zip`;
     a.click();
     URL.revokeObjectURL(url);
 
@@ -421,7 +419,7 @@ export const GalleryView: React.FC = () => {
     const url = URL.createObjectURL(zipContent);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `minitavern_cards_export_${Date.now()}.zip`;
+    a.download = `roleplay_forge_cards_export_${Date.now()}.zip`;
     a.click();
     URL.revokeObjectURL(url);
 
@@ -440,7 +438,7 @@ export const GalleryView: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `minitavern_cards_bundle_${Date.now()}.json`;
+    a.download = `roleplay_forge_cards_bundle_${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
 
@@ -479,6 +477,10 @@ export const GalleryView: React.FC = () => {
         onBulkExportSelectedZip={handleBulkExportSelectedZip}
         onExportAllJsonBundle={handleExportAllJsonBundle}
         onFileUpload={handleFileUpload}
+        onCreateCard={async () => {
+          await createNewCard('New Character');
+          setActiveTab('editor');
+        }}
       />
 
       {/* Import Status & Modals */}
@@ -531,6 +533,12 @@ export const GalleryView: React.FC = () => {
         fileInputRef={fileInputRef}
         createNewCard={createNewCard}
         setActiveTab={setActiveTab}
+        hasActiveFilters={Boolean(searchQuery.trim() || selectedTag || selectedRatingFilter !== 'all')}
+        onClearFilters={() => {
+          setSearchQuery('');
+          setSelectedTag(null);
+          setSelectedRatingFilter('all');
+        }}
       />
     </div>
   );

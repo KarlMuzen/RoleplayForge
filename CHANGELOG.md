@@ -3,14 +3,18 @@
 ## Unreleased — Documentation baseline (2026-10-28)
 
 ### Visual refresh
-- Introduce a warm parchment-and-charcoal theme with a muted clay accent.
-- Clarify Roleplay Forge branding and label mobile primary navigation.
-- Improve mobile workspace tab fit and reduce visual motion.
+- Introduce a warm parchment-and-charcoal theme with a muted clay accent and calm focus states.
+- Replace the generic sparkle with a card-and-anvil Roleplay Forge mark; regenerate PWA, favicon and Apple touch assets from one SVG source during builds.
+- Update app title, navigation terminology, guide/security copy, package metadata and PWA manifest branding.
+- Remove forced portrait locking, keep the four labeled primary destinations, and expose contextual help in Forge and Test.
+- Improve Library drag scrolling, empty states, create action, sticky bulk actions and explicit export choices.
+- Make AI response text selectable and simplify patch review to a single selection-aware apply action.
+- Add missing legacy utility tokens/classes and synchronous theme preference bootstrap; preserve existing IndexedDB theme storage and other data identifiers.
 
-- Documented the Roleplay Forge product direction while explicitly identifying the legacy CardCrucible app and package branding that remains in the current source.
+- Documented the Roleplay Forge product direction and conservative platform-support boundary.
 - Added product vision, phased roadmap, platform/format support matrix, testing strategy and a repository checkpoint.
-- Recorded the current CI boundary: dependency installation, lint/type checking and tests run; the workflow does not yet run a production build.
-- Documentation-only change. No application source, package metadata, storage schema, encryption identifiers or sync identifiers were changed.
+- Extended CI to run dependency installation, lint/type checking, automated tests and a production PWA build.
+- Existing IndexedDB keys, encryption formats, passkey identifiers and sync identifiers remain unchanged.
 
 ## 0.3.0
 

@@ -1,17 +1,17 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useCardStore, type TabType } from '../store/useCardStore';
-import { Edit3, BookOpen, FlaskConical, Bot, MessageSquare, AlertTriangle, Zap } from 'lucide-react';
+import { Edit3, BookOpen, FlaskConical, Bot, MessageSquare, AlertTriangle, Zap, HelpCircle } from 'lucide-react';
 import { validateCardCompleteness } from '../utils/validation';
 
 const SUB_TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
   { id: 'editor', label: 'Details', icon: <Edit3 className="w-3.5 h-3.5 shrink-0" /> },
   { id: 'lorebook', label: 'Lorebook', icon: <BookOpen className="w-3.5 h-3.5 shrink-0" /> },
-  { id: 'payload', label: 'Payload', icon: <FlaskConical className="w-3.5 h-3.5 shrink-0" /> },
-  { id: 'assistant', label: 'Assistant', icon: <Bot className="w-3.5 h-3.5 shrink-0" /> },
+  { id: 'payload', label: 'Prompt', icon: <FlaskConical className="w-3.5 h-3.5 shrink-0" /> },
+  { id: 'assistant', label: 'Assist', icon: <Bot className="w-3.5 h-3.5 shrink-0" /> },
 ];
 
 export const WorkspaceSubNav: React.FC = () => {
-  const { activeTab, setActiveTab, activeCard, setChatPreviewOpen, setPreFlightAuditOpen } = useCardStore();
+  const { activeTab, setActiveTab, activeCard, setChatPreviewOpen, setPreFlightAuditOpen, setIsOnboardingOpen } = useCardStore();
   const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -77,6 +77,8 @@ export const WorkspaceSubNav: React.FC = () => {
               </button>
             )}
           </div>
+              <button onClick={() => setIsOnboardingOpen(true)} aria-label="Help and documentation" title="Help and documentation" className="flex items-center justify-center min-w-9 min-h-9 rounded-lg text-knight-400 hover:text-mist-100 hover:bg-void-800 transition-colors touch-fast"><HelpCircle className="w-4 h-4" /></button>
+
 
           {activeCard && activeTab !== 'editor' && (
             <button

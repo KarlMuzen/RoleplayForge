@@ -1,11 +1,11 @@
 {
-  "name": "cardcrucible",
+  "name": "roleplay-forge",
   "private": true,
   "version": "0.3.0",
-  "description": "A comprehensive toolkit for creating and managing detailed character profiles for ai roleplayers.",
+  "description": "The AI roleplay workbench for building, organizing, and testing character cards and lore.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ShashiDao/CardCrucible.git"
+    "url": "https://github.com/KarlMuzen/RoleplayForge.git"
   },
   "keywords": [
     "character-card",
@@ -17,7 +17,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
+    "build": "npm run generate:icons && vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "generate:icons": "node scripts/generate-pwa-icons.js",

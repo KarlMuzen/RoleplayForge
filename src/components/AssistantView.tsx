@@ -132,7 +132,7 @@ export const AssistantView: React.FC = () => {
         }
       : null;
 
-    return `You are an expert AI CardCrucible Assistant adhering strictly to the Character Card V3 specification.
+    return `You are an expert AI Roleplay Forge Assistant adhering strictly to the Character Card V3 specification.
 You have full real-time access to the user's active application surface metadata.
 
 === LIVE APP SURFACE METADATA ===
@@ -447,7 +447,7 @@ IMPORTANT DIRECTIVES:
               } space-y-2 max-w-3xl ${m.role === 'user' ? 'ml-auto' : 'mr-auto'}`}
             >
               <div
-                className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap shadow-sm ${
+                className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap select-text shadow-sm ${
                   m.role === 'user'
                     ? 'bg-maroon-600 text-white rounded-tr-none'
                     : 'bg-void-800/90 text-mist-100 border border-knight-700/60 rounded-tl-none'

@@ -64,7 +64,7 @@ export default defineConfig(() => {
           theme_color: '#191816',
           background_color: '#191816',
           display: 'standalone',
-          orientation: 'portrait',
+          orientation: 'any',
           start_url: '/',
           scope: '/',
           id: '/',

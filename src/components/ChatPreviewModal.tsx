@@ -467,7 +467,7 @@ export const ChatPreviewModal: React.FC = () => {
                   </div>
 
                   <div
-                    className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap shadow-md ${
+                    className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap select-text shadow-md ${
                       isUser
                         ? 'bg-maroon-500 text-white rounded-tr-none'
                         : 'bg-void-800/90 border border-knight-700/80 text-mist-100 rounded-tl-none font-sans'
