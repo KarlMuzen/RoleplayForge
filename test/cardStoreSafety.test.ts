@@ -1,3 +1,4 @@
+import 'fake-indexeddb/auto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db, type StoredCard } from '../src/db';
 import { createNewDefaultCard } from '../src/utils/cardDefaults';
