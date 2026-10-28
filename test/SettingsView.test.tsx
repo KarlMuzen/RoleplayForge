@@ -51,7 +51,7 @@ describe('SettingsView and Sub-sections', () => {
     render(<SettingsView />);
 
     // 1. Security section
-    expect(screen.getByText(/Master Passphrase & Key Encryption Security/i)).toBeDefined();
+    expect(screen.getByText(/API key protection/i)).toBeDefined();
     expect(screen.getByText(/Master Passphrase Active/i)).toBeDefined();
     expect(screen.getByText(/Unlocked \(Active Memory Session\)/i)).toBeDefined();
 
