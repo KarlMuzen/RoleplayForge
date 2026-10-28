@@ -161,7 +161,7 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     set({
       isPassphraseSet: true,
       isPasskeyOnly: true,
-      hasRecoveryKey: true,
+      hasRecoveryKey: false,
       isPasskeyEnrolled: true,
       isUnlocked: true,
       cryptoKey: key,
