@@ -355,6 +355,9 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
   },
 
   removePasskeyUnlock: async () => {
+    if (get().isPasskeyOnly) {
+      throw new Error('This vault uses the passkey as its primary key protector. Reset protection and re-enter saved API keys before removing it.');
+    }
     await db.transaction('rw', db.settings, async () => {
       await db.settings.delete('passkey_credential_id');
       await db.settings.delete('passkey_wrapped_key');
@@ -367,6 +370,9 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
     await db.transaction('rw', db.settings, db.connectionProfiles, async () => {
       await db.settings.delete('crypto_salt');
       await db.settings.delete('crypto_hash');
+      await db.settings.delete('crypto_mode');
+      await db.settings.delete('crypto_recovery_salt');
+      await db.settings.delete('crypto_recovery_wrapped_key');
       await db.settings.delete('passkey_credential_id');
       await db.settings.delete('passkey_wrapped_key');
       await db.settings.delete('passkey_prf_salt');
@@ -380,7 +386,15 @@ export const createSessionSlice: StateCreator<CardStore, [], [], SessionSlice> =
       }
     });
 
-    set({ isPassphraseSet: false, isUnlocked: false, cryptoKey: null, isPasskeyEnrolled: false });
+    set({
+      isPassphraseSet: false,
+      isPasskeyOnly: false,
+      hasRecoveryKey: false,
+      pendingRecoveryCode: null,
+      isUnlocked: false,
+      cryptoKey: null,
+      isPasskeyEnrolled: false,
+    });
     await get().loadProfilesFromDb();
   },
 
