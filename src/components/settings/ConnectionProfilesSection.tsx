@@ -568,7 +568,7 @@ export const ConnectionProfilesSection: React.FC<ConnectionProfilesSectionProps>
                 <p className="mt-1 text-[10px] text-knight-400">
                   {isPassphraseSet
                     ? '🔒 Encrypted with AES-GCM at rest using your Master Passphrase.'
-                    : '💡 Set a Master Passphrase in Security to encrypt API keys at rest.'}
+                    : 'You’ll be asked to create a passphrase when you save this key.'}
                 </p>
               </div>
             </div>
