@@ -16,91 +16,63 @@ export const GalleryFilterBar: React.FC<GalleryFilterBarProps> = ({
   selectedRatingFilter,
   setSelectedRatingFilter,
 }) => {
+  const ratingOptions: { value: 'all' | 'sfw' | 'nsfw' | 'unrated'; label: string; selectedClass: string }[] = [
+    { value: 'all', label: 'All Ratings', selectedClass: 'bg-knight-700 text-mist-100' },
+    { value: 'sfw', label: 'SFW', selectedClass: 'bg-emerald-950 text-emerald-300 border border-emerald-800/80' },
+    { value: 'nsfw', label: 'NSFW', selectedClass: 'bg-rose-950 text-rose-300 border border-rose-800/80' },
+    { value: 'unrated', label: 'Unrated', selectedClass: 'bg-amber-950 text-amber-300 border border-amber-800/80' },
+  ];
+  const targetClass = 'min-h-11 px-3 py-2 rounded-full text-xs font-semibold transition-colors shrink-0 touch-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-maroon-400';
+
   return (
-    <div className="relative w-full overflow-hidden">
-      <div className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none py-0.5">
-        {/* Rating Filter Pills */}
-        <div role="group" aria-label="Filter by content rating" className="flex items-center gap-1 bg-void-900 border border-knight-800 rounded-full p-1 text-xs shrink-0">
-          <button
-            data-testid="filter-rating-all"
-            onClick={() => setSelectedRatingFilter('all')}
-            className={`min-h-11 min-w-11 px-3 rounded-full text-xs font-semibold transition-colors flex items-center justify-center ${
-              selectedRatingFilter === 'all'
-                ? 'bg-knight-700 text-mist-100'
-                : 'text-knight-400 hover:text-mist-200'
-            }`}
-          >
-            All Ratings
-          </button>
-          <button
-            data-testid="filter-rating-sfw"
-            onClick={() => setSelectedRatingFilter('sfw')}
-            className={`min-h-11 min-w-11 px-3 rounded-full text-xs font-semibold transition-colors flex items-center justify-center ${
-              selectedRatingFilter === 'sfw'
-                ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/80'
-                : 'text-knight-400 hover:text-mist-200'
-            }`}
-          >
-            SFW
-          </button>
-          <button
-            data-testid="filter-rating-nsfw"
-            onClick={() => setSelectedRatingFilter('nsfw')}
-            className={`min-h-11 min-w-11 px-3 rounded-full text-xs font-semibold transition-colors flex items-center justify-center ${
-              selectedRatingFilter === 'nsfw'
-                ? 'bg-rose-950 text-rose-300 border border-rose-800/80'
-                : 'text-knight-400 hover:text-mist-200'
-            }`}
-          >
-            NSFW
-          </button>
-          <button
-            data-testid="filter-rating-unrated"
-            onClick={() => setSelectedRatingFilter('unrated')}
-            className={`min-h-11 min-w-11 px-3 rounded-full text-xs font-semibold transition-colors flex items-center justify-center ${
-              selectedRatingFilter === 'unrated'
-                ? 'bg-amber-950 text-amber-300 border border-amber-800/80'
-                : 'text-knight-400 hover:text-mist-200'
-            }`}
-          >
-            Unrated
-          </button>
-        </div>
-
-        <div className="w-px h-4 bg-knight-800 mx-1 shrink-0" />
-
-        {/* Tag Pills */}
-        {allTags.length > 0 && (
-          <div role="group" aria-label="Filter by tag" className="flex items-center gap-2 shrink-0">
-            <Tag className="w-3.5 h-3.5 text-knight-500 shrink-0" />
+    <div className="w-full min-w-0 space-y-3">
+      <div role="group" aria-label="Rating filter" className="flex flex-wrap items-center gap-1 bg-void-900 border border-knight-800 rounded-full p-1 w-fit max-w-full">
+        {ratingOptions.map((option) => {
+          const selected = selectedRatingFilter === option.value;
+          return (
             <button
+              key={option.value}
+              type="button"
+              data-testid={`filter-rating-${option.value}`}
+              aria-pressed={selected}
+              onClick={() => setSelectedRatingFilter(option.value)}
+              className={`${targetClass} ${selected ? option.selectedClass : 'text-knight-400 hover:text-mist-200'}`}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {allTags.length > 0 && (
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-knight-400 shrink-0">
+            <Tag className="w-3.5 h-3.5" aria-hidden="true" />
+            Tags
+          </span>
+          <div role="group" aria-label="Tag filter" tabIndex={0} className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <button
+              type="button"
+              aria-pressed={selectedTag === null}
               onClick={() => setSelectedTag(null)}
-              className={`min-h-11 px-3 py-2 rounded-full text-xs font-medium transition-colors shrink-0 touch-fast ${
-                selectedTag === null
-                  ? 'bg-zinc-200 text-zinc-900'
-                  : 'bg-void-900 border border-mist-100/5 text-knight-400 hover:text-mist-100'
-              }`}
+              className={`${targetClass} ${selectedTag === null ? 'bg-zinc-200 text-zinc-900' : 'bg-void-900 border border-mist-100/5 text-knight-400 hover:text-mist-100'}`}
             >
               All Tags
             </button>
             {allTags.map((tag) => (
               <button
+                type="button"
                 key={tag}
+                aria-pressed={selectedTag === tag}
                 onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-                className={`min-h-11 px-3 py-2 rounded-full text-xs font-medium transition-colors shrink-0 touch-fast ${
-                  selectedTag === tag
-                    ? 'bg-zinc-200 text-zinc-900'
-                    : 'bg-void-900 border border-mist-100/5 text-knight-400 hover:text-mist-100'
-                }`}
+                className={`${targetClass} ${selectedTag === tag ? 'bg-zinc-200 text-zinc-900' : 'bg-void-900 border border-mist-100/5 text-knight-400 hover:text-mist-100'}`}
               >
                 #{tag}
               </button>
             ))}
           </div>
-        )}
-      </div>
-      {/* Visual scroll fade affordance on right edge for narrow screens */}
-      <div className="pointer-events-none absolute right-0 top-0 bottom-1.5 w-8 bg-gradient-to-l from-void-950 to-transparent sm:hidden" />
+        </div>
+      )}
     </div>
   );
 };
