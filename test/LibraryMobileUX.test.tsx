@@ -1,0 +1,93 @@
+// @vitest-environment jsdom
+import '../test/setup';
+import React from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { GalleryView } from '../src/components/GalleryView';
+import { GuideView } from '../src/components/GuideView';
+import { createNewDefaultCard } from '../src/utils/cardDefaults';
+import { db } from '../src/db';
+import { useCardStore } from '../src/store/useCardStore';
+
+beforeEach(async () => {
+  await db.cards.clear();
+  useCardStore.setState({
+    cards: [],
+    activeCardUuid: null,
+    searchQuery: '',
+    selectedTag: null,
+    selectedCardUuids: [],
+    selectedRatingFilter: 'all',
+    isLoadingCards: false,
+    isImporting: false,
+    isOnboardingOpen: true,
+  });
+});
+
+afterEach(async () => {
+  await db.cards.clear();
+});
+
+describe('Library mobile controls', () => {
+  it('keeps the New, Import and Export actions readable and anchors menus to the trigger edge', async () => {
+    render(<GalleryView />);
+
+    expect(screen.getByRole('button', { name: 'New character' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Import', exact: true })).toBeInTheDocument();
+
+    const importToggle = screen.getByRole('button', { name: 'More Import Options' });
+    fireEvent.click(importToggle);
+    const importMenu = screen.getByRole('dialog', { name: 'Import Options' });
+    expect(importToggle).toHaveAttribute('aria-expanded', 'true');
+    expect(importMenu.className).toContain('right-0');
+    expect(importMenu.className).toContain('max-w-[calc(100vw-2rem)]');
+    expect(importMenu.className).toContain('overflow-y-auto');
+
+    fireEvent.click(importToggle);
+    const exportToggle = screen.getByRole('button', { name: 'More Export Options' });
+    expect(exportToggle).toBeInTheDocument();
+    fireEvent.click(exportToggle);
+    const exportMenu = screen.getByRole('dialog', { name: 'Bulk Export Options' });
+    expect(exportToggle).toHaveAttribute('aria-expanded', 'true');
+    expect(exportMenu.className).toContain('max-h-[min(70vh,32rem)]');
+  });
+
+  it('uses labelled filter groups and minimum touch-height controls', async () => {
+    const card = createNewDefaultCard('Tagged Test Character');
+    await db.cards.add({
+      uuid: 'tagged-test-character',
+      name: card.data.name,
+      creator: card.data.creator || '',
+      tags: ['fantasy'],
+      modification_date: Date.now(),
+      cardData: card,
+      embeddedAssets: {},
+    });
+    await useCardStore.getState().loadCardsFromDb();
+
+    render(<GalleryView />);
+
+    expect(screen.getByRole('group', { name: 'Filter by content rating' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Filter by tag' })).toBeInTheDocument();
+
+    for (const name of ['All Ratings', 'SFW', 'NSFW', 'Unrated', 'All Tags', '#fantasy']) {
+      const button = screen.getByRole('button', { name, exact: true });
+      expect(button.className).toContain('min-h-11');
+    }
+  });
+});
+
+describe('Guide modal header', () => {
+  it('keeps a separate, sticky close control instead of overlaying the title badge', () => {
+    const onClose = vi.fn();
+    render(<GuideView onClose={onClose} />);
+
+    const close = screen.getByRole('button', { name: 'Close Guide' });
+    expect(close.className).toContain('min-h-11');
+    expect(close.parentElement?.className).toContain('sticky');
+    expect(screen.getByText('Roleplay Forge Field Guide & Reference')).toBeInTheDocument();
+
+    fireEvent.click(close);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+});
