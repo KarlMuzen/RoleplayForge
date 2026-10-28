@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDialogStore } from '../store/useDialogStore';
 import { useModalA11y } from '../hooks/useModalA11y';
+import { canAutoFocusText } from '../utils/touch';
 import { AlertTriangle, Info, ShieldAlert, X } from 'lucide-react';
 
 export const AlertDialogModal: React.FC = () => {
@@ -77,7 +78,7 @@ export const AlertDialogModal: React.FC = () => {
               <div className="mt-3">
                 <input
                   type="text"
-                  autoFocus
+                  autoFocus={canAutoFocusText()}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => {

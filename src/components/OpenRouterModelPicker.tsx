@@ -11,6 +11,7 @@ import {
   Cpu,
   X,
 } from 'lucide-react';
+import { canAutoFocusText } from '../utils/touch';
 import {
   fetchOpenRouterModels,
   formatOpenRouterPricing,
@@ -202,7 +203,7 @@ export const OpenRouterModelPicker: React.FC<OpenRouterModelPickerProps> = ({
           <div
             onClick={() => {
               setIsOpen(!isOpen);
-              setTimeout(() => inputRef.current?.focus(), 50);
+              if (canAutoFocusText()) setTimeout(() => inputRef.current?.focus(), 50);
             }}
             className={`w-full flex items-center justify-between px-3 py-2 bg-void-800 border ${
               isOpen ? 'border-maroon-500/80 ring-2 ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50' : 'border-knight-700 hover:border-knight-600'
@@ -260,7 +261,7 @@ export const OpenRouterModelPicker: React.FC<OpenRouterModelPickerProps> = ({
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Filter by name or ID (e.g. dolphin, sonnet, r1, llama)..."
                   className="w-full bg-transparent text-xs text-mist-100 placeholder:text-knight-500 focus:outline-none"
-                  autoFocus
+                  autoFocus={canAutoFocusText()}
                 />
                 {searchTerm && (
                   <button

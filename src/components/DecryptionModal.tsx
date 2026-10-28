@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCardStore } from '../store/useCardStore';
 import { useModalA11y } from '../hooks/useModalA11y';
+import { canAutoFocusText } from '../utils/touch';
 import { Lock, Eye, EyeOff, X, Loader2, Fingerprint, KeyRound } from 'lucide-react';
 
 export const DecryptionModal: React.FC = () => {
@@ -94,7 +95,6 @@ export const DecryptionModal: React.FC = () => {
     }, 50);
   };
 
-  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
   const showRecoveryInput = isPasskeyOnly && isRecoveryMode;
   const showPassphraseInput = !isPasskeyOnly;
 
@@ -190,7 +190,7 @@ export const DecryptionModal: React.FC = () => {
                 autoCorrect="off"
                 spellCheck={false}
                 disabled={isProcessing || isPasskeyProcessing}
-                autoFocus={!isTouchDevice}
+                autoFocus={canAutoFocusText()}
                 className="w-full min-h-12 bg-void-950 border border-knight-700/60 rounded-xl px-4 py-3 font-mono text-sm tracking-wider text-mist-200 focus:outline-none focus:border-maroon-500/50 focus:ring-1 focus:ring-maroon-500/50 disabled:opacity-50"
               />
               {(localError || decryptionError) && <p role="alert" className="text-xs text-red-300">{localError || decryptionError}</p>}
@@ -212,7 +212,7 @@ export const DecryptionModal: React.FC = () => {
                   placeholder="Master passphrase"
                   disabled={isProcessing || isPasskeyProcessing}
                   className="w-full min-h-11 bg-void-950 border border-knight-700/60 rounded-xl px-4 py-3 text-sm text-mist-200 focus:outline-none focus:border-maroon-500/50 focus:ring-1 focus:ring-maroon-500/50 transition-all pr-12 disabled:opacity-50"
-                  autoFocus={!isTouchDevice && !(isPasskeyEnrolled && isPasskeySupported)}
+                  autoFocus={canAutoFocusText() && !(isPasskeyEnrolled && isPasskeySupported)}
                 />
                 <button
                   type="button"
