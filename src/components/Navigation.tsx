@@ -104,7 +104,7 @@ export const Navigation: React.FC = () => {
     },
     {
       id: 'workspace' as const,
-      label: 'Workspace',
+      label: 'Forge',
       icon: <Layers className="w-5 h-5" />,
       onClick: () => {
         if (activeSection === 'workspace') {
@@ -152,25 +152,23 @@ export const Navigation: React.FC = () => {
         {/* Header */}
         <div className="p-4 border-b border-knight-700/40 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-maroon-500/80 to-amber-500/80 p-0.5 shadow-md shadow-maroon-950 overflow-hidden shrink-0">
-              <img src="/brand_logo.png" alt="CardCrucible Logo" className="w-full h-full object-cover rounded-[10px]" referrerPolicy="no-referrer" />
+            <div className="w-9 h-9 rounded-xl bg-void-800 p-0.5 border border-knight-700/50 overflow-hidden shrink-0">
+              <img src="/forge-mark.svg" alt="Roleplay Forge mark" className="w-full h-full object-cover rounded-[10px]" referrerPolicy="no-referrer" />
             </div>
             <div>
-              <h1 className="font-bold text-mist-100 tracking-wide text-sm flex items-center gap-1.5">
-                CardCrucible
-                <span className="text-[10px] font-mono font-medium px-1.5 py-0.2 bg-maroon-950 text-maroon-400 border border-maroon-800/60 rounded">
-                  v3
-                </span>
+              <h1 className="font-semibold text-mist-100 tracking-tight text-sm flex items-center gap-1.5">
+                Roleplay Forge
+                <span className="text-[9px] font-medium px-1.5 py-0.5 bg-maroon-950 text-maroon-300 border border-maroon-800/50 rounded-full">AI</span>
               </h1>
-              <p className="text-[11px] text-knight-400">CCv3 Character Engine</p>
+              <p className="text-[10px] text-knight-400 tracking-wide">The AI roleplay workbench</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
             {isInstallable && (
               <button
                 onClick={promptInstall}
-                className="p-2 rounded-xl bg-maroon-950/80 hover:bg-maroon-900 border border-maroon-800/80 text-maroon-300 transition-colors touch-fast active:scale-95 animate-pulse"
-                title="Install CardCrucible App"
+                className="p-2 rounded-xl bg-maroon-950/80 hover:bg-maroon-900 border border-maroon-800/60 text-maroon-300 transition-colors touch-fast active:scale-95"
+                title="Install Roleplay Forge App"
               >
                 <DownloadCloud className="w-4 h-4 text-maroon-400" />
               </button>
@@ -281,9 +279,9 @@ export const Navigation: React.FC = () => {
         <header className="md:hidden flex items-center justify-between px-4 py-2.5 bg-void-950/90 backdrop-blur-md border-b border-knight-700/20 text-mist-100 sticky top-0 z-30 pt-[max(0.625rem,env(safe-area-inset-top,0px))]">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-void-800 flex items-center justify-center text-maroon-400 font-bold text-xs shadow-inner border border-knight-700/40 overflow-hidden shrink-0">
-              <img src="/brand_logo.png" alt="CardCrucible Logo" className="w-full h-full object-cover rounded-md" referrerPolicy="no-referrer" />
+              <img src="/forge-mark.svg" alt="Roleplay Forge mark" className="w-full h-full object-cover rounded-md" referrerPolicy="no-referrer" />
             </div>
-            <span className="font-semibold text-sm text-mist-100 tracking-tight">Card<span className="text-maroon-400 font-bold">Crucible</span></span>
+            <span className="font-semibold text-sm text-mist-100 tracking-tight">Roleplay <span className="text-maroon-400 font-semibold">Forge</span></span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -310,7 +308,7 @@ export const Navigation: React.FC = () => {
       )}
 
       {/* Mobile Bottom Navigation Bar & Contextual Action Sheet (md:hidden) */}
-      <div className="md:hidden fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-xs flex flex-col items-center">
+      <div className="md:hidden fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-sm flex flex-col items-center">
         {/* Workspace/Lab Sub-Nav Micro-Popover / Action Sheet */}
         {isSubNavPopoverOpen && (activeSection === 'workspace' || activeSection === 'lab') && (
           <div
@@ -350,7 +348,7 @@ export const Navigation: React.FC = () => {
         )}
 
         {/* Floating Bottom Nav Container */}
-        <div className="w-full bg-void-900/90 backdrop-blur-xl border border-knight-700/50 shadow-2xl rounded-full px-2 py-1.5 flex justify-around items-center select-none">
+        <div className="w-full bg-void-900/95 backdrop-blur-xl border border-knight-700/50 shadow-2xl rounded-[1.35rem] px-2 py-2 flex justify-around items-center select-none">
           {primaryItems.map((item) => {
             const isActive = activeSection === item.id;
             const hasSubItems = item.id === 'workspace' || item.id === 'lab';
@@ -361,11 +359,12 @@ export const Navigation: React.FC = () => {
                 aria-label={item.label}
                 aria-haspopup={hasSubItems ? 'dialog' : undefined}
                 aria-expanded={hasSubItems ? (isActive && isSubNavPopoverOpen) : undefined}
-                className={`relative flex items-center justify-center min-w-10 min-h-10 p-2.5 rounded-full transition-all touch-fast active:scale-90 ${
-                  isActive ? 'text-maroon-400 bg-maroon-500/10' : 'text-knight-500 hover:text-knight-300'
+                className={`relative flex flex-col items-center justify-center gap-1 min-w-[3.75rem] min-h-12 px-2 py-1.5 rounded-xl transition-all touch-fast active:scale-95 ${
+                  isActive ? 'text-maroon-400 bg-maroon-950/80' : 'text-knight-500 hover:text-mist-100 hover:bg-void-800/70'
                 }`}
               >
-                {item.icon}
+                <span className="flex items-center justify-center">{item.icon}</span>
+                <span className="text-[10px] leading-none font-medium">{item.label}</span>
                 {hasSubItems && (
                   <>
                     {activeCard && !isActive && (

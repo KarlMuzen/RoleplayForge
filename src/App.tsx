@@ -58,7 +58,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col md:flex-row antialiased font-sans selection:bg-maroon-500/30 selection:text-maroon-200 bg-void-950 text-mist-100">
       <Navigation />
 
-      <main className="flex-1 overflow-y-auto min-h-screen">
+      <main className="flex-1 overflow-y-auto min-h-screen pb-28 md:pb-0">
         {isWorkspaceTab && <WorkspaceSubNav />}
         {isLabTab && <LabSubNav />}
         <ErrorBoundary resetKey={activeTab}>
@@ -86,7 +86,7 @@ export default function App() {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="CardCrucible Guide and Onboarding"
+          aria-label="Roleplay Forge Guide and Onboarding"
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md overflow-y-auto p-3 sm:p-6 md:p-10 flex justify-center items-start"
         >
           <div className="relative w-full max-w-5xl my-auto">

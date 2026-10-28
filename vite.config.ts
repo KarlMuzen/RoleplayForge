@@ -58,11 +58,11 @@ export default defineConfig(() => {
           ]
         },
         manifest: {
-          name: 'CardCrucible',
-          short_name: 'CardCrucible',
-          description: 'Character Card Studio & Lab',
-          theme_color: '#0a0a0f',
-          background_color: '#0a0a0f',
+          name: 'Roleplay Forge',
+          short_name: 'Forge',
+          description: 'The AI roleplay workbench',
+          theme_color: '#191816',
+          background_color: '#191816',
           display: 'standalone',
           orientation: 'portrait',
           start_url: '/',

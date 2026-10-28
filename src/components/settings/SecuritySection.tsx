@@ -219,7 +219,7 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
       ) : (
         <div className="space-y-3 bg-void-950/80 p-4 rounded-xl border border-knight-800">
           <p className="text-xs text-knight-300 leading-relaxed">
-            To prevent credentials from being stored in plaintext in local storage, CardCrucible mandates a Master Passphrase to encrypt all API keys saved in local IndexedDB. Keys are encrypted with <strong>AES-256-GCM</strong> using <strong>PBKDF2 key derivation (600,000 iterations)</strong>.
+            To prevent credentials from being stored in plaintext in local storage, Roleplay Forge mandates a Master Passphrase to encrypt all API keys saved in local IndexedDB. Keys are encrypted with <strong>AES-256-GCM</strong> using <strong>PBKDF2 key derivation (600,000 iterations)</strong>.
           </p>
 
           <button

@@ -44,7 +44,7 @@ export const LabSubNav: React.FC = () => {
                 <img src={activeCard.data.avatar} alt="" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-[9px] font-bold text-maroon-400">
-                  {activeCard?.data.name?.substring(0, 2).toUpperCase() || 'CC'}
+                  {activeCard?.data.name?.substring(0, 2).toUpperCase() || 'RF'}
                 </span>
               )}
             </div>
@@ -77,7 +77,7 @@ export const LabSubNav: React.FC = () => {
         </div>
 
         {/* Sliding Sub-Nav Tabs */}
-        <div className="relative flex items-center bg-void-900/80 p-1 rounded-xl border border-knight-700/30 overflow-x-auto no-scrollbar">
+        <div className="relative flex items-center bg-void-900/80 p-1 rounded-xl border border-knight-700/30 overflow-x-auto no-scrollbar w-full sm:w-auto max-w-full">
           {/* Sliding indicator background */}
           <div
             className="absolute top-1 bottom-1 bg-gradient-to-r from-maroon-600/30 to-maroon-500/20 border border-maroon-500/50 rounded-lg shadow-sm transition-all duration-300 ease-out pointer-events-none"
@@ -94,7 +94,7 @@ export const LabSubNav: React.FC = () => {
                 key={tab.id}
                 ref={(el) => { tabsRef.current[idx] = el; }}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative z-10 flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors duration-200 touch-fast active:scale-95 whitespace-nowrap ${
+                className={`relative z-10 flex-1 min-w-0 flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-colors duration-200 touch-fast active:scale-95 whitespace-nowrap ${
                   isActive
                     ? 'text-mist-100'
                     : 'text-knight-400 hover:text-mist-200'

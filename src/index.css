@@ -1,183 +1,53 @@
 @import "tailwindcss";
-
 @theme {
-  --color-void-950: var(--theme-void-950);
-  --color-void-900: var(--theme-void-900);
-  --color-void-800: var(--theme-void-800);
-
-  --color-maroon-950: var(--theme-maroon-950);
-  --color-maroon-900: var(--theme-maroon-900);
-  --color-maroon-800: var(--theme-maroon-800);
-  --color-maroon-700: #4d0009;
-  --color-maroon-600: #66000c;
-  --color-maroon-500: #83001a;
-  --color-maroon-400: #a8283f;
-  --color-maroon-300: var(--theme-maroon-300);
-  --color-maroon-text: var(--theme-maroon-text);
-
-  --color-amber-950: var(--theme-amber-950);
-  --color-amber-900: var(--theme-amber-900);
-  --color-amber-800: var(--theme-amber-800);
-  --color-amber-700: var(--theme-amber-700);
-  --color-amber-600: var(--theme-amber-600);
-  --color-amber-500: var(--theme-amber-500);
-  --color-amber-400: var(--theme-amber-400);
-  --color-amber-300: var(--theme-amber-300);
-  --color-amber-200: var(--theme-amber-200);
-
-  --color-knight-900: var(--theme-knight-900);
-  --color-knight-700: var(--theme-knight-700);
-  --color-knight-500: var(--theme-knight-500);
-  --color-knight-400: var(--theme-knight-400);
-  --color-knight-300: var(--theme-knight-300);
-
-  --color-mist-100: var(--theme-mist-100);
-  --color-mist-200: var(--theme-mist-200);
-  --color-mist-300: var(--theme-mist-300);
+  --color-void-950: var(--theme-void-950); --color-void-900: var(--theme-void-900); --color-void-800: var(--theme-void-800);
+  --color-maroon-950: var(--theme-maroon-950); --color-maroon-900: var(--theme-maroon-900); --color-maroon-800: var(--theme-maroon-800); --color-maroon-700: var(--theme-maroon-700); --color-maroon-600: var(--theme-maroon-600); --color-maroon-500: var(--theme-maroon-500); --color-maroon-400: var(--theme-maroon-400); --color-maroon-300: var(--theme-maroon-300); --color-maroon-text: var(--theme-maroon-text);
+  --color-amber-950: var(--theme-amber-950); --color-amber-900: var(--theme-amber-900); --color-amber-800: var(--theme-amber-800); --color-amber-700: var(--theme-amber-700); --color-amber-600: var(--theme-amber-600); --color-amber-500: var(--theme-amber-500); --color-amber-400: var(--theme-amber-400); --color-amber-300: var(--theme-amber-300); --color-amber-200: var(--theme-amber-200);
+  --color-knight-900: var(--theme-knight-900); --color-knight-700: var(--theme-knight-700); --color-knight-500: var(--theme-knight-500); --color-knight-400: var(--theme-knight-400); --color-knight-300: var(--theme-knight-300);
+  --color-mist-100: var(--theme-mist-100); --color-mist-200: var(--theme-mist-200); --color-mist-300: var(--theme-mist-300);
 }
-
 @layer base {
   :root {
-    /* LIGHT MODE */
-    --theme-void-950: #f4f6f8; /* App bg */
-    --theme-void-900: #eef1f4; /* Secondary panels */
-    --theme-void-800: #ffffff; /* Cards, inputs */
-
-    --theme-maroon-950: #ffeef0; /* Subtle tinted panels */
-    --theme-maroon-900: #ffd3d9;
-    --theme-maroon-800: #ffaeb8;
-    --theme-maroon-300: #a8283f; /* Darker accent text for contrast on light bg (matches maroon-400) */
-    --theme-maroon-text: #83001a;
-
-    --theme-amber-950: #fef9c3; /* Light warm yellow/amber tint for bg-amber-950 */
-    --theme-amber-900: #fde68a; /* Light warm amber fill for bg-amber-900 */
-    --theme-amber-800: #f59e0b; /* Visible amber border for border-amber-800 */
-    --theme-amber-700: #d97706; /* Medium amber accent */
-    --theme-amber-600: #b45309; /* Dark amber for buttons */
-    --theme-amber-500: #92400e; /* Deep amber text/icon */
-    --theme-amber-400: #a15c00; /* High contrast dark amber for icons and labels */
-    --theme-amber-300: #854d0e; /* High contrast dark amber text for text-amber-300 */
-    --theme-amber-200: #713f12; /* High contrast dark brown/amber text for text-amber-200 */
-
-    --theme-knight-900: #e4e8e9;
-    --theme-knight-700: #d3d8d9; /* Borders */
-    --theme-knight-500: #9ba0ab;
-    --theme-knight-400: #6f7480; /* Muted text */
-    --theme-knight-300: #4a4e58;
-
-    --theme-mist-100: #0e0e0f; /* Primary text */
-    --theme-mist-200: #17171a;
-    --theme-mist-300: #202024;
+    color-scheme: light;
+    /* Soft parchment, oat, and warm ink. */
+    --theme-void-950:#f7f4ee; --theme-void-900:#eee8de; --theme-void-800:#fffdf8;
+    --theme-maroon-950:#f8ebe5; --theme-maroon-900:#f0d7ce; --theme-maroon-800:#e5b7a8; --theme-maroon-700:#7b3529; --theme-maroon-600:#944332; --theme-maroon-500:#b55641; --theme-maroon-400:#c96e58; --theme-maroon-300:#a74f3c; --theme-maroon-text:#984632;
+    --theme-amber-950:#fbf0ce; --theme-amber-900:#f4dfa1; --theme-amber-800:#d6a74f; --theme-amber-700:#a97624; --theme-amber-600:#95631d; --theme-amber-500:#815319; --theme-amber-400:#9a671e; --theme-amber-300:#76501c; --theme-amber-200:#684419;
+    --theme-knight-900:#e6ded2; --theme-knight-700:#d8cfc1; --theme-knight-500:#a79d90; --theme-knight-400:#797166; --theme-knight-300:#514b43;
+    --theme-mist-100:#292620; --theme-mist-200:#3b3730; --theme-mist-300:#514b43;
   }
-
   .dark {
-    /* DARK MODE (Original palette) */
-    --theme-void-950: #0e0e0f;
-    --theme-void-900: #17171a;
-    --theme-void-800: #202024;
-
-    --theme-maroon-950: #1a0003;
-    --theme-maroon-900: #260005;
-    --theme-maroon-800: #390007;
-    --theme-maroon-300: #c8677a;
-    --theme-maroon-text: #d68a9a;
-
-    --theme-amber-950: #451a03;
-    --theme-amber-900: #78350f;
-    --theme-amber-800: #92400e;
-    --theme-amber-700: #b45309;
-    --theme-amber-600: #d97706;
-    --theme-amber-500: #f59e0b;
-    --theme-amber-400: #fbbf24;
-    --theme-amber-300: #fcd34d;
-    --theme-amber-200: #fde68a;
-
-    --theme-knight-900: #2b2d33;
-    --theme-knight-700: #4a4e58;
-    --theme-knight-500: #6f7480;
-    --theme-knight-400: #9ba0ab;
-    --theme-knight-300: #b6bac2;
-
-    --theme-mist-100: #f0f4f5;
-    --theme-mist-200: #e4e8e9;
-    --theme-mist-300: #d3d8d9;
+    color-scheme: dark;
+    /* Charcoal ink warmed by umber and a restrained clay accent. */
+    --theme-void-950:#191816; --theme-void-900:#22211e; --theme-void-800:#2c2a26;
+    --theme-maroon-950:#2c201c; --theme-maroon-900:#3b2822; --theme-maroon-800:#53352b; --theme-maroon-700:#71382b; --theme-maroon-600:#894431; --theme-maroon-500:#a95540; --theme-maroon-400:#cf7964; --theme-maroon-300:#df9a86; --theme-maroon-text:#e1a08e;
+    --theme-amber-950:#342816; --theme-amber-900:#4b371b; --theme-amber-800:#705022; --theme-amber-700:#96702b; --theme-amber-600:#bc9139; --theme-amber-500:#ddb45e; --theme-amber-400:#e8c473; --theme-amber-300:#efd18b; --theme-amber-200:#f4dfaa;
+    --theme-knight-900:#302d28; --theme-knight-700:#47423a; --theme-knight-500:#756d62; --theme-knight-400:#a79e91; --theme-knight-300:#c9c0b4;
+    --theme-mist-100:#f2ede4; --theme-mist-200:#e2d9cc; --theme-mist-300:#cec4b6;
   }
-
-  html, body {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    background-color: var(--color-void-950);
-    color: var(--color-mist-100);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  }
-  
-  /* Input fields allow text selection */
-  input, textarea, [contenteditable="true"] {
-    user-select: text;
-  }
+  html, body { min-height:100%; touch-action:manipulation; -webkit-tap-highlight-color:transparent; user-select:none; background-color:var(--theme-void-950); color:var(--theme-mist-100); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; font-feature-settings:"cv02","cv03","cv04","cv11"; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+  button:not(:disabled), [role="button"] { cursor:pointer; }
+  button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, [role="button"]:focus-visible { outline:2px solid var(--theme-maroon-400); outline-offset:3px; }
+  input, textarea, select, [contenteditable="true"] { user-select:text; accent-color:var(--theme-maroon-500); }
+  ::selection { color:var(--theme-mist-100); background:var(--theme-maroon-800); }
 }
-
-/* Fast touch response helper */
-.touch-fast {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Adaptive Panel & Subview Utilities */
+.touch-fast { touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 @utility subview-container {
-  background-color: var(--theme-void-950);
-  color: var(--theme-mist-100);
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  background-color:var(--theme-void-950);
+  background-image:radial-gradient(ellipse at 85% 0%,color-mix(in srgb,var(--theme-maroon-950) 54%,transparent),transparent 34rem);
+  color:var(--theme-mist-100); transition:background-color .22s ease,color .22s ease;
 }
-
 @utility panel-box {
-  background-color: var(--theme-void-900);
-  border: 1px solid var(--theme-knight-700);
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  background-color:var(--theme-void-900);
+  border:1px solid color-mix(in srgb,var(--theme-knight-700) 82%,transparent);
+  transition:background-color .22s ease,border-color .22s ease,box-shadow .22s ease;
 }
-
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-knight-700);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-knight-500);
-}
-
-/* Toast Notification Keyframes */
-@keyframes toast-slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes toast-progress {
-  from {
-    width: 100%;
-  }
-  to {
-    width: 0%;
-  }
-}
-
-.animate-toast-enter {
-  animation: toast-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-toast-progress {
-  animation: toast-progress linear forwards;
-}
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:color-mix(in srgb,var(--theme-knight-700) 86%,transparent); border-radius:9999px; }
+::-webkit-scrollbar-thumb:hover { background:var(--theme-knight-500); }
+@keyframes toast-slide-in { from { opacity:0; transform:translateY(12px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes toast-progress { from { width:100%; } to { width:0%; } }
+.animate-toast-enter { animation:toast-slide-in .25s cubic-bezier(.16,1,.3,1) forwards; }
+.animate-toast-progress { animation:toast-progress linear forwards; }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; } }

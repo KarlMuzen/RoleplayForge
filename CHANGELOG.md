@@ -2,6 +2,11 @@
 
 ## Unreleased — Documentation baseline (2026-10-28)
 
+### Visual refresh
+- Introduce a warm parchment-and-charcoal theme with a muted clay accent.
+- Clarify Roleplay Forge branding and label mobile primary navigation.
+- Improve mobile workspace tab fit and reduce visual motion.
+
 - Documented the Roleplay Forge product direction while explicitly identifying the legacy CardCrucible app and package branding that remains in the current source.
 - Added product vision, phased roadmap, platform/format support matrix, testing strategy and a repository checkpoint.
 - Recorded the current CI boundary: dependency installation, lint/type checking and tests run; the workflow does not yet run a production build.
