@@ -35,8 +35,8 @@ describe('persisted format invariants', () => {
     expect(db.cards.schema.primKey.src).toBe('++id');
     expect(db.cards.schema.indexes.map((index) => index.src).sort()).toEqual([
       '*tags',
-      'creator',
       'creation_date',
+      'creator',
       'modification_date',
       'name',
       'order',
