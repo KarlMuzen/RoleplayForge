@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useCardStore } from '../store/useCardStore';
 import { useModalA11y } from '../hooks/useModalA11y';
 import { ShieldCheck, Eye, EyeOff, X, KeyRound, Loader2, Fingerprint, Copy, CheckCircle2 } from 'lucide-react';
-import { PASSKEY_ONLY_SETUP_SENTINEL } from '../utils/passkeyCrypto';
 
 export const PassphraseSetupModal: React.FC = () => {
   const {
@@ -81,7 +80,7 @@ export const PassphraseSetupModal: React.FC = () => {
     const waitingRequest = current.passphraseSetupRequest;
     try {
       await current.confirmRecoveryKeySaved();
-      waitingRequest?.resolve(PASSKEY_ONLY_SETUP_SENTINEL);
+      waitingRequest?.resolve({ kind: 'passkey-only' });
       useCardStore.setState({ passphraseSetupRequest: null, passphraseSetupError: null });
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : 'Could not save recovery-key confirmation. Keep this screen open and retry.');
@@ -108,7 +107,7 @@ export const PassphraseSetupModal: React.FC = () => {
     if (passphrase !== confirmPassphrase) return setLocalError('Passphrases do not match.');
 
     setIsProcessing(true);
-    setTimeout(() => passphraseSetupRequest?.resolve(passphrase), 50);
+    setTimeout(() => passphraseSetupRequest?.resolve({ kind: 'passphrase', passphrase }), 50);
   };
 
   const strength = getStrength(passphrase);
