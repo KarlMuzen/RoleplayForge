@@ -101,6 +101,9 @@ export interface ProfileSlice {
 export interface SessionSlice {
   // Crypto & Session State
   isPassphraseSet: boolean;
+  isPasskeyOnly: boolean;
+  hasRecoveryKey: boolean;
+  pendingRecoveryCode: string | null;
   isUnlocked: boolean;
   cryptoKey: CryptoKey | null;
   isPasskeySupported: boolean;
@@ -111,7 +114,9 @@ export interface SessionSlice {
   passphraseSetupError: string | null;
   checkPassphraseSetup: () => Promise<void>;
   setupPassphrase: (passphrase: string) => Promise<void>;
+  setupPasskeyProtection: () => Promise<string | null>;
   unlockSession: (passphrase: string) => Promise<boolean>;
+  unlockWithRecoveryCode: (recoveryCode: string) => Promise<boolean>;
   requestSessionUnlock: () => Promise<boolean>;
   enrollPasskeyUnlock: () => Promise<boolean>;
   unlockWithPasskeyAction: () => Promise<boolean>;
