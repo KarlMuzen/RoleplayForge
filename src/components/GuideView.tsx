@@ -179,19 +179,23 @@ export const GuideView: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-8 pb-24">
-      {/* Hero Header */}
-      <div className="bg-void-900 border border-knight-700/40 p-6 md:p-8 rounded-3xl shadow-sm text-center md:text-left relative overflow-hidden">
-        <div className="absolute -right-12 -top-12 w-64 h-64 bg-maroon-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-8 pb-24 max-h-[calc(100dvh-1.5rem)] md:max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain">
+      <div className="sticky top-0 z-30 -mt-4 md:-mt-6 flex justify-end bg-void-950/95 backdrop-blur-xl py-2">
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 z-20 p-2 bg-void-800/80 hover:bg-knight-700 text-knight-400 hover:text-mist-100 rounded-full transition-colors border border-knight-700"
+          aria-label="Close Guide"
           title="Close Onboarding Guide"
+          className="min-w-11 min-h-11 flex items-center justify-center bg-void-800 hover:bg-knight-700 text-knight-200 rounded-xl transition-colors border border-knight-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-maroon-400"
         >
           <X className="w-5 h-5" />
         </button>
+      </div>
+
+      {/* Hero Header */}
+      <div className="bg-void-900 border border-knight-700/40 p-5 sm:p-6 md:p-8 rounded-3xl shadow-sm text-center md:text-left relative overflow-hidden">
+        <div className="absolute -right-12 -top-12 w-64 h-64 bg-maroon-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-maroon-950/80 border border-maroon-800/80 rounded-full text-maroon-300 text-xs font-medium">
+          <div className="inline-flex max-w-full items-center justify-center gap-2 px-3 py-2 bg-maroon-950/80 border border-maroon-800/80 rounded-full text-maroon-300 text-xs font-medium">
             <GraduationCap className="w-4 h-4 text-maroon-400" />
             <span>Roleplay Forge Field Guide & Reference</span>
           </div>
