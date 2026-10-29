@@ -1,6 +1,6 @@
 # Task 010: Regenerate, edit and delete the last message in Chat
 
-Status: in progress
+Status: done
 Review: skip
 Goal: Once a chat has started, the last message has three actions: regenerate the reply, edit the text, delete it. This lets a card author retry a reply without resetting the whole chat.
 Files to touch: `src/components/ChatPreviewModal.tsx`, `src/utils/chatHistory.ts` (new), `test/chatHistory.test.ts` (new)
@@ -22,16 +22,16 @@ Done when: CI green. Owner on the preview, phone: after sending a message, the r
 Decisions: 18.
 
 ## Progress (executor, update every commit)
-Done: Added all five pure `chatHistory.ts` helpers and tests; wired the last-message-only action row, inline edit/save/cancel, delete, and regenerate through the same generation/error/typing path as Send. Header and Task 009 input bar remain intact.
-Left: Review scope and code, open PR, verify `test-and-lint`, and merge only when green.
-Next action: Inspect the current diff and create the Task 010 PR.
+Done: Added all five pure `chatHistory.ts` helpers and tests; wired the last-message-only action row, inline edit/save/cancel, delete, and regenerate through the same generation/error/typing path as Send. Header and Task 009 input bar remain intact. PR #13 squash-merged.
+Left: None.
+Next action: Task 010 is complete; wait for the next task.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Preview link: 
-Deviations from the card: 
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/13
+Checks run by executor: Not run locally; repository CI is authoritative.
+CI: Passed `test-and-lint` (lint, tests, production build), run 40845490781, on `97f74f76be9710741f3abff6ad100fd27ddc21b8`.
+Preview link: n/a (Decision 19)
+Deviations from the card: Auto-merge was rejected with "Pull request is in clean status"; manually squash-merged after `test-and-lint` passed, per Decision 19.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
