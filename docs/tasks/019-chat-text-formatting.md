@@ -51,7 +51,7 @@ Next action: Claude reviews PR #21 and confirms the diff contains no copied Sill
 ## Result (executor, when finished)
 Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/21
 Checks run by executor: Not run locally; the environment could not resolve github.com for a git clone. GitHub Actions is the authoritative CI check.
-CI: Passed `test-and-lint` (lint, tests, production PWA build), run 40874635269, on PR head `5ba77af0ac2cb9e3c4b6ebfb15fecf2c96aabd3b`. The task-card-only result update is documented separately and will be rechecked on the new head.
+CI: Passed `test-and-lint` (lint, tests, production PWA build): run 40874635269 passed on the implementation head `5ba77af0ac2cb9e3c4b6ebfb15fecf2c96aabd3b`, and run 40874838635 passed on the PR head after the task-card result update `19c618b2268b9d7acb3f2e1c3dcb4060baf94c12`.
 Preview link: n/a (Decision 19)
 Deviations from the card:
 
