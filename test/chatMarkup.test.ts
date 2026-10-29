@@ -78,6 +78,12 @@ describe('parseChatMarkup', () => {
     ]);
   });
 
+  it('does not format empty inline-code pairs', () => {
+    expect(tokenShape(parseDisplayText('``'))).toEqual([
+      { type: 'text', text: '``' },
+    ]);
+  });
+
   it('formats strikethrough', () => {
     expect(tokenShape(parseDisplayText('~~gone~~'))).toEqual([
       { type: 'strike', text: 'gone' },
