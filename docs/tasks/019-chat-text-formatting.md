@@ -44,14 +44,14 @@ Done when: CI green; Claude's review is Approved (one diff read, plus a check th
 Decisions: 2 (pure logic in `src/core/`), 18 (chat is a card test bench).
 
 ## Progress (executor, update every commit)
-Done: Verified updated `main` at `01ab1a5eafab3ff239f5b378dd75173ef9c0eda8`; Task 018 is merged. Created `wip/019`; implemented the pure display-only formatter/parser, wired the specified renderer and user-message call site, and added no-DOM tests for all required cases plus empty inline-code pairs and the nesting-depth limit.
-Left: Open PR, verify CI, and request the required Claude review.
-Next action: Open PR #21, confirm `test-and-lint` is green, then hand it to Claude for review. Do not merge pending approval.
+Done: Implemented `fixChatMarkup` and `parseChatMarkup` as pure functions, wired only `renderRoleplayText` and the user-message call site, and added no-DOM tests for the required cases plus empty inline-code pairs and the nesting-depth limit. Opened PR #21; GitHub Actions `test-and-lint` passed.
+Left: Required Claude review and approval before merge.
+Next action: Claude reviews PR #21 and confirms the diff contains no copied SillyTavern code. Do not merge pending approval.
 
 ## Result (executor, when finished)
-Pull request:
-Checks run by executor:
-CI:
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/21
+Checks run by executor: Not run locally; the environment could not resolve github.com for a git clone. GitHub Actions is the authoritative CI check.
+CI: Passed `test-and-lint` (lint, tests, production PWA build), run 40874635269, on PR head `5ba77af0ac2cb9e3c4b6ebfb15fecf2c96aabd3b`. The task-card-only result update is documented separately and will be rechecked on the new head.
 Preview link: n/a (Decision 19)
 Deviations from the card:
 
