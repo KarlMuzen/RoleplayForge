@@ -18,15 +18,15 @@ Decisions: 16.
 
 ## Progress (executor, update every commit)
 Done: Added the shared `CardAvatar` component with source-specific error state, initials and User-icon fallback, and the site-specific empty label/sizing props. Replaced the Library and Details cover blocks and added component tests for the required fallback cases.
-Left: Open PR, verify CI, and record the final result.
-Next action: Open PR to main and check CI.
+Left: Verify CI for the final task-card update and confirm the squash merge.
+Next action: Enable auto-merge once the new required check is pending.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Preview link: 
-Deviations from the card: 
+Pull request: #4 — https://github.com/KarlMuzen/RoleplayForge/pull/4
+Checks run by executor: Not run locally; `git clone` could not resolve `github.com`. GitHub CI is authoritative.
+CI: Green on code commit `e01677cf98a1eb7cd6ddce506cc8a580ab712609`: lint, tests (including CardAvatar tests), and production build passed. The final task-card update requires a fresh CI run before merge.
+Preview link: https://roleplayforge-git-wip-002-xiorolab.vercel.app
+Deviations from the card: None.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
