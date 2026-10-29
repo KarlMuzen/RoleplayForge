@@ -1,6 +1,6 @@
 # Task 016: Vercel builds only for `main`
 
-Status: todo
+Status: in progress
 Review: required
 Goal: Vercel starts a build only for a code commit on `main`. Every other branch is skipped by the ignore command, so no branch, current or future, can use the Hobby plan's 100 deployments per day.
 Files to touch: `vercel.json`
@@ -17,16 +17,19 @@ Done when: CI green and Claude's review is Approved. After the merge, Claude che
 Decisions: 17, 19, 20, 22.
 
 ## Progress (executor, update every commit)
-Done: nothing yet.
-Left: everything.
-Next action: confirm the two documentation facts, then edit `vercel.json`.
+Done: Confirmed the two Vercel documentation facts, changed only `ignoreCommand`, preserved `git.deploymentEnabled` and `headers`, and opened PR #18. JSON parsing passed via `node -e`; `test-and-lint` passed on current code commit `200d758933f8ae5dac13e36e6dcab323a05aac15` (run 40862800567) and latest PR head `4c1a9c2da6aff9417bc811da26b9adb95b6b337a` (run 40863064296).
+Left: Required Claude review and approval before merge.
+Next action: Review PR #18; do not merge until the card's Review is Approved.
 
 ## Result (executor, when finished)
-Pull request:
-Checks run by executor:
-CI:
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/18
+Checks run by executor: `node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"` passed against the candidate `vercel.json` contents.
+CI: Passed `test-and-lint` (lint, tests, production build), run 40862800567, on `200d758933f8ae5dac13e36e6dcab323a05aac15`.
+Vercel documentation confirmed: `VERCEL_GIT_COMMIT_REF` is the triggering Git branch, https://vercel.com/docs/environment-variables/system-environment-variables (section `VERCEL_GIT_COMMIT_REF`); `ignoreCommand` exit code 0 skips the build and exit code 1 continues, https://vercel.com/docs/project-configuration/vercel-json (section `ignoreCommand`).
 Preview link: n/a (Decision 19)
-Deviations from the card:
+Deviations from the card: None. Review is required; waiting for Claude approval before merge.
 
 ## Review (Claude, required)
-Pending.
+Approved (2026-10-29). Diff against `main` is `vercel.json` (one line, `ignoreCommand` only) plus this card. `headers` and `git.deploymentEnabled` unchanged. JSON valid. Shell-tested the exact command: on a code commit, ref `main` exits 1 (build); refs `wip/016`, `other`, and empty exit 0 (skip). On a docs-only commit with ref `main` it exits 0 (skip), as before. `test-and-lint` green on the PR head (run 40863271679).
+Residual risk, not blocking: an empty `VERCEL_GIT_COMMIT_REF` also skips. Git-triggered builds always set it. The manual recovery in Decision 22 uses `gitSource` with `ref: main`, so it is unaffected. A deploy made from uploaded files with no Git ref is untested against `ignoreCommand`.
+Post-merge check (Claude): the squash commit touches `vercel.json`, so it is a code commit and must produce a READY production deployment. If none appears, deploy by hand per Decision 22.
