@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-29 · **`main` head when written:** `cd2b164`
+**Last updated:** 2026-10-29 · **`main` head when written:** `bad5b0e`
 
 ## Goal
 
@@ -16,7 +16,7 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 - Scripts: `npm run lint && npm test && npm run build`. UI audit: `scripts/ui-audit.py`.
 - CI: `.github/workflows/ci.yml`, one job `test-and-lint` (lint, tests, build). Runs on pull requests to `main` and on non-docs pushes to `main`. Not on other branches until a pull request exists.
 - GitHub ruleset `main-ci-gate` targets `main`. Bypass: repository admin and the Claude GitHub connector (seen in owner screenshot, 2026-10-29).
-- Vercel (team `xiorolab`, project `roleplayforge`, Hobby plan, 100 deployments per day): production from `main` at `roleplayforge.vercel.app` (the only domain). `ignoreCommand` skips docs-only commits. Deployments for `wip/*` branches are switched off (Task 011, merged `7ad5605`, Decision 19).
+- Vercel (team `xiorolab`, project `roleplayforge`, Hobby plan, 100 deployments per day): production from `main` at `roleplayforge.vercel.app` (the only domain). `ignoreCommand` skips docs-only commits. Deployments for `wip/*` branches are switched off (Task 011, merged `7ad5605`, Decision 19). On 2026-10-29 production was brought up to `c19deac` (Task 015) by a manual deploy through the Vercel connector (see Decision 22).
 
 ## Decisions
 
@@ -41,27 +41,28 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 19. The only merge gate is `test-and-lint`. The Vercel status is informational: red, failed or missing never blocks a squash merge, and the executor merges by hand when auto-merge is rejected. Vercel Hobby allows 100 deployments per day; on 2026-10-29 the preview of `wip/008` was rejected ("retry in 24 hours"), so Vercel deployments for `wip/*` branches are switched off (Task 011). With no previews, the owner checks production in a batch (Decision 17). Source: https://vercel.com/docs/plans/hobby.
 20. No host or origin move for production. The app stores cards in IndexedDB and passkeys use the hostname as WebAuthn relying-party id (`src/utils/passkeyCrypto.ts`), so a new domain starts empty and old passkeys stop working. A move needs a tested backup/restore path first. A second host used only for testing (separate origin, separate data) is allowed; the repo already has `wrangler.toml` and `public/_headers` for Cloudflare Pages, not verified as working.
 21. Details tab order (HANDOFF step 3, spec UX-DET-1): toolbar (Save, Undo, Redo, Variant), one compact token + health row, then Identity (name, description, personality, scenario), Greetings, Lorebook summary, Advanced prompts, Card Info (creator, version, nickname, tags), and last one collapsed "Cover art and export". Cards 013-015, in that order, because they share `EditorView.tsx`. The export sheet and History sheet (UX-DET-2) come with the ContextBar, not now.
+22. Vercel deploys only for code commits on `main` (Task 016 closes the last gap with an ignore command that skips any other branch). Project name stays `roleplayforge` (Decision 20). Vercel sometimes never starts a build for a `main` push (no record at all for 010, 011, 014, 015 on 2026-10-29; usage meters were far below limits, so the cause is unknown). Recovery: with the Vercel connector, `create_deployment` for project `roleplayforge`, target `production`, `gitSource` `{type: github, org: KarlMuzen, repo: RoleplayForge, ref: main, sha: <latest CODE commit>}`. Use a code commit, not the docs commit on top of it: a docs-only head is skipped by `ignoreCommand`. Check afterwards that the alias `roleplayforge.vercel.app` points to the new deployment.
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-1. **Executor (ChatGPT):** in this order, each after the previous is merged: `docs/tasks/012` (Chat menu fixes, one file), `013` (Details: cover art and export to a collapsed bottom section), `014` (Details: compact token and health row), `015` (Details: Card Info section below the writing fields). All `Review: skip`. 013, 014 and 015 share `EditorView.tsx`, so never run two at once. Merge on a green `test-and-lint` only (Decision 19).
-2. **Claude, next:** plan HANDOFF step 4 (one sticky ContextBar replacing `WorkspaceSubNav` and `LabSubNav`) as task cards. When 015 is merged, the Decision 17 hold on new tooling ends; Claude then decides on Dependabot and CI additions. HANDOFF step 3 is done once 015 is merged.
+1. **Executor (ChatGPT):** `docs/tasks/016` (Vercel builds only for `main`, one file, `Review: required`). Open a pull request, wait for green `test-and-lint`, then stop and report; Claude reviews the diff before the merge (Decision 15). Merge on green CI only (Decision 19).
+2. **Claude, next:** plan HANDOFF step 4 (one sticky ContextBar replacing `WorkspaceSubNav` and `LabSubNav`) as task cards. HANDOFF step 3 is done (cards 012-015 merged), so the Decision 17 hold on new tooling has ended; Claude decides on Dependabot and CI additions. After Task 016 merges, confirm the merge commit produced a READY production deployment.
 
-Cards 001-011 are merged (quick wins, CardAvatar, rating-filter and Assist/Chat layout, Chat header menu, multi-line message box, last-message actions, no Vercel deployments for `wip/*`). Owner phone check of 001-010 is pending and is not a merge gate (Decision 17).
+Cards 001-015 are merged (quick wins, CardAvatar, rating-filter and Assist/Chat layout, Chat header menu, multi-line message box, last-message actions, no Vercel deployments for `wip/*`, Chat menu fixes, Details reorder). Owner phone check of 001-015 is pending and is not a merge gate (Decision 17).
 
-HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Step 3 rewrites the Details components anyway, so do it per screen after step 3, not before.
+HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Step 3 rewrote the Details components, so do it per screen now, not before.
 
 Verify `main` head first.
 
 ## In progress
 
-See open pull requests (branch `wip/NNN`). None known.
+See open pull requests (branch `wip/NNN`). None known. Task 016 card is committed and not started.
 
 ## Done
 
-See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11 (011), #12 (009), #13 (010). Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
+See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11 (011), #12 (009), #13 (010), #14 (012), #15 (013), #16 (014), #17 (015). Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
@@ -75,19 +76,17 @@ See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11
 
 ## Known bugs and risks
 
-- Details first screen shows no writing fields; token header wraps on real cards. Cards 013-015.
-- Task 008 follow-ups (Group Preview badge position, name lost on outside tap, blank profile option) are still present on `main`; Card 012.
 - Chat: `**bold**` shows stray asterisks (`renderRoleplayText` only handles `*action*`). Not carded.
+- Details chip reads "1 alerts" with exactly one warning (wording given in Task 014). Cards 012-015 are verified by CI and code diff only; whether the Details token row stays on one line at 393px is unchecked on a phone.
 - Chat tasks 008-010 are verified by CI only; not yet checked on a phone.
-- Vercel (observed through the Vercel connector, 2026-10-29): production deploys of `0bbf4dd` (Task 008) and `6afe7af` (Task 009) are READY. There is no deployment record for `7ad5605` (Task 011) or `90bfda6` (Task 010), nor for recent docs commits. Cause unverified (rate limit suspected). So production may not have Task 010 (regenerate, edit, delete on the last message) yet; the next code merge should carry it. Unverified: whether canceled docs-only deployments count toward the 100, and whether Pro (6,000 per day) lifts an active limit at once.
-- Auto-merge is rejected by GitHub on most pull requests (#4-#13). The executor merges by hand once `test-and-lint` is green. Owner to check Settings, General, Pull Requests, "Allow auto-merge".
+- Vercel (checked 2026-10-29): production now serves `c19deac` (Task 015) via manual deploy `dpl_AnKFe27…`, so Tasks 010-015 are live. Vercel never created deployments for the pushes of 010, 011, 014 and 015; 012 and 013 deployed within seconds. Usage meters are far below limits and about 62 deployments were recorded in 24 hours (limit 100), so a rate limit is not shown. A canceled record for the docs commit `bad5b0e` appeared about 25 minutes after its push, which suggests late or dropped push delivery. Cause unverified. Not checkable by Claude: GitHub app repository access (owner: GitHub Settings, Applications, Installed GitHub Apps, Vercel). Task 016 plus a check after each merge covers it.
+- Auto-merge is rejected by GitHub on most pull requests (#4-#17) with "Pull request is in clean status". That message means the PR was already mergeable when the executor tried (CI had finished), so it is probably timing, not the repository setting. The executor merges by hand once `test-and-lint` is green. Unverified: Settings, General, Pull Requests, "Allow auto-merge" (owner only).
 - Tasks 001-010 are verified by CI only; owner phone check pending. Tasks 005-006 (accessible names) are not visible by eye; the UI audit could not be run by the executor.
 - Lorebook delete: not verified whether it confirms.
 - `usePWAUpdate` may fail on an undefined registration (seen when service workers are blocked; verify before changing).
 - `selectCardForEditing` does not flush pending autosave on the Library tap path (D-13).
 - Accessibility: light theme has more contrast failures than dark. 5 unlabelled selects (Task 005 merged), 3 unnamed buttons (Task 006 merged); unverified until the UI audit runs.
 - CI skips docs-only pushes, so the required check cannot report on them. Docs pushes to `main` work only through the ruleset bypass. The ChatGPT connector was not seen on the bypass list; it uses pull requests.
-- `docs/PROJECT_STATUS.md` header still names `13d4442` as the checkpoint; `main` is later. Refresh when next touched.
 - Unverified: Vercel runtime headers/CSP in production, Android installed-PWA behavior, iOS Safari, passkey flow on phone, Ollama on `localhost:11434` from https.
 - Adapters and simulators depend on SillyTavern/Chub behavior that can change; each needs a last-tested date.
 
