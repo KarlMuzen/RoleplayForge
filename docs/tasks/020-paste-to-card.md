@@ -64,14 +64,14 @@ Done when: CI green; Claude's review is Approved (one diff read; check that noth
 Decisions: 1 (no silent data loss), 2, 7 (nothing leaves the device here).
 
 ## Progress (executor, update every commit)
-Done: Verified main at ed6f285; fast-forwarded wip/020 to that head. Added the offline paste reader, modal, Library menu entry, and requested unit tests in the working change set.
-Left: Commit the change set, open one PR, and wait for green test-and-lint.
-Next action: Open the PR and verify CI.
+Done: Implementation committed as c9c3a6a; PR #22 opened.
+Left: Wait for green test-and-lint, fix failures within the retry cap, and report for required Claude review.
+Next action: Verify CI on PR #22; do not merge.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Deviations from the card: 
+Pull request: #22 — https://github.com/KarlMuzen/RoleplayForge/pull/22
+Checks run by executor: Not run locally; clone was blocked because github.com DNS was unavailable. GitHub CI is authoritative.
+CI: Pending on PR #22.
+Deviations from the card: None.
 
 ## Review (Claude, required)
