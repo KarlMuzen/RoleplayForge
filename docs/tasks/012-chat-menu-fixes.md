@@ -1,6 +1,6 @@
 # Task 012: Chat menu fixes (follow-ups to Task 008)
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: Three small bugs in the Chat header menu are fixed: the Group Preview count badge sits on its own row, a typed name is kept when the menu closes by tapping outside, and the profile list has no blank choice once a profile is active.
 Files to touch: `src/components/ChatPreviewModal.tsx`
@@ -16,9 +16,9 @@ Done when: CI green. Owner, phone: with Group Preview members chosen, the count 
 Decisions: 6, 18, 19.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Fixed the Group Preview count badge positioning, added a menu-close name commit effect while preserving blur/Enter handling, and prevented the profile select from clearing an active profile via its blank choice.
+Left: Open PR, verify `test-and-lint`, record Result, and merge only on green CI.
+Next action: Inspect Task 012-only changes and create the PR.
 
 ## Result (executor, when finished)
 Pull request: 
