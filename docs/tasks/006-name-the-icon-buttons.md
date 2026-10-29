@@ -14,15 +14,15 @@ Decisions: HANDOFF step 2.
 
 ## Progress (executor, update every commit)
 Done: Added accessible names to the two Assist buttons (`Generate cover`, `Send message`) and the Settings API-key visibility toggle (`Show API key` / `Hide API key`). Each label matches its handler; no visuals or handlers changed.
-Left: Open PR, verify CI, and record the final result.
-Next action: Open PR to main.
+Left: Verify CI for the final task-card update, retry auto-merge, and confirm the squash merge.
+Next action: Enable auto-merge when the new required check is pending.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Preview link: 
-Deviations from the card: 
+Pull request: #8 — https://github.com/KarlMuzen/RoleplayForge/pull/8
+Checks run by executor: Not run locally; `git clone` could not resolve `github.com`. `scripts/ui-audit.py` was not run locally for the same reason.
+CI: `test-and-lint` passed on implementation commit `3896f7a1489d56571b1df0506675c79c041f4214` (lint, tests, production build). The final task-card update will trigger a fresh required check before merge.
+Preview link: https://roleplayforge-git-wip-006-xiorolab.vercel.app
+Deviations from the card: Exactly three unnamed controls were identified and named: `AssistantView.tsx:372` — `Generate cover`; `AssistantView.tsx:549` — `Send message`; `ConnectionProfilesSection.tsx:562` — `Show API key` / `Hide API key`. The local UI audit could not be run. GitHub rejected the first auto-merge request with “Pull request is in clean status”; it will be retried during the fresh CI run, with manual squash merge as fallback.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
