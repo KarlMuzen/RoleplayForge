@@ -1,6 +1,6 @@
 # Task 017: One ContextBar replaces WorkspaceSubNav and LabSubNav
 
-Status: not started
+Status: in progress
 Review: required
 Goal: Forge and Test screens share one sticky two-row bar. Row 1: card avatar and name, incomplete-card checklist, Pre-Flight Audit, Chat (phone), Help. Row 2: section tabs, each at least 44px tall. The bar clears the phone status bar in the installed app.
 Files to touch: new `src/components/ContextBar.tsx`; `src/App.tsx`; delete `src/components/WorkspaceSubNav.tsx` and `src/components/LabSubNav.tsx`; rename `test/WorkspaceSubNav.test.tsx` to `test/ContextBar.test.tsx`.
@@ -19,16 +19,18 @@ Done when: CI green; no remaining import of the old components (`grep -r "SubNav
 Decisions: 5, 6, 17, 19, 24.
 
 ## Progress (executor, update every commit)
-Done:
-Left:
-Next action:
+Done: Verified `main` at `802e00803d0e4e3e9ced497f4b71768e8ca7e217`; created `wip/017`; added `ContextBar.tsx`, replaced the two App nav slots with one shared component, removed both old sub-nav components, and replaced the old sub-nav test with ContextBar regression coverage. Opened PR #19; GitHub Actions `test-and-lint` passed.
+Left: Required Claude review before merge.
+Next action: Claude reviews PR #19. Do not merge until the task card's Review is Approved.
 
 ## Result (executor, when finished)
-Pull request:
-Checks run by executor:
-CI:
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/19
+Checks run by executor: Not run locally; the environment could not resolve github.com for a git clone. GitHub Actions is the authoritative CI check.
+CI: Passed `test-and-lint` (lint, tests, production PWA build), run 40865712441, on PR head `470850d0dead458f024b3a368118e25df76863f6`. The result-record update is documentation-only.
 Preview link: n/a (Decision 19)
-Deviations from the card:
+Deviations from the card: None.
 
 ## Review (Claude, if required)
-Pending
+Approved (2026-10-29). Diff reviewed: `ContextBar.tsx`, `App.tsx`, deleted `WorkspaceSubNav.tsx` and `LabSubNav.tsx`, renamed test. Matches the card point by point: tab ids and labels, checklist popover (aria, Escape, outside tap, 44px targets) now also in Test mode, Pre-Flight only on Forge with a card, phone-only Chat, Help 44px, `aria-current="page"`, `min-h-11` tabs, safe-area top padding. No `SubNav` reference left in `src` or `test`. `test-and-lint` green on the PR head (run 40865957160).
+Not verified (no phone or browser): the bar is now about 120px tall on a phone (two 44px rows plus padding), up from about 85px. On a 393px screen the card name may truncate to a few letters because Pre-Flight, Chat, Help and the checklist button share row 1. The checklist popover is anchored to the checklist button, as before, so it may run past the right edge when the name is long.
+Follow-up (new card, not a change to 017): after the owner's phone check, decide whether to move Pre-Flight and Chat into the overflow menu planned for the next ContextBar card and anchor the popover to the bar edge.

@@ -7,8 +7,7 @@ import { PassphraseSetupModal } from './components/PassphraseSetupModal';
 import { GuideView } from './components/GuideView';
 import { ChatPreviewModal } from './components/ChatPreviewModal';
 import { AlertDialogModal } from './components/AlertDialogModal';
-import { WorkspaceSubNav } from './components/WorkspaceSubNav';
-import { LabSubNav } from './components/LabSubNav';
+import { ContextBar } from './components/ContextBar';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PreFlightAuditModal } from './components/PreFlightAuditModal';
 import { ToastContainer } from './components/ToastContainer';
@@ -69,8 +68,7 @@ export default function App() {
       <Navigation />
 
       <main className="flex-1 overflow-y-auto min-h-screen pb-28 md:pb-0">
-        {isWorkspaceTab && <WorkspaceSubNav />}
-        {isLabTab && <LabSubNav />}
+        {(isWorkspaceTab || isLabTab) && <ContextBar />}
         <ErrorBoundary resetKey={activeTab}>
           <Suspense fallback={
             <div className="flex-1 flex items-center justify-center p-8 min-h-screen">
