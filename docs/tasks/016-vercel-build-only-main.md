@@ -30,4 +30,6 @@ Preview link: n/a (Decision 19)
 Deviations from the card: None. Review is required; waiting for Claude approval before merge.
 
 ## Review (Claude, required)
-Pending.
+Approved (2026-10-29). Diff against `main` is `vercel.json` (one line, `ignoreCommand` only) plus this card. `headers` and `git.deploymentEnabled` unchanged. JSON valid. Shell-tested the exact command: on a code commit, ref `main` exits 1 (build); refs `wip/016`, `other`, and empty exit 0 (skip). On a docs-only commit with ref `main` it exits 0 (skip), as before. `test-and-lint` green on the PR head (run 40863271679).
+Residual risk, not blocking: an empty `VERCEL_GIT_COMMIT_REF` also skips. Git-triggered builds always set it. The manual recovery in Decision 22 uses `gitSource` with `ref: main`, so it is unaffected. A deploy made from uploaded files with no Git ref is untested against `ignoreCommand`.
+Post-merge check (Claude): the squash commit touches `vercel.json`, so it is a code commit and must produce a READY production deployment. If none appears, deploy by hand per Decision 22.
