@@ -1,6 +1,6 @@
 # Task 011: No Vercel deployments for wip branches
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: Branches named `wip/*` stop creating Vercel deployments, so pull requests stop using the Hobby plan's 100 deployments per day and stop showing a red Vercel status.
 Files to touch: `vercel.json`
@@ -23,9 +23,9 @@ Done when: CI green. Nothing visible for the owner. Cannot be verified until Ver
 Decisions: 17, 19.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Added the `git.deploymentEnabled` rule for `wip/*` in `vercel.json`; preserved `ignoreCommand` and the complete `headers` block.
+Left: Open PR, check `test-and-lint`, fill in Result, merge on green CI.
+Next action: Open the PR and inspect required CI.
 
 ## Result (executor, when finished)
 Pull request: 
