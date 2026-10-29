@@ -128,7 +128,7 @@ describe('ContextBar', () => {
     expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Redo' })).toBeDisabled();
 
-    useCardStore.setState({ activeTab: 'crucible' });
+    act(() => useCardStore.setState({ activeTab: 'crucible' }));
     expect(screen.queryByRole('button', { name: 'Undo' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Redo' })).not.toBeInTheDocument();
     expect(screen.queryByText('Unsaved')).not.toBeInTheDocument();
