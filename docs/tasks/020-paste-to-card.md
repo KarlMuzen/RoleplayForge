@@ -71,8 +71,8 @@ Next action: Check test-and-lint on the final PR head; do not merge.
 
 ## Result (executor, when finished)
 Pull request: #22 — https://github.com/KarlMuzen/RoleplayForge/pull/22
-Checks run by executor: Pending for this review-fix commit; local checks unavailable in this session.
-CI: Pending on the updated PR head.
+Checks run by executor: Not run locally; GitHub CI is authoritative.
+CI: First review-fix run failed TypeScript at `src/core/pasteImport.ts:478`; correction committed in this retry.
 Deviations from the card: None.
 
 ## Review (Claude, required)

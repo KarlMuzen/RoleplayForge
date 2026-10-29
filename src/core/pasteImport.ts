@@ -475,7 +475,7 @@ async function readPastedTextImpl(text: string): Promise<PasteReadResult> {
   if (isCardShaped(parsed)) {
     const renamedCopy = JSON.parse(JSON.stringify(parsed)) as DataRecord;
     const changed = normalizeCardLorebookKeys(renamedCopy);
-    const inputForImporter = changed || cardJsonText !== cleaned ? JSON.stringify(renamedCopy) : cleaned;
+    const inputForImporter = changed || cardJsonText !== cleaned.original ? JSON.stringify(renamedCopy) : cleaned.original;
     const imported = await importCardData(inputForImporter);
     if (!imported.card) {
       return errorResult('The JSON did not produce a character card.');
