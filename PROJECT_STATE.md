@@ -1,8 +1,8 @@
 # PROJECT_STATE
 
-Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed.
+Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-29 · **`main` head when written:** `484e6b4`
+**Last updated:** 2026-10-29 · **`main` head when written:** `0537d84`
 
 ## Goal
 
@@ -14,7 +14,7 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 - `src/`: `components`, `constants`, `db`, `hooks`, `io` (formats), `routing` (hash routes), `schemas`, `services` (AI providers), `store` (slices), `types`, `utils`.
 - `docs/`: `AI_WORKFLOW.md` (how the two AIs work), `tasks/` (task cards), `HANDOFF.md` (latest session notes), `ROADMAP.md` (priority plan + phases), `PROJECT_STATUS.md`, `PLATFORM_SUPPORT.md`, `TESTING_STRATEGY.md`, `UI_UX_REDESIGN_SPEC.md`, `PRODUCT_VISION.md`.
 - Scripts: `npm run lint && npm test && npm run build`. UI audit: `scripts/ui-audit.py`.
-- CI: `.github/workflows/ci.yml` runs lint, tests, build on pull requests to `main` and on non-docs pushes to `main`. It does not run on other branches until a pull request exists.
+- CI: `.github/workflows/ci.yml`, one job `test-and-lint` (lint, tests, build). Runs on pull requests to `main` and on non-docs pushes to `main`. Not on other branches until a pull request exists.
 
 ## Decisions
 
@@ -31,22 +31,26 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 11. Still deferred: semantic token layer, tablet rail, standalone lorebook shelf, Enhancer move, per-hunk selection.
 12. Two-AI workflow: Claude plans and reviews, ChatGPT executes. Hand-offs go through the repo (task cards in `docs/tasks/`), never through pasted chat. Rules in `docs/AI_WORKFLOW.md`.
 13. Code changes by the executor go on branch `wip/NNN` with a pull request to `main`, and merge only when CI is green. Docs-only changes may go straight to `main`. This replaces the earlier practice of pushing code directly to `main`, because CI only runs after a direct push.
+14. Claude is the only writer of this file. The executor writes code and its own task card. Status comes from pull requests: open = in progress, squash-merged = done. This supersedes the section split in the first version of `AI_WORKFLOW.md`.
+15. Merges are automatic: required check `test-and-lint` on `main`, auto-merge with squash. Card says `Review: skip`, or Review is Approved, before the executor enables it. The executor gets 2 fix attempts after a red CI, then stops and records the failure in the card.
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-Priority 1, HANDOFF step 2: quick-wins batch. No task card written yet. Next action (Claude): split step 2 into small cards in `docs/tasks/`, one outcome each, with `Review: required` or `skip`. Verify `main` head first.
+1. **Owner:** set the two GitHub settings in `docs/AI_WORKFLOW.md` (auto-merge + squash; required check `test-and-lint`, administrators not included).
+2. **Claude:** automation audit. What Vercel, GitHub Actions and the connected tools can automate, and which would improve output. Findings go to `docs/AUTOMATION.md`.
+3. **Claude:** then split HANDOFF step 2 (quick-wins batch) into small cards in `docs/tasks/`, each with `Review: required` or `skip`.
+
+Verify `main` head first.
 
 ## In progress
 
-None. (Executor: list any `wip/NNN` branch and pull request here with done, left, next action.)
+See open pull requests (branch `wip/NNN`). None known.
 
-## Done (last 10)
+## Done
 
-- `7cbd503` ROADMAP priority plan and this file created.
-- `484e6b4` `docs/AI_WORKFLOW.md` added (Claude plans, ChatGPT executes).
-- Pull-request gate added to the workflow (Decision 13).
+See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
@@ -68,7 +72,8 @@ None. (Executor: list any `wip/NNN` branch and pull request here with done, left
 - `usePWAUpdate` may fail on an undefined registration (seen when service workers are blocked; verify before changing).
 - `selectCardForEditing` does not flush pending autosave on the Library tap path (D-13).
 - Accessibility: light theme has more contrast failures than dark. 5 unlabelled selects, 3 unnamed buttons.
-- Direct pushes of code to `main` are only checked by CI after the fact. Vercel may build a commit that CI later marks red.
+- Until the required check is set on `main`, direct code pushes are checked by CI only after the fact. Vercel may build a commit that CI later marks red.
+- If the AI connectors act as non-admins, the required check may reject docs pushes to `main` (CI skips docs). Fallback: docs via pull request.
 - Unverified: Vercel headers/CSP in production, whether Vercel makes preview links for pull requests, Android installed-PWA behavior, iOS Safari, passkey flow on phone, Ollama on `localhost:11434` from https.
 - Adapters and simulators depend on SillyTavern/Chub behavior that can change; each needs a last-tested date.
 
@@ -82,4 +87,4 @@ None. (Executor: list any `wip/NNN` branch and pull request here with done, left
 
 ## Handoff
 
-On "handoff", update the task card's Progress, then give a paste block of at most 10 lines: goal, current task, branch and pull request if any, next action. A new chat starts with the bootstrap line in `docs/AI_WORKFLOW.md`.
+On "handoff", update the task card's Progress (Claude: the Current task above), then give a paste block of at most 10 lines: goal, current task, open pull request if any, next action. A new chat starts with the bootstrap line in `docs/AI_WORKFLOW.md`.
