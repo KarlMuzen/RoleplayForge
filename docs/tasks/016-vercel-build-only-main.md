@@ -1,6 +1,6 @@
 # Task 016: Vercel builds only for `main`
 
-Status: todo
+Status: in progress
 Review: required
 Goal: Vercel starts a build only for a code commit on `main`. Every other branch is skipped by the ignore command, so no branch, current or future, can use the Hobby plan's 100 deployments per day.
 Files to touch: `vercel.json`
@@ -17,9 +17,9 @@ Done when: CI green and Claude's review is Approved. After the merge, Claude che
 Decisions: 17, 19, 20, 22.
 
 ## Progress (executor, update every commit)
-Done: nothing yet.
-Left: everything.
-Next action: confirm the two documentation facts, then edit `vercel.json`.
+Done: Confirmed that `VERCEL_GIT_COMMIT_REF` is documented as the triggering Git branch and that Ignored Build Step exit code 0 skips the build. Updated only `ignoreCommand` so non-`main` branches skip while `main` retains the prior docs-only check; preserved `git.deploymentEnabled` and `headers`. JSON parsing passed in the executor runtime and with `node -e`.
+Left: Open PR, verify `test-and-lint`, fill in Result, and stop for required Claude review before merge.
+Next action: Check the exact branch diff and open the pull request.
 
 ## Result (executor, when finished)
 Pull request:
