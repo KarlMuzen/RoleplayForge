@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-29 · **`main` head when written:** `bad5b0e`
+**Last updated:** 2026-10-29 · **`main` head when written:** `c5f7c51`
 
 ## Goal
 
@@ -16,7 +16,7 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 - Scripts: `npm run lint && npm test && npm run build`. UI audit: `scripts/ui-audit.py`.
 - CI: `.github/workflows/ci.yml`, one job `test-and-lint` (lint, tests, build). Runs on pull requests to `main` and on non-docs pushes to `main`. Not on other branches until a pull request exists.
 - GitHub ruleset `main-ci-gate` targets `main`. Bypass: repository admin and the Claude GitHub connector (seen in owner screenshot, 2026-10-29).
-- Vercel (team `xiorolab`, project `roleplayforge`, Hobby plan, 100 deployments per day): production from `main` at `roleplayforge.vercel.app` (the only domain). `ignoreCommand` skips docs-only commits. Deployments for `wip/*` branches are switched off (Task 011, merged `7ad5605`, Decision 19). On 2026-10-29 production was brought up to `c19deac` (Task 015) by a manual deploy through the Vercel connector (see Decision 22).
+- Vercel (team `xiorolab`, project `roleplayforge`, id `prj_vTfhxB0i0hmxZI1uCnRooJ73745P` since the project was recreated on 2026-10-29; the old id `prj_K3E6…` returns 404 and its deployment history is gone; Hobby plan, 100 deployments per day): production from `main` at `roleplayforge.vercel.app` (the only domain). `ignoreCommand` skips docs-only commits. Deployments for `wip/*` branches are switched off (Task 011, merged `7ad5605`, Decision 19). On 2026-10-29 production was brought up to `c19deac` (Task 015) by a manual deploy through the Vercel connector (see Decision 22).
 
 ## Decisions
 
@@ -40,17 +40,19 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 18. Chat is a card test bench, not a chat host (`docs/PRODUCT_VISION.md`). Taken from Chub-style chat, scoped down: one header menu (name, model profile switch, Lorebook Debug, Group Preview, Reset), a multi-line message box, and regenerate/edit/delete on the last message only (Tasks 008-010, merged). Not adopted: secrets, chat memory/summary, saved-chats list, chat tree, discussion thread, slash commands, voice input. Reconsider only with evidence of user demand.
 19. The only merge gate is `test-and-lint`. The Vercel status is informational: red, failed or missing never blocks a squash merge, and the executor merges by hand when auto-merge is rejected. Vercel Hobby allows 100 deployments per day; on 2026-10-29 the preview of `wip/008` was rejected ("retry in 24 hours"), so Vercel deployments for `wip/*` branches are switched off (Task 011). With no previews, the owner checks production in a batch (Decision 17). Source: https://vercel.com/docs/plans/hobby.
 20. No host or origin move for production. The app stores cards in IndexedDB and passkeys use the hostname as WebAuthn relying-party id (`src/utils/passkeyCrypto.ts`), so a new domain starts empty and old passkeys stop working. A move needs a tested backup/restore path first. A second host used only for testing (separate origin, separate data) is allowed; the repo already has `wrangler.toml` and `public/_headers` for Cloudflare Pages, not verified as working.
-21. Details tab order (HANDOFF step 3, spec UX-DET-1): toolbar (Save, Undo, Redo, Variant), one compact token + health row, then Identity (name, description, personality, scenario), Greetings, Lorebook summary, Advanced prompts, Card Info (creator, version, nickname, tags), and last one collapsed "Cover art and export". Cards 013-015, in that order, because they share `EditorView.tsx`. The export sheet and History sheet (UX-DET-2) come with the ContextBar, not now.
+21. Details tab order (HANDOFF step 3, spec UX-DET-1): toolbar (Save, Undo, Redo, Variant), one compact token + health row, then Identity (name, description, personality, scenario), Greetings, Lorebook summary, Advanced prompts, Card Info (creator, version, nickname, tags), and last one collapsed "Cover art and export". Cards 013-015, in that order, because they share `EditorView.tsx`. The export sheet and History sheet (UX-DET-2) come with the ContextBar, not now. Task 018 later moves Undo and Redo out of this toolbar into the ContextBar (Decision 24).
 22. Vercel deploys only for code commits on `main` (Task 016 closes the last gap with an ignore command that skips any other branch). Project name stays `roleplayforge` (Decision 20). Vercel sometimes never starts a build for a `main` push (no record at all for 010, 011, 014, 015 on 2026-10-29; usage meters were far below limits, so the cause is unknown). Recovery: with the Vercel connector, `create_deployment` for project `roleplayforge`, target `production`, `gitSource` `{type: github, org: KarlMuzen, repo: RoleplayForge, ref: main, sha: <latest CODE commit>}`. Use a code commit, not the docs commit on top of it: a docs-only head is skipped by `ignoreCommand`. Check afterwards that the alias `roleplayforge.vercel.app` points to the new deployment.
+23. Small owner-requested fixes (PWA install toast, logo and icon masking, theme contrast) were committed by Claude directly to `main` on 2026-10-29 (`7e22276`, `768c784`, `e7aefc4`, `f93096d`), before cards 012-015. This is an exception to Decision 13 on the owner's instruction; the executor still uses `wip/NNN` pull requests. Any further direct code commit by Claude needs the owner's instruction and a line here.
+24. ContextBar (HANDOFF step 4, spec 4.4): one component for Forge and Test, two rows, replaces `WorkspaceSubNav` and `LabSubNav` (Task 017). Undo, Redo and a save-status chip live in it on Forge tabs only (Task 018). The Save Card and Variant buttons stay on the Details toolbar until the overflow-menu card. Card switcher sheet and overflow menu are later cards.
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-1. **Executor (ChatGPT):** `docs/tasks/016` (Vercel builds only for `main`, one file, `Review: required`). Open a pull request, wait for green `test-and-lint`, then stop and report; Claude reviews the diff before the merge (Decision 15). Merge on green CI only (Decision 19).
-2. **Claude, next:** plan HANDOFF step 4 (one sticky ContextBar replacing `WorkspaceSubNav` and `LabSubNav`) as task cards. HANDOFF step 3 is done (cards 012-015 merged), so the Decision 17 hold on new tooling has ended; Claude decides on Dependabot and CI additions. After Task 016 merges, confirm the merge commit produced a READY production deployment.
+1. **Executor (ChatGPT), in this order:** `docs/tasks/016` (Vercel builds only for `main`, one file, `Review: required`), then `docs/tasks/017` (one ContextBar replaces both sub-navs, `Review: required`), then `docs/tasks/018` (Undo/Redo and save chip in the ContextBar, `Review: skip`). One pull request per card, wait for green `test-and-lint`; for `Review: required` stop and report so Claude reviews the diff before the merge (Decision 15). Merge on green CI only (Decision 19). 017 and 018 both touch `ContextBar.tsx`, so 018 starts only after 017 is merged.
+2. **Claude, next:** review 016 and 017 when reported. After each merge confirm the merge commit produced a READY production deployment (project id above). Then plan the rest of HANDOFF step 4 and the spec: ContextBar overflow menu (Help, Install, Test chat, Export), card switcher sheet, keyboard-open mode. The Decision 17 hold on new tooling has ended; Claude decides on Dependabot and CI additions.
 
-Cards 001-015 are merged (quick wins, CardAvatar, rating-filter and Assist/Chat layout, Chat header menu, multi-line message box, last-message actions, no Vercel deployments for `wip/*`, Chat menu fixes, Details reorder). Owner phone check of 001-015 is pending and is not a merge gate (Decision 17).
+Cards 001-015 are merged (quick wins, CardAvatar, rating-filter and Assist/Chat layout, Chat header menu, multi-line message box, last-message actions, no Vercel deployments for `wip/*`, Chat menu fixes, Details reorder). Cards 016-018 are written and not started. Owner phone check of 001-015 is pending and is not a merge gate (Decision 17).
 
 HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Step 3 rewrote the Details components, so do it per screen now, not before.
 
@@ -58,11 +60,11 @@ Verify `main` head first.
 
 ## In progress
 
-See open pull requests (branch `wip/NNN`). None known. Task 016 card is committed and not started.
+See open pull requests (branch `wip/NNN`). None known (checked 2026-10-29). Cards 016, 017, 018 are committed and not started.
 
 ## Done
 
-See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11 (011), #12 (009), #13 (010), #14 (012), #15 (013), #16 (014), #17 (015). Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
+See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11 (011), #12 (009), #13 (010), #14 (012), #15 (013), #16 (014), #17 (015). Direct commits by Claude (Decision 23): `7e22276`, `768c784`, `e7aefc4`, `f93096d` (PWA install toast and welcome, new Forge logo with real maskable icon source and splash color, themed emerald/red/cyan/purple in `src/status-colors.css`, invisible Replace-recovery-key button, PwaSection branding; CI green on a clean checkout: lint, 165 tests, build). Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
@@ -89,6 +91,9 @@ See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11
 - CI skips docs-only pushes, so the required check cannot report on them. Docs pushes to `main` work only through the ruleset bypass. The ChatGPT connector was not seen on the bypass list; it uses pull requests.
 - Unverified: Vercel runtime headers/CSP in production, Android installed-PWA behavior, iOS Safari, passkey flow on phone, Ollama on `localhost:11434` from https.
 - Adapters and simulators depend on SillyTavern/Chub behavior that can change; each needs a last-tested date.
+- Branding leftovers, not fixed: the passkey prompt shows "CardCrucible User" / `cardcrucible_user` (`src/utils/passkeyCrypto.ts`, a frozen identifier area: ask the owner before touching, existing passkeys may be affected); `ErrorBoundary` console and crash-report text, `BackupRestoreSection` file names (`cardcrucible_full_backup_*`), and the OpenRouter header placeholder in `ConnectionProfilesSection` still say CardCrucible.
+- Icons: committed `public/*.png` are stale; `npm run build` regenerates them from `public/forge-mark.svg` and `forge-mark-maskable.svg`. Android caches installed icons, so the owner may need to reinstall the PWA to see the new one. Install toast and new splash are unverified on a phone.
+- Theme: in a fresh browser context with `roleplay-forge-theme=light` in localStorage the app still came up with the `dark` class (checked locally with Playwright, cause unverified; the app may read the theme from IndexedDB). Light theme contrast is improved by `src/status-colors.css` but not re-audited with `scripts/ui-audit.py`.
 
 ## Guardrails
 
