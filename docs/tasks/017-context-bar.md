@@ -1,6 +1,6 @@
 # Task 017: One ContextBar replaces WorkspaceSubNav and LabSubNav
 
-Status: in progress
+Status: done
 Review: required
 Goal: Forge and Test screens share one sticky two-row bar. Row 1: card avatar and name, incomplete-card checklist, Pre-Flight Audit, Chat (phone), Help. Row 2: section tabs, each at least 44px tall. The bar clears the phone status bar in the installed app.
 Files to touch: new `src/components/ContextBar.tsx`; `src/App.tsx`; delete `src/components/WorkspaceSubNav.tsx` and `src/components/LabSubNav.tsx`; rename `test/WorkspaceSubNav.test.tsx` to `test/ContextBar.test.tsx`.
@@ -19,16 +19,16 @@ Done when: CI green; no remaining import of the old components (`grep -r "SubNav
 Decisions: 5, 6, 17, 19, 24.
 
 ## Progress (executor, update every commit)
-Done: Verified `main` at `802e00803d0e4e3e9ced497f4b71768e8ca7e217`; created `wip/017`; added `ContextBar.tsx`, replaced the two App nav slots with one shared component, removed both old sub-nav components, and replaced the old sub-nav test with ContextBar regression coverage. Opened PR #19; GitHub Actions `test-and-lint` passed.
-Left: Required Claude review before merge.
-Next action: Claude reviews PR #19. Do not merge until the task card's Review is Approved.
+Done: Implemented the shared `ContextBar`, integrated it in `App.tsx`, deleted both duplicate sub-navs, and replaced the old navigation test with ContextBar regression coverage. Claude approved the diff. PR #19 passed CI and was squash-merged into `main`.
+Left: Owner's installed-phone visual check is still recommended. Vercel's post-merge status is pending; the deployment inspector request returned not found through the connector.
+Next action: Owner checks the shared bar on Forge and Test screens on a phone; follow up on any layout issue with a new task card.
 
 ## Result (executor, when finished)
-Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/19
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/19 (squash-merged; merge commit `a16f4d533b7c8494cfb8159a1d22557364047bda`)
 Checks run by executor: Not run locally; the environment could not resolve github.com for a git clone. GitHub Actions is the authoritative CI check.
-CI: Passed `test-and-lint` (lint, tests, production PWA build), run 40865712441, on PR head `470850d0dead458f024b3a368118e25df76863f6`. The result-record update is documentation-only.
+CI: Passed `test-and-lint` (lint, tests, production PWA build), run 40865957160, on the reviewed PR head. The Task 017 implementation and regression tests passed.
 Preview link: n/a (Decision 19)
-Deviations from the card: None.
+Deviations from the card: None. Post-merge Vercel status reports pending at https://vercel.com/xiorolab/roleplayforge/E3SJD9EMab1qvfQhPmMDJT2Yugeb; the deployment lookup through the connector returned not found, so READY has not been independently confirmed.
 
 ## Review (Claude, if required)
 Approved (2026-10-29). Diff reviewed: `ContextBar.tsx`, `App.tsx`, deleted `WorkspaceSubNav.tsx` and `LabSubNav.tsx`, renamed test. Matches the card point by point: tab ids and labels, checklist popover (aria, Escape, outside tap, 44px targets) now also in Test mode, Pre-Flight only on Forge with a card, phone-only Chat, Help 44px, `aria-current="page"`, `min-h-11` tabs, safe-area top padding. No `SubNav` reference left in `src` or `test`. `test-and-lint` green on the PR head (run 40865957160).
