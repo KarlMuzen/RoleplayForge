@@ -604,7 +604,7 @@ export const EditorView: React.FC = () => {
           </span>
         </summary>
         <div className="p-3.5 space-y-4">
-  <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2 font-semibold text-mist-100">
               <BarChart3 className="w-4 h-4 text-maroon-400" />
               <span>Character Token Budget</span>
