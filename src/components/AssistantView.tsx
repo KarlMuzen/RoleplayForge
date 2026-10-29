@@ -369,6 +369,7 @@ IMPORTANT DIRECTIVES:
           <div className="flex items-center gap-2 shrink-0">
             {activeCard ? (
               <button
+                aria-label="Generate cover"
                 onClick={handleGenerateLogoAction}
                 disabled={isGeneratingLogo}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 bg-maroon-600/80 hover:bg-maroon-500 text-white rounded-lg text-xs font-medium transition-all shadow-sm disabled:opacity-50 touch-fast active:scale-95"
@@ -545,6 +546,7 @@ IMPORTANT DIRECTIVES:
               </button>
             )}
             <button
+              aria-label="Send message"
               onClick={() => handleSendPrompt()}
               disabled={isGenerating || !inputPrompt.trim()}
               className="px-3.5 py-2.5 bg-gradient-to-b from-maroon-500 to-maroon-600 hover:from-maroon-400 text-white rounded-xl font-medium shadow-sm transition-all disabled:opacity-50 touch-fast active:scale-95 shrink-0"
