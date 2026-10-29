@@ -17,9 +17,9 @@ Done when: CI green and Claude's review is Approved. After the merge, Claude che
 Decisions: 17, 19, 20, 22.
 
 ## Progress (executor, update every commit)
-Done: Confirmed that `VERCEL_GIT_COMMIT_REF` is documented as the triggering Git branch and that Ignored Build Step exit code 0 skips the build. Updated only `ignoreCommand` so non-`main` branches skip while `main` retains the prior docs-only check; preserved `git.deploymentEnabled` and `headers`. JSON parsing passed in the executor runtime and with `node -e`.
-Left: Open PR, verify `test-and-lint`, fill in Result, and stop for required Claude review before merge.
-Next action: Check the exact branch diff and open the pull request.
+Done: Confirmed the two Vercel documentation facts, changed only `ignoreCommand`, preserved `git.deploymentEnabled` and `headers`, and opened PR #18. JSON parsing passed via `node -e`; `test-and-lint` passed on current code commit `200d758933f8ae5dac13e36e6dcab323a05aac15` (run 40862800567) and latest PR head `4c1a9c2da6aff9417bc811da26b9adb95b6b337a` (run 40863064296).
+Left: Required Claude review and approval before merge.
+Next action: Review PR #18; do not merge until the card's Review is Approved.
 
 ## Result (executor, when finished)
 Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/18
