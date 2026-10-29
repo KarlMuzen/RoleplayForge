@@ -15,9 +15,9 @@ Done when: CI green. Owner, phone, Details tab: Name, then Description right awa
 Decisions: 6, 17, 19.
 
 ## Progress (executor, update every commit)
-Done: Started Task 015 from the verified post-Task-014 main head; identified the metadata inputs to move and the insertion point after Advanced Prompts.
-Left: Create `MetadataSection`, simplify `IdentitySection`, insert `Card Info` in `EditorView`, then verify CI and merge only on green `test-and-lint`.
-Next action: Move Creator, Version, Nickname, and Tags into the new section without changing any `onChange` logic.
+Done: Added `MetadataSection` with Creator, Version, Nickname and Tags; reduced `IdentitySection` to Character Name followed by Description, Personality and Scenario; inserted `Card Info` after Advanced Prompts and before the existing collapsed cover/export section. Original field names, placeholders, styles, and `onChange` handlers are retained.
+Left: Open PR, verify `test-and-lint`, record Result, and merge only on green CI.
+Next action: Confirm the diff has exactly the three specified code files plus this task card, then create the PR.
 
 ## Result (executor, when finished)
 Pull request: 
