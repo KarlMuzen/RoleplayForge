@@ -4,12 +4,12 @@ import {
   Trash2,
   Sparkles,
   CheckSquare,
-  User,
   GripVertical,
 } from 'lucide-react';
 import type { StoredCard } from '../../db';
 import type { TabType } from '../../store/useCardStore';
 import { getCardCoverUrl } from './galleryUtils';
+import { CardAvatar } from '../CardAvatar';
 import {
   DndContext,
   closestCenter,
@@ -108,19 +108,16 @@ export const SortableCard: React.FC<SortableCardProps> = ({
       </button>
 
       <div className="relative aspect-[2/3] w-full bg-void-900 overflow-hidden">
-        {previewUri ? (
-          <img
-            src={previewUri}
-            alt={card.name}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-          />
-        ) : (
-          <div className="flex flex-col items-center justify-center w-full h-full text-knight-700 bg-void-900/50">
-            <User className="w-12 h-12" />
-          </div>
-        )}
+        <CardAvatar
+          src={previewUri}
+          name={card.name}
+          alt={card.name}
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+          fallbackClassName="text-4xl"
+          fallbackIconClassName="w-12 h-12"
+        />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90 pointer-events-none" />
 
