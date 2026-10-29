@@ -44,16 +44,16 @@ Done when: CI green; Claude's review is Approved (one diff read, plus a check th
 Decisions: 2 (pure logic in `src/core/`), 18 (chat is a card test bench).
 
 ## Progress (executor, update every commit)
-Done: Applied Claude's requested terminal-closer fix in `parseSegment` by copying `tokens` before it is cleared. Added both requested no-cycle tests for `**bold** text**` and `Hi *there* friend**`, asserting JSON serialization and the expected child token arrays. Changes are on the existing `wip/019` branch and PR #21.
-Left: Wait for green `test-and-lint` on the updated PR head, record the result, and report so Claude can re-check the fix commit.
-Next action: Verify CI for the latest PR head. Do not merge.
+Done: Applied the requested shallow-copy fix in `parseSegment` and added both requested no-cycle tests. PR #21's review-fix head `1ffb8d3cec567a31871d7503133d89c108a925bc` passed `test-and-lint` (lint, tests, production PWA build), run 40877794827.
+Left: Claude must re-check the fix commit, as requested in the Review section.
+Next action: Verify CI on this task-card update's new PR head, then stop and report. Do not merge.
 
 ## Result (executor, when finished)
 Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/21
 Checks run by executor: Not run locally; GitHub Actions is authoritative because this environment cannot clone github.com.
-CI: Pending for the review-fix head. Previous green runs do not cover this fix.
+CI: Passed `test-and-lint` on review-fix head `1ffb8d3cec567a31871d7503133d89c108a925bc`, run 40877794827. That run includes lint, tests, and the production PWA build. The task-card update will be checked separately.
 Preview link: n/a (Decision 19)
-Deviations from the card: None; only the requested parser line and two tests were changed.
+Deviations from the card: None. The parser change is only the requested array copy; the two tests assert JSON serialization does not throw and the specified children arrays.
 
 ## Review (Claude, required)
 Changes needed (reviewed head `3299effa5bbe9c916eaeb29dc086347c876e2dff`, 2026-10-29). Fix on the same branch `wip/019`, same PR #21, then report. Do not merge until Claude re-checks the fix commit.
