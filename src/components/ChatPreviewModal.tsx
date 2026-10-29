@@ -73,6 +73,12 @@ export const ChatPreviewModal: React.FC = () => {
     typeof window !== 'undefined' &&
     (window.matchMedia?.('(pointer: coarse)').matches ?? false);
 
+  const commitUserNameDraft = () => {
+    const nextName = userNameDraft.trim() || 'User';
+    setUserNameDraft(nextName);
+    setUserName(nextName);
+  };
+
   const lorebookDebug = useMemo(() => {
     if (!activeCard || !activeCard.data.character_book) return null;
     return scanLorebook(
@@ -122,6 +128,11 @@ export const ChatPreviewModal: React.FC = () => {
 
     document.addEventListener('pointerdown', handleClickOutside);
     return () => document.removeEventListener('pointerdown', handleClickOutside);
+  }, [isChatMenuOpen]);
+
+  useEffect(() => {
+    if (!isChatMenuOpen) commitUserNameDraft();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isChatMenuOpen]);
 
   useEffect(() => {
@@ -200,12 +211,6 @@ export const ChatPreviewModal: React.FC = () => {
     setGroupMemberUuids((prev) =>
       prev.includes(uuid) ? prev.filter((u) => u !== uuid) : [...prev, uuid]
     );
-  };
-
-  const commitUserNameDraft = () => {
-    const nextName = userNameDraft.trim() || 'User';
-    setUserNameDraft(nextName);
-    setUserName(nextName);
   };
 
   const handleResetChat = () => {
@@ -392,10 +397,14 @@ export const ChatPreviewModal: React.FC = () => {
                           id="chat-model-profile"
                           aria-label="Model profile"
                           value={activeProfileUuid ?? ''}
-                          onChange={(event) => { void setActiveProfileUuid(event.target.value || null); }}
+                          onChange={(event) => {
+                            if (event.target.value) {
+                              void setActiveProfileUuid(event.target.value);
+                            }
+                          }}
                           className="min-w-0 max-w-40 rounded-lg border border-knight-700/80 bg-void-950 px-2 py-2 text-xs text-mist-100 focus:outline-none focus:ring-2 focus:ring-maroon-400/60"
                         >
-                          <option value="">Select profile...</option>
+                          {!activeProfile && <option value="" disabled>Select profile...</option>}
                           {profiles.map((profile) => (
                             <option key={profile.uuid} value={profile.uuid}>{profile.name}</option>
                           ))}
@@ -443,7 +452,7 @@ export const ChatPreviewModal: React.FC = () => {
                         Group Preview
                       </span>
                       {groupMemberUuids.length > 0 && (
-                        <span className="absolute -top-1 right-1 bg-maroon-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                        <span className="rounded-full bg-maroon-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
                           {groupMemberUuids.length}
                         </span>
                       )}
