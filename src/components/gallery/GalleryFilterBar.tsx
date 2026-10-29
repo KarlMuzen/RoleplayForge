@@ -51,12 +51,12 @@ export const GalleryFilterBar: React.FC<GalleryFilterBarProps> = ({
   }, [isTagPickerOpen]);
 
   const ratingOptions: { value: 'all' | 'sfw' | 'nsfw' | 'unrated'; label: string; selectedClass: string }[] = [
-    { value: 'all', label: 'All Ratings', selectedClass: 'bg-knight-700 text-mist-100' },
-    { value: 'sfw', label: 'SFW', selectedClass: 'bg-emerald-950 text-emerald-300 border border-emerald-800/80' },
-    { value: 'nsfw', label: 'NSFW', selectedClass: 'bg-rose-950 text-rose-300 border border-rose-800/80' },
-    { value: 'unrated', label: 'Unrated', selectedClass: 'bg-amber-950 text-amber-300 border border-amber-800/80' },
+    { value: 'all', label: 'All Ratings', selectedClass: 'bg-knight-700 text-mist-100 border-transparent' },
+    { value: 'sfw', label: 'SFW', selectedClass: 'bg-emerald-950 text-emerald-300 border-emerald-800/80' },
+    { value: 'nsfw', label: 'NSFW', selectedClass: 'bg-rose-950 text-rose-300 border-rose-800/80' },
+    { value: 'unrated', label: 'Unrated', selectedClass: 'bg-amber-950 text-amber-300 border-amber-800/80' },
   ];
-  const targetClass = 'min-h-11 px-3 py-2 rounded-full text-xs font-semibold transition-colors shrink-0 touch-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-maroon-400';
+  const targetClass = 'min-h-11 px-3 py-2 rounded-full border text-xs font-semibold transition-colors shrink-0 touch-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-maroon-400';
   const visibleTags = allTags.filter((tag) => tag.toLowerCase().includes(tagQuery.trim().toLowerCase()));
 
   const selectTag = (tag: string | null) => {
@@ -77,7 +77,7 @@ export const GalleryFilterBar: React.FC<GalleryFilterBarProps> = ({
               data-testid={`filter-rating-${option.value}`}
               aria-pressed={selected}
               onClick={() => setSelectedRatingFilter(option.value)}
-              className={`${targetClass} ${selected ? option.selectedClass : 'text-knight-400 hover:text-mist-200'}`}
+              className={`${targetClass} ${selected ? option.selectedClass : 'text-knight-400 hover:text-mist-200 border-transparent'}`}
             >
               {option.label}
             </button>

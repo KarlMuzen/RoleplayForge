@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { z } from 'zod';
 import { useCardStore } from '../store/useCardStore';
 import { sendLLMRequest, type LLMMessage, type LLMResponseSchema } from '../services/llmAdapter';
@@ -342,8 +342,38 @@ IMPORTANT DIRECTIVES:
     }
   };
 
+  const assistantRootRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    const root = assistantRootRef.current;
+    if (!root) return;
+
+    const updateHeight = () => {
+      const isMobile = typeof window.matchMedia === 'function'
+        ? window.matchMedia('(max-width: 767px)').matches
+        : window.innerWidth < 768;
+
+      if (!isMobile) {
+        root.style.height = '';
+        return;
+      }
+
+      const top = root.getBoundingClientRect().top + window.scrollY;
+      root.style.height = `${Math.max(320, window.innerHeight - top)}px`;
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('orientationchange', updateHeight);
+
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      window.removeEventListener('orientationchange', updateHeight);
+    };
+  }, []);
+
   return (
-    <div className="subview-container flex flex-col h-[calc(100vh-65px)] max-w-5xl mx-auto p-3 sm:p-4 space-y-3 pb-24 md:pb-6 overflow-hidden">
+    <div ref={assistantRootRef} className="subview-container flex flex-col md:h-[calc(100vh-65px)] -mb-28 md:mb-0 max-w-5xl mx-auto p-3 sm:p-4 space-y-3 pb-24 md:pb-6 overflow-hidden">
       {/* Sleek Compact Header */}
       <div className="bg-void-900 border border-knight-700/40 rounded-xl p-3 shrink-0 shadow-sm space-y-2">
         <div className="flex items-center justify-between gap-3">
@@ -353,7 +383,7 @@ IMPORTANT DIRECTIVES:
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold text-mist-100 truncate">
+                <h2 className="text-sm font-semibold text-mist-100 truncate shrink-0">
                   Assistant
                 </h2>
                 <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800/80 rounded-full hidden sm:inline-flex items-center gap-1">
@@ -397,7 +427,7 @@ IMPORTANT DIRECTIVES:
               title="Toggle Surface Inspector"
             >
               <Eye className="w-3.5 h-3.5 text-maroon-400" />
-              <span className="text-[11px] font-mono uppercase">
+              <span className="text-[11px] font-mono uppercase max-w-[7rem] truncate">
                 {activeCard ? activeCard.data.name || 'Active' : 'Inspector'}
               </span>
               {showInspector ? (
@@ -530,7 +560,8 @@ IMPORTANT DIRECTIVES:
               value={inputPrompt}
               onChange={(e) => setInputPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendPrompt()}
-              placeholder="Ask for advice, personality refinements, or lorebook entry ideas..."
+              placeholder="Ask for advice or edits..."
+              aria-label="Message the assistant"
               className="flex-1 px-3.5 py-2.5 bg-void-900 border border-knight-700/80 rounded-xl text-mist-100 text-xs sm:text-sm focus:outline-none focus:border-maroon-500/60 transition-colors"
             />
             {activeCard && (

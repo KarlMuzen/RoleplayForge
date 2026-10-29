@@ -255,13 +255,15 @@ export const ChatPreviewModal: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <div className="flex items-center gap-1 bg-void-800/80 border border-knight-700/80 rounded-xl px-2 py-1">
+            <div className="hidden sm:flex items-center gap-1 bg-void-800/80 border border-knight-700/80 rounded-xl px-2 py-1">
               <span className="text-[10px] text-knight-400 font-mono">User:</span>
               <input
                 type="text"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
                 placeholder="User"
+                aria-label="Your name in the chat"
+                data-testid="chat-user-name-header"
                 className="bg-transparent text-mist-100 text-xs font-medium w-14 sm:w-20 focus:outline-none"
               />
             </div>
@@ -349,6 +351,21 @@ export const ChatPreviewModal: React.FC = () => {
             >
               <X className="w-5 h-5" />
             </button>
+          </div>
+        </div>
+
+        <div className="sm:hidden flex items-center gap-2 px-3 py-1.5 border-b border-knight-700/40 bg-void-950/90 shrink-0">
+          <div className="flex flex-1 min-w-0 items-center gap-1 bg-void-800/80 border border-knight-700/80 rounded-xl px-2 py-1">
+            <span className="text-[10px] text-knight-400 font-mono shrink-0">User:</span>
+            <input
+              type="text"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="User"
+              aria-label="Your name in the chat"
+              data-testid="chat-user-name-phone"
+              className="flex-1 min-w-0 bg-transparent text-mist-100 text-xs font-medium focus:outline-none"
+            />
           </div>
         </div>
 
