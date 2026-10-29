@@ -1,6 +1,6 @@
 # Task 010: Regenerate, edit and delete the last message in Chat
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: Once a chat has started, the last message has three actions: regenerate the reply, edit the text, delete it. This lets a card author retry a reply without resetting the whole chat.
 Files to touch: `src/components/ChatPreviewModal.tsx`, `src/utils/chatHistory.ts` (new), `test/chatHistory.test.ts` (new)
@@ -22,9 +22,9 @@ Done when: CI green. Owner on the preview, phone: after sending a message, the r
 Decisions: 18.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Added all five pure `chatHistory.ts` helpers and tests; wired the last-message-only action row, inline edit/save/cancel, delete, and regenerate through the same generation/error/typing path as Send. Header and Task 009 input bar remain intact.
+Left: Review scope and code, open PR, verify `test-and-lint`, and merge only when green.
+Next action: Inspect the current diff and create the Task 010 PR.
 
 ## Result (executor, when finished)
 Pull request: 

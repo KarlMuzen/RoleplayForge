@@ -6,6 +6,13 @@ import { CardAvatar } from './CardAvatar';
 import type { StoredCard } from '../db';
 import { countTokens, countTokensAsync } from '../utils/tokenizer';
 import { shouldSendOnEnter } from '../utils/chatKeys';
+import {
+  canRegenerate,
+  dropLast,
+  hasUserMessage,
+  historyForRegenerate,
+  replaceLastText,
+} from '../utils/chatHistory';
 import { scanLorebook, type LorebookScanDebugInfo } from '../utils/lorebookScan';
 import {
   buildInitialGreetingMessages,
@@ -16,6 +23,9 @@ import {
 import {
   X,
   Send,
+  RefreshCw,
+  Pencil,
+  Trash2,
   RotateCcw,
   User,
   MessageSquare,
@@ -48,6 +58,8 @@ export const ChatPreviewModal: React.FC = () => {
   const [activeGreetingIdx, setActiveGreetingIdx] = useState<number>(0);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isEditingLastMessage, setIsEditingLastMessage] = useState(false);
+  const [editMessageDraft, setEditMessageDraft] = useState('');
   const [typingSpeaker, setTypingSpeaker] = useState<string | null>(null);
   const [groupMemberUuids, setGroupMemberUuids] = useState<string[]>([]);
   const [isGroupPickerOpen, setIsGroupPickerOpen] = useState(false);
@@ -56,6 +68,7 @@ export const ChatPreviewModal: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatMenuRef = useRef<HTMLDivElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
+  const editMessageTextareaRef = useRef<HTMLTextAreaElement>(null);
   const isTouchDevice =
     typeof window !== 'undefined' &&
     (window.matchMedia?.('(pointer: coarse)').matches ?? false);
@@ -115,6 +128,7 @@ export const ChatPreviewModal: React.FC = () => {
     if (!activeCard || sceneCharacters.length === 0) return;
     const initialMsgs = buildInitialGreetingMessages(sceneCharacters, userName, activeGreetingIdx);
     setMessages(initialMsgs);
+    setIsEditingLastMessage(false);
     // userName is handled separately so editing the name cannot reset an active conversation.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCard, activeGreetingIdx, groupMemberUuids.join(',')]);
@@ -138,6 +152,14 @@ export const ChatPreviewModal: React.FC = () => {
     textarea.style.height = 'auto';
     textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`;
   }, [inputMsg]);
+
+  useEffect(() => {
+    if (!isEditingLastMessage) return;
+    const textarea = editMessageTextareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    textarea.style.height = String(textarea.scrollHeight) + 'px';
+  }, [editMessageDraft, isEditingLastMessage]);
 
   const [exactChatTokens, setExactChatTokens] = useState<number | null>(null);
 
@@ -189,25 +211,31 @@ export const ChatPreviewModal: React.FC = () => {
   const handleResetChat = () => {
     const initialMsgs = buildInitialGreetingMessages(sceneCharacters, userName, activeGreetingIdx);
     setMessages(initialMsgs);
+    setIsEditingLastMessage(false);
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMsg.trim() || isGenerating) return;
+  const showMissingProfileAlert = async () => {
+    await useDialogStore.getState().showAlert(
+      'Please configure a connection profile in Settings before starting a test chat.',
+      'Missing Configuration',
+      'warning'
+    );
+  };
 
+  const generateConversationTurn = async (history: ChatMessage[], userText: string) => {
     if (!activeProfile) {
-      await useDialogStore.getState().showAlert('Please configure a connection profile in Settings before starting a test chat.', 'Missing Configuration', 'warning');
+      await showMissingProfileAlert();
       return;
     }
 
-    const userText = inputMsg;
-    setInputMsg('');
+    setIsEditingLastMessage(false);
     setIsGenerating(true);
 
     try {
       await executeConversationTurn({
         profile: activeProfile,
         sceneCharacters,
-        history: messages,
+        history,
         userTurnInput: userText,
         userName,
         onSpeakerTyping: (speaker) => setTypingSpeaker(speaker),
@@ -223,6 +251,33 @@ export const ChatPreviewModal: React.FC = () => {
       setIsGenerating(false);
       setTypingSpeaker(null);
     }
+  };
+
+  const handleSendMessage = async () => {
+    if (!inputMsg.trim() || isGenerating) return;
+
+    if (!activeProfile) {
+      await showMissingProfileAlert();
+      return;
+    }
+
+    const userText = inputMsg;
+    setInputMsg('');
+    await generateConversationTurn(messages, userText);
+  };
+
+  const handleRegenerate = async () => {
+    if (isGenerating || !canRegenerate(messages)) return;
+
+    if (!activeProfile) {
+      await showMissingProfileAlert();
+      return;
+    }
+
+    const history = historyForRegenerate(messages);
+    setMessages(history);
+    setIsEditingLastMessage(false);
+    await generateConversationTurn(history, '');
   };
 
   // Render roleplay message formatting (*actions* in subtle italic amber)
@@ -546,6 +601,7 @@ export const ChatPreviewModal: React.FC = () => {
         {/* Messages Stream */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 max-w-4xl w-full mx-auto">
           {messages.map((m, idx) => {
+            const isLastMessage = idx === messages.length - 1;
             const isUser = m.role === 'user';
             const speaker = !isUser && isGroupMode
               ? sceneCharacters.find((sc) => sc.uuid === m.speakerUuid)
@@ -588,8 +644,80 @@ export const ChatPreviewModal: React.FC = () => {
                         : 'bg-void-800/90 border border-knight-700/80 text-mist-100 rounded-tl-none font-sans'
                     }`}
                   >
-                    {isUser ? m.text : renderRoleplayText(m.text)}
+                    {isEditingLastMessage && isLastMessage ? (
+                      <div className="w-full">
+                        <textarea
+                          ref={editMessageTextareaRef}
+                          rows={1}
+                          value={editMessageDraft}
+                          onChange={(e) => {
+                            const textarea = e.currentTarget;
+                            setEditMessageDraft(textarea.value);
+                            textarea.style.height = 'auto';
+                            textarea.style.height = String(textarea.scrollHeight) + 'px';
+                          }}
+                          aria-label="Edit message"
+                          className="w-full resize-none bg-transparent text-xs sm:text-sm leading-relaxed text-current focus:outline-none"
+                        />
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMessages((prev) => replaceLastText(prev, editMessageDraft));
+                              setIsEditingLastMessage(false);
+                            }}
+                            disabled={!editMessageDraft.trim()}
+                            className="min-h-10 rounded-lg border border-knight-700/60 px-3 text-xs font-semibold hover:bg-black/10 disabled:opacity-50"
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIsEditingLastMessage(false)}
+                            className="min-h-10 rounded-lg border border-knight-700/60 px-3 text-xs font-semibold hover:bg-black/10"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : isUser ? m.text : renderRoleplayText(m.text)}
                   </div>
+                  {isLastMessage && hasUserMessage(messages) && !isGenerating && !isEditingLastMessage && (
+                    <div className="mt-1 flex items-center gap-2 px-1">
+                      {canRegenerate(messages) && (
+                        <button
+                          type="button"
+                          onClick={() => void handleRegenerate()}
+                          aria-label="Regenerate reply"
+                          className="flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-knight-700/60 text-knight-300 transition-colors hover:bg-void-800 hover:text-mist-100"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditMessageDraft(m.text);
+                          setIsEditingLastMessage(true);
+                        }}
+                        aria-label="Edit message"
+                        className="flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-knight-700/60 text-knight-300 transition-colors hover:bg-void-800 hover:text-mist-100"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMessages((prev) => dropLast(prev));
+                          setIsEditingLastMessage(false);
+                        }}
+                        aria-label="Delete message"
+                        className="flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-knight-700/60 text-knight-300 transition-colors hover:bg-void-800 hover:text-mist-100"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             );
