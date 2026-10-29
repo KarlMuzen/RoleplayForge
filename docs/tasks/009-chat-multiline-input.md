@@ -16,9 +16,9 @@ Done when: CI green. Owner on the preview, phone: Enter makes a new line, the bo
 Decisions: 18.
 
 ## Progress (executor, update every commit)
-Done: Replaced the single-line Chat input with an autosizing textarea, set the input row to `items-end`, and wired Enter behavior to the planned helper.
-Left: Add the Enter-key helper and unit tests, open PR, and merge only after `test-and-lint` is green.
-Next action: Add `src/utils/chatKeys.ts` and its five specified test cases.
+Done: Replaced the single-line Chat input with an autosizing textarea, set the input row to `items-end`, wired Enter behavior, and added `shouldSendOnEnter` for desktop/touch/composition handling.
+Left: Add unit tests, open PR, and merge only after `test-and-lint` is green.
+Next action: Add the five test cases in `test/chatKeys.test.ts`.
 
 ## Result (executor, when finished)
 Pull request: 
