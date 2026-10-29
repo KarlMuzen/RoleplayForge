@@ -22,9 +22,9 @@ Done when: CI green. Owner on the preview, phone: after sending a message, the r
 Decisions: 18.
 
 ## Progress (executor, update every commit)
-Done: Started Task 010 from current `main` after PR #12 merged; implementing last-message history helpers, UI actions, and focused tests.
-Left: Finish implementation, verify CI, record Result, and merge only on green `test-and-lint`.
-Next action: Add pure `chatHistory.ts` helpers/tests and wire the three last-message actions into `ChatPreviewModal.tsx`.
+Done: Added pure `chatHistory.ts` helpers for user-message detection, regenerate eligibility/history trimming, deleting the last message, and replacing its text.
+Left: Add helper tests, wire the UI actions and shared generation path, then verify CI.
+Next action: Add focused tests for all five history helpers.
 
 ## Result (executor, when finished)
 Pull request: 
