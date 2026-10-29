@@ -1,51 +1,60 @@
-# Handoff — 2026-10-29 (steps 0 and 1 done)
+# Handoff — 2026-10-29 (steps 0 and 1 done, Back-in-modals done, UI audit done)
 
 Supersedes the "Next actions" in `UI_UX_REDESIGN_SPEC.md` §17. Read this first.
 
-## Verified findings (production build of `17841bb`, Chromium/Playwright at 360/390/1280px; live deploy confirmed to be the same commit)
+## Done on `main`
 
-- **Back button left the app** and reload always returned to an empty Library. **Fixed in step 1.**
-- **Sub-nav is not sticky.** Scrolled 1500px it sat at -1435px. Scroll position also carried across tab switches (scroll reset added in step 1; sub-nav is still not sticky — step 3). The spec's "sticky sub-nav" claim was wrong.
-- **Details screen order:** first screen is Save/Export, token budget and cover art; writing fields start ~1.5 screens down. Page is 3,091px tall on a 390x844 phone. Settings is 3,537px. (step 2)
-- **Touch targets under 44px:** sub-nav tabs 29px, Help 36px, Save Card 32px; 32 undersized targets on Details. Text at 9-11px on every Forge/Test/Settings screen. (step 4)
-- **axe-core:** 3 unlabelled `<select>` on Details, 1 on Settings (critical); 1 unnamed button on Settings (critical); 11 color-contrast failures on Details, 4 on Settings. Light-theme axe results were identical to dark; not confirmed the light theme was applied — treat light theme as unchecked. (step 4)
-- **Hosting:** Vercel project is `roleplayforge` (team `xiorolab`, Hobby), not `rpforge`. It has **zero routing rules**: a direct visit to `/studio/test` returns Vercel 404 (confirmed on a phone). **Path routes are not viable; the app uses hash routes.** Do not add a catch-all rewrite unless there is a reason.
-- **Theme storage:** the real theme lives in IndexedDB (`app_theme`); localStorage `roleplay-forge-theme` is a mirror read by `public/theme-init.js`. Keep both in sync.
+- **Step 0 `b98e25d` — security headers.** `vercel.json` serves CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (HSTS comes from Vercel). Theme bootstrap moved to `public/theme-init.js`. CSP `connect-src` allows localhost for Ollama. Guard test `test/securityHeaders.test.ts`. **securityheaders.com: D -> A+.**
+- **Step 1 `bfdd6b2` — hash routing.** `src/routing/hashRoute.ts`, `src/routing/useHashRouting.ts` (mounted in `App.tsx`): `#/library`, `#/forge/<uuid>/<details|lorebook|prompt|assist>`, `#/test/<uuid>/<stress|enhancer>`, `#/settings`. Push on screen/card change, replace on sub-tab change. Unknown card or garbage hash -> Library. Reload and deep links restore card + tab (owner confirmed on phone). Flushes pending autosave before route-driven card switches. Scroll resets on screen change. Hash (not path) routes because the Vercel project has **zero routing rules**: `/studio/x` returns Vercel 404.
+- **`2986e7e` — Back closes modals.** Owner reported Back did nothing in the Guide and navigated *behind* the passkey-setup modal. `useModalA11y` now gives every open modal one history entry; Back calls the modal's own close handler (so guards still apply: passkey setup refuses to close while a recovery key is showing, and Back is re-trapped). Only the top modal reacts; closing via X/Escape removes the entry. The Guide overlay in `App.tsx` now uses the hook (Back, Escape, focus trap). 6 unit tests. Verified in Chromium for the Guide. **Not testable in the sandbox:** the real passkey (WebAuthn) flow — owner should confirm on phone.
 
-## Done
+## UI audit (Chromium via `scripts/ui-audit.py`, 390x844, owner's Chub Helper v2 card imported: 9 KB description, 10 lorebook entries)
 
-### Step 0 — security headers (`b98e25d`)
-`vercel.json` serves CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (HSTS comes from Vercel). Inline theme script moved to `public/theme-init.js`. CSP `connect-src` allows `http://localhost:*` / `http://127.0.0.1:*` for Ollama. `test/securityHeaders.test.ts` guards parity with `public/_headers`. **Live result: securityheaders.com grade D -> A+ (all six headers present).**
+No screen overflows horizontally. Per screen (dark theme unless noted):
 
-### Step 1 — hash routing
-- `src/routing/hashRoute.ts`: `#/library`, `#/forge[/<uuid>[/details|lorebook|prompt|assist]]`, `#/test[/<uuid>[/stress|enhancer]]`, `#/settings`. Unknown routes parse to `null`.
-- `src/routing/useHashRouting.ts`, mounted in `App.tsx`: store is still the source of truth. Store -> URL: **push** when the screen or card changes, **replace** when only a sub-tab inside the same section changes. URL -> store on `popstate` and on load. Unknown card id or garbage hash -> Library (toast, no extra history entry). Empty hash normalised to `#/library`.
-- Before a route-driven card switch the hook flushes a pending autosave (D-13), covered by a test.
-- `App.tsx` scrolls to top when the screen changes.
-- Tests: `test/hashRoute.test.ts`, `test/hashRouting.test.tsx` (11 tests). Browser e2e (390x844, new CSP) confirmed: Back/Forward step through screens, reload and deep link restore card + tab, unknown card and garbage hash go to Library, scroll resets, no CSP console errors.
-- Behaviour to know: Back from Library root leaves the app (platform default). Sub-tab changes in Forge/Test are replaced, so Back goes to the previous *screen*, not the previous sub-tab.
+| Screen | targets <44px | text <12px (elements) | axe (non-minor) |
+|---|---|---|---|
+| Library + card | 6 | 2 | contrast 1, no h1 |
+| Guide (dark / light) | 15 / 12 | 12 / 11 | contrast 1 / **14** |
+| Details | **40** | 33 | contrast 13, select-name 3, scrollable-region-focusable 1 |
+| Lorebook | 35 | 19 | contrast 4, label 1 |
+| Prompt | 8 | 19 | contrast 11, scrollable-region-focusable 1 |
+| Assist | 13 | 9 | button-name 2, contrast 4 |
+| Test | 16 | 6 | contrast 7, select-name 1 |
+| Enhancer | 6 | 5 | contrast 4 |
+| Settings | 20 | 27 | button-name 1, select-name 1, contrast 4 |
+| Library (light) | 3 | 1 | contrast **8** |
 
-## Known gaps / follow-ups
+The **light theme has materially more contrast failures** than dark (Library 8 vs 1, Guide 14 vs 1).
 
-1. **D-13 on the Library tap path:** `selectCardForEditing` in `src/store/slices/cardSlice.ts` still does not flush a pending autosave. The router flushes for Back/Forward/deep links only. Move `flushPendingAutosave` (in `useHashRouting.ts`) into `selectCardForEditing` and add a store test. It was kept out of step 1 only to keep the commit small.
-2. Hash routing is not yet exercised on a real phone/PWA (see checklist).
-3. Android installed-PWA smoke test not done (back button in standalone mode, keyboard over bottom nav, theme-color, update prompt, uninstall data retention).
+Visual findings (screenshots reviewed: Library, Details, Lorebook, Guide light/dark):
+1. **Guide close band.** `GuideView.tsx` line ~183: `sticky top-0 z-30 -mt-4 ... bg-void-950/95 backdrop-blur-xl py-2` wraps only the X button. At scroll top it is an empty ~110px grey band; when scrolled it covers the content (it clipped the title in the owner's screenshot). Fix: make the wrapper `sticky top-0 z-30 h-0 flex justify-end` with no background, and give the X button a shadow, so it floats without taking space.
+2. **Details first screen has no writing fields** (Save/Export, token budget, cover art come first). With a real card the token header also wraps to two lines ("(4907 / 4096 OpenAI Tokens)").
+3. **Broken cover image has no fallback**: when the remote avatar fails (offline PWA, blocked host — imported cards point at `avatars.charhub.io`), the browser's alt text and broken icon render inside the frame. Add an `onError` fallback to the initials tile. (The sandbox has no network, so it hit this; real users hit it offline.)
+4. **Header is inconsistent across tabs:** the `Chat` button shows on Lorebook but not on Details.
+5. Lorebook: delete icon sits next to copy icon at touch size; not tested whether delete confirms. Check.
+6. `Service worker registration failed ... reading 'waiting'` appeared in the console when service workers were blocked (probably a test artifact). `usePWAUpdate` should tolerate an undefined registration; verify before changing.
+7. Not yet reviewed visually: Prompt, Assist, Test, Enhancer, Settings screenshots, light theme beyond Library/Guide, desktop (the first desktop run crashed because a new browser context has an empty library; fixed in the committed script by importing the card in the desktop context).
 
-## Phone checklist for the owner
+## Next steps, in order (one commit each; verify `main` SHA first; `npm run lint && npm test && npm run build`)
 
-1. Open the app, create/open a card, switch Forge tabs, then press system Back: you should step back through screens, not leave the app until Library.
-2. Reload on a card URL: the same card and tab reopen.
-3. Light theme saved + reload: no dark flash. Use the app for a minute under the new CSP; report anything broken.
-4. Ollama connection test to `http://localhost:11434` (Chrome may prompt for local-network access on https; untested).
+Note for whoever edits: `push_files` needs full file contents, so edits to big files (`GuideView.tsx` 664 lines, `cardSlice.ts` ~700 lines) are expensive through the GitHub tool; prefer a clone + normal git push if available.
 
-## Next steps, in order (one commit each; verify `main` SHA first; run `npm run lint && npm test && npm run build`)
-
-2. **Reorder Details** (spec UX-DET-1): name + completeness, then description/personality/scenario, greetings, lorebook summary, advanced prompts, metadata, then cover/export in one collapsed section. Token budget becomes a compact chip.
-3. **One sticky ContextBar** replacing `WorkspaceSubNav` and `LabSubNav`: sticky with safe-area top padding, tabs >=44px, Undo/Redo on all Forge tabs. Routes already exist, so tabs can become real links/buttons that only call `setActiveTab`.
-4. **Accessibility pass:** label the 4 `<select>`s, name the unnamed button, 12px minimum text, 44px targets, fix contrast failures; then add axe + a mobile Playwright smoke test to CI (spec P2-7). The e2e flow used for step 1 is a good template.
+2. **Quick wins batch:** Guide close band (finding 1), cover-image `onError` fallback (3), `Chat` button consistency (4), label the 5 unlabelled `<select>`s and 3 unnamed buttons, 12px minimum text.
+3. **Reorder Details** (spec UX-DET-1): name + completeness, then description/personality/scenario, greetings, lorebook summary, advanced prompts, metadata; cover/export collapsed into one section at the bottom; token budget as a compact chip.
+4. **One sticky ContextBar** replacing `WorkspaceSubNav` and `LabSubNav`: sticky with safe-area top padding, tabs >=44px, Undo/Redo on all Forge tabs. Routes already exist, so tabs only call `setActiveTab`.
+5. **Contrast pass, light theme first**, then tap targets to 44px via one shared class; then add axe + a mobile Playwright smoke test to CI (spec P2-7) based on `scripts/ui-audit.py`.
+6. **D-13 on the Library tap path:** `selectCardForEditing` in `cardSlice.ts` still does not flush a pending autosave (the router does for Back/Forward/deep links). Move `flushPendingAutosave` from `useHashRouting.ts` into it, with a store test.
 
 Defer: semantic token layer, tablet rail, import receipts, per-hunk patch selection, standalone lorebook shelf, Enhancer move.
 
+## Owner phone checklist (still open)
+
+1. Passkey setup: press Back while the modal is open (it should close, or stay open and not navigate if a recovery key is showing).
+2. Guide: Back, Escape-equivalent (X) both close it; afterwards Back still steps through screens normally.
+3. Android installed-PWA smoke test (standalone Back behaviour, keyboard over bottom nav, theme-color, update prompt, uninstall data retention).
+4. Ollama connection test to `http://localhost:11434` (Chrome may prompt for local-network access on https; untested).
+
 ## Guardrails (unchanged)
 
-Do not change DB name `CardCrucibleDB`, settings keys, `enc.v1.` format, passkey or sync identifiers. No origin or project rename. Verify `main` head before each direct commit.
+Do not change DB name `CardCrucibleDB`, settings keys, `enc.v1.` format, passkey or sync identifiers. No origin or project rename. Verify `main` head before each direct commit. The owner's helper card is a test fixture only; it is not committed (ask before adding it to the repo).
