@@ -33,15 +33,15 @@ Decisions: 6, 8.
 
 ## Progress (executor, update every commit)
 Done: Implemented Parts A-C in the three specified components.
-Left: Open PR, verify CI, and record the final PR/CI/merge outcome in Result.
-Next action: Open the PR from wip/007 to main and verify test-and-lint.
+Left: Verify the fresh CI run after this Result update, then squash-merge and mark the task done on main.
+Next action: Wait for test-and-lint on the Result update; manually squash-merge once it is green.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Preview link: 
-Deviations from the card: 
+Pull request: #9 — https://github.com/KarlMuzen/RoleplayForge/pull/9
+Checks run by executor: Not run locally; git clone failed because this environment could not resolve github.com.
+CI: Green on initial run 40839544376 (lint, tests, production build). This task-card update will trigger a fresh required CI run before merge.
+Preview link: https://roleplayforge-git-wip-007-xiorolab.vercel.app
+Deviations from the card: No scope deviations. Auto-merge was attempted after CI passed, but GitHub rejected it with “Pull request is in clean status”; it did not complete. Manual squash merge will be used once the fresh CI run is green.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
