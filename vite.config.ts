@@ -62,7 +62,7 @@ export default defineConfig(() => {
           short_name: 'Forge',
           description: 'The AI roleplay workbench',
           theme_color: '#191816',
-          background_color: '#191816',
+          background_color: '#22211E',
           display: 'standalone',
           orientation: 'any',
           start_url: '/',
@@ -145,7 +145,7 @@ export default defineConfig(() => {
     server: {
       host: '0.0.0.0',
       port: 3000,
-      hmr: process.env.DISABLE_HMR !== 'true',
+      hmr: process.env.DISABLE_HMR === 'true' ? false : undefined,
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };
