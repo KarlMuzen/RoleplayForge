@@ -1,8 +1,8 @@
 # PROJECT_STATE
 
-Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/HANDOFF.md`, then `docs/ROADMAP.md`.
+Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed.
 
-**Last updated:** 2026-10-29 · **`main` head when written:** `f93096d`
+**Last updated:** 2026-10-29 · **`main` head when written:** `7cbd503`
 
 ## Goal
 
@@ -12,7 +12,7 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 
 - React 19, Vite 6, TypeScript, Tailwind 4, Zustand 5, Dexie (IndexedDB), Zod, `gpt-tokenizer`, vitest. Deployed on Vercel as a PWA.
 - `src/`: `components`, `constants`, `db`, `hooks`, `io` (formats), `routing` (hash routes), `schemas`, `services` (AI providers), `store` (slices), `types`, `utils`.
-- `docs/`: `HANDOFF.md` (latest session notes), `ROADMAP.md` (priority plan + phases), `PROJECT_STATUS.md`, `PLATFORM_SUPPORT.md`, `TESTING_STRATEGY.md`, `UI_UX_REDESIGN_SPEC.md`, `PRODUCT_VISION.md`.
+- `docs/`: `AI_WORKFLOW.md` (how the two AIs work), `tasks/` (task cards), `HANDOFF.md` (latest session notes), `ROADMAP.md` (priority plan + phases), `PROJECT_STATUS.md`, `PLATFORM_SUPPORT.md`, `TESTING_STRATEGY.md`, `UI_UX_REDESIGN_SPEC.md`, `PRODUCT_VISION.md`.
 - Scripts: `npm run lint && npm test && npm run build`. UI audit: `scripts/ui-audit.py`.
 
 ## Decisions
@@ -28,12 +28,22 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 9. Token numbers come from one function. Counts are `gpt-tokenizer` estimates and are labelled so. The breakdown must sum to the headline.
 10. A revisions store, if added, is additive and capped (about 20 per card). No migration rewrites existing stores.
 11. Still deferred: semantic token layer, tablet rail, standalone lorebook shelf, Enhancer move, per-hunk selection.
+12. Two-AI workflow: Claude plans and reviews, ChatGPT executes. Hand-offs go through the repo (task cards in `docs/tasks/`), never through pasted chat. Rules in `docs/AI_WORKFLOW.md`.
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-Priority 1, HANDOFF step 2: quick-wins batch. Verify `main` head first.
+Priority 1, HANDOFF step 2: quick-wins batch. No task card written yet. Next action (Claude): split step 2 into small cards in `docs/tasks/`, one outcome and one commit each. Verify `main` head first.
+
+## In progress
+
+None. (Executor: list any `wip/NNN` branch here with done, left, next action.)
+
+## Done (last 10)
+
+- `7cbd503` ROADMAP priority plan and this file created.
+- `docs/AI_WORKFLOW.md` added in the commit after `7cbd503`.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
@@ -68,4 +78,4 @@ Priority 1, HANDOFF step 2: quick-wins batch. Verify `main` head first.
 
 ## Handoff
 
-On "handoff", summarize this file plus the latest `docs/HANDOFF.md` in a short paste-ready block.
+On "handoff", update the task card's Progress, then give a paste block of at most 10 lines: goal, current task, branch if any, next action. A new chat starts with the bootstrap line in `docs/AI_WORKFLOW.md`.
