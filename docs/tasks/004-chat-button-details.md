@@ -13,15 +13,15 @@ Decisions: HANDOFF finding 4.
 
 ## Progress (executor, update every commit)
 Done: Changed only the Chat button condition in `WorkspaceSubNav.tsx` so it renders whenever `activeCard` exists, including on Details. Kept `sm:hidden` and all button styling unchanged.
-Left: Open PR, verify CI, and record the final result.
-Next action: Open PR to main.
+Left: Verify CI for the final task-card update, retry auto-merge, and confirm the squash merge.
+Next action: Enable auto-merge when the new required check is pending.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Preview link: 
-Deviations from the card: 
+Pull request: #6 — https://github.com/KarlMuzen/RoleplayForge/pull/6
+Checks run by executor: Not run locally; `git clone` could not resolve `github.com`. GitHub CI is authoritative.
+CI: `test-and-lint` passed on implementation commit `29213f49c6c40dca0a470ad47a75df2432ebec6d` (lint, tests, production build). The final task-card update will trigger a fresh required check before merge.
+Preview link: https://roleplayforge-git-wip-004-xiorolab.vercel.app
+Deviations from the card: None in the code change. GitHub rejected the first auto-merge request with “Pull request is in clean status”; auto-merge will be retried during the fresh CI run, with manual squash merge as the fallback.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
