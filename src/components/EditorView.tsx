@@ -27,6 +27,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { IdentitySection } from './editor/IdentitySection';
+import { MetadataSection } from './editor/MetadataSection';
 import { GreetingsSection } from './editor/GreetingsSection';
 import { LorebookLinksSection } from './editor/LorebookLinksSection';
 import { AdvancedPromptsSection } from './editor/AdvancedPromptsSection';
@@ -734,6 +735,8 @@ export const EditorView: React.FC = () => {
             });
           }}
         />
+
+        <MetadataSection cardData={d} updateActiveCardData={updateActiveCardData} />
 
         <details className="bg-void-900 border border-knight-700/40 rounded-2xl shadow-sm">
           <summary className="min-h-11 flex items-center px-4 cursor-pointer text-sm font-semibold text-mist-100">
