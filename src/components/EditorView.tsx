@@ -6,6 +6,7 @@ import { useToastStore } from '../store/useToastStore';
 import { countTokens, countTokensAsync, getTokenSchemeName } from '../utils/tokenizer';
 import { exportCardData, importCardData } from '../io';
 import { getCardCoverUrl } from './GalleryView';
+import { CardAvatar } from './CardAvatar';
 import type { StoredCard, CardSnapshot } from '../db';
 import { generateCharacterLogoBytes } from '../utils/logoGenerator';
 import { exportVisualCardPng, renderVisualCardCanvasBytes } from '../utils/visualCardExporter';
@@ -14,7 +15,6 @@ import {
   Undo,
   Redo,
   Upload,
-  User,
   Wand2,
   AlertTriangle,
   CheckCircle2,
@@ -679,19 +679,16 @@ export const EditorView: React.FC = () => {
       {/* COVER / AVATAR CARD HEADER */}
       <div className="bg-void-900 border border-knight-700/40 rounded-2xl p-4 md:p-5 flex flex-col sm:flex-row items-center gap-4 shadow-sm min-w-0">
         <div className="relative w-24 h-32 sm:w-28 sm:h-36 shrink-0 rounded-xl overflow-hidden bg-void-950 border border-knight-700/40 flex items-center justify-center group shadow-inner">
-          {coverUrl ? (
-            <img
-              src={coverUrl}
-              alt={d.name || 'Character Cover'}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center text-knight-500 p-2 text-center">
-              <User className="w-8 h-8 mb-1 opacity-60" />
-              <span className="text-[10px] text-knight-500 font-medium">No Cover</span>
-            </div>
-          )}
+          <CardAvatar
+            src={coverUrl}
+            name={d?.name || ''}
+            alt={d?.name || 'Character Cover'}
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover"
+            fallbackClassName="text-3xl"
+            fallbackIconClassName="w-8 h-8 mb-1 opacity-60"
+            emptyLabel="No Cover"
+          />
         </div>
 
         <div className="flex-1 space-y-2.5 text-center sm:text-left">

@@ -1,6 +1,6 @@
 # Task 002: CardAvatar with fallback (Library and Details)
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: A card cover that fails to load shows the initials tile instead of a broken image, in the Library grid and the Details editor.
 Files to touch: `src/components/CardAvatar.tsx` (new), `src/components/gallery/GalleryCardsGrid.tsx`, `src/components/EditorView.tsx`, `test/CardAvatar.test.tsx` (new)
@@ -17,9 +17,9 @@ Done when: CI green. Owner on the preview: open a card whose avatar address is d
 Decisions: 16.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Added the shared `CardAvatar` component with source-specific error state, initials and User-icon fallback, and the site-specific empty label/sizing props. Replaced the Library and Details cover blocks and added component tests for the required fallback cases.
+Left: Open PR, verify CI, and record the final result.
+Next action: Open PR to main and check CI.
 
 ## Result (executor, when finished)
 Pull request: 
