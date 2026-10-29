@@ -1,6 +1,6 @@
 # Task 020: Paste raw text or JSON, get a character card
 
-Status: in progress
+Status: done
 Review: required
 Goal: In the Library, the owner opens "Paste text or JSON", pastes any raw block (card JSON of any known layout, unknown JSON, labeled text, or plain prose), sees what the app understood, and creates a card with one tap. No file, no AI, no network.
 Files to touch: new `src/core/pasteImport.ts`; new `src/components/gallery/PasteImportModal.tsx`; `src/components/gallery/GalleryToolbar.tsx` (one new menu item and one new prop); `src/components/GalleryView.tsx` (modal state and one handler); new `test/pasteImport.test.ts`.
@@ -65,14 +65,16 @@ Done when: CI green; Claude's review is Approved (one diff read; check that noth
 Decisions: 1 (no silent data loss), 2, 7 (nothing leaves the device here).
 
 ## Progress (executor, update every commit)
-Done: PR #22 remains open on wip/020; round 2 fixes the fence-pattern string escapes and adds the fenced labeled-text regression test. `test-and-lint` passed on implementation commit 1a5ac62 (run 40944527491).
-Left: Verify `test-and-lint` on the final PR head after this status update, then stop for required Claude review.
-Next action: Confirm the final PR head check is green; do not merge.
+Done: Task 020 merged by squash in PR #22 on 2026-10-29 (`c0db92c`). Claude approved the round-two changes on `d213728`; `test-and-lint` passed on both the approved PR head and merge commit (run 40945806311). Vercel production deployment `dpl_AhsM5Trh8HCypMmekCW9CF2WL6ww` is READY for merge commit `c0db92c`, and `roleplayforge.vercel.app` points to it.
+Left: Owner phone check of the Library paste-to-card flow.
+Next action: Owner checks a pasted JSON card and labeled-text block in the installed app; any issues become a new task.
 
 ## Result (executor, when finished)
 Pull request: #22 — https://github.com/KarlMuzen/RoleplayForge/pull/22
-Checks run by executor: Not run locally; GitHub CI is authoritative.
-CI: Round 2 implementation commit 1a5ac62 passed `test-and-lint` (run 40944527491); verify the new final-head check after this task-card status update.
+Merge commit: `c0db92cdb22d3b084ef0143eb76a25cf5f3162a9` (squash).
+CI: `test-and-lint` passed on approved PR head `d21372846b6ae8f926be2845b67d0dd04a90e917` and merge commit `c0db92cdb22d3b084ef0143eb76a25cf5f3162a9` (run 40945806311).
+Production: READY deployment `dpl_AhsM5Trh8HCypMmekCW9CF2WL6ww` serves merge commit `c0db92cdb22d3b084ef0143eb76a25cf5f3162a9`; alias `roleplayforge.vercel.app` points to that deployment. No recovery deployment was needed.
+Checks run by executor locally: Not run; GitHub CI is authoritative.
 Deviations from the card: None.
 
 ## Review (Claude, required)
