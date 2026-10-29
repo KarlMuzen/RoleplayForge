@@ -1,6 +1,6 @@
 # Task 014: Details, token budget and health check become one compact row
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: The big token panel and the health banner on the Details tab are replaced by one short row of two chips that opens to the full details. The row never wraps on a 393px phone.
 Files to touch: `src/components/EditorView.tsx`
@@ -17,9 +17,9 @@ Done when: CI green. Owner, phone, Details tab: under the toolbar one short row 
 Decisions: 6, 8, 9, 17, 19.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Started Task 014 from the verified post-Task-013 main head; inspected the token panel, context-limit control, breakdown chips, and health banner to preserve calculations and warnings verbatim.
+Left: Combine them under a compact two-chip details summary below the toolbar; verify CI and merge only on green `test-and-lint`.
+Next action: Replace the two large panels with the compact summary and expanded details.
 
 ## Result (executor, when finished)
 Pull request: 
