@@ -1,6 +1,6 @@
 # Task 007: Rating filter shift, Assist layout, Chat header overflow
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: (a) Switching the Library rating filter no longer shifts or resizes the pill. (b) On a phone, the Assist message box sits fully above the bottom nav and the panel title is readable. (c) On a phone, the Chat header shows the character name and the avatar no longer overlaps the User-name box.
 Files to touch: `src/components/gallery/GalleryFilterBar.tsx`, `src/components/AssistantView.tsx`, `src/components/ChatPreviewModal.tsx`
@@ -32,9 +32,9 @@ Done when: CI green (existing tests still pass). Owner on the preview, phone: (a
 Decisions: 6, 8.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Implemented Parts A-C in the three specified components.
+Left: Open PR, verify CI, and record the final PR/CI/merge outcome in Result.
+Next action: Open the PR from wip/007 to main and verify test-and-lint.
 
 ## Result (executor, when finished)
 Pull request: 
