@@ -1,6 +1,6 @@
 # Task 018: Undo, Redo and save status in the ContextBar on every Forge tab
 
-Status: not started
+Status: in progress
 Review: skip
 Goal: Undo and Redo are reachable on Details, Lorebook, Prompt and Assist, next to a small save-status chip. They are not shown on Test tabs, which do not edit the card.
 Files to touch: `src/components/ContextBar.tsx`, `src/components/EditorView.tsx`, `test/ContextBar.test.tsx`.
@@ -15,9 +15,9 @@ Done when: CI green. Owner, phone: on Lorebook and Assist the Undo and Redo butt
 Decisions: 3, 6, 17, 19, 24.
 
 ## Progress (executor, update every commit)
-Done:
-Left:
-Next action:
+Done: Verified `main` at `0632297da7fbab7d52da832e7f544480fc92f401`; Task 017 is squash-merged and its reviewed PR CI passed. Created `wip/018`.
+Left: Add the ContextBar actions and save-state chip, remove only the duplicate Editor toolbar buttons, and extend tests.
+Next action: Implement the task-card changes, then open a PR and verify CI.
 
 ## Result (executor, when finished)
 Pull request:
