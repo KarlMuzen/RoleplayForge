@@ -1,6 +1,6 @@
 # Task 019: Chat text formatting in the SillyTavern way
 
-Status: not started
+Status: in progress
 Review: required
 Goal: Chat messages (card and user) show `*actions*`, `**bold**`, `~~strike~~` and `` `code` `` correctly, and broken or half-finished asterisks no longer show as stray `*` characters. Behavior follows SillyTavern's chat display, written from scratch.
 Files to touch: new `src/core/chatMarkup.ts`; `src/components/ChatPreviewModal.tsx` (only `renderRoleplayText` and its one call site); new `test/chatMarkup.test.ts`.
@@ -22,7 +22,7 @@ Design (the whole spec; do not improvise):
 3. In `ChatPreviewModal.tsx`, `renderRoleplayText(text)` calls `parseChatMarkup(fixChatMarkup(text))` and maps tokens to elements: italic keeps today's classes (`<em className="text-amber-300/90 not-italic italic font-serif opacity-90">`), bold `<strong className="font-semibold">`, strike `<s>`, code `<code className="rounded bg-black/20 px-1 font-mono text-[0.9em]">`, text `<span>`. Keep `whitespace-pre-wrap` on the bubble, so single newlines stay line breaks.
 4. User messages use the same function (replace `isUser ? m.text : renderRoleplayText(m.text)` with the single call). The message edit box and stored text stay raw.
 5. The stored message, the text sent to the AI, copy, and edit all use the raw text. Only the display changes.
-Tests (`test/chatMarkup.test.ts`, vitest, no DOM). Each case: input, then expected tokens (type and text only, newline tokens omitted below):
+Tests (`test/chatMarkup.test.ts`, vitest, no DOM). Each case: input, then expected tokens (type and text only, newline tokens included where specified):
    - `*waves* hello` gives italic "waves", text " hello".
    - `**bold**` gives bold "bold".
    - `* spaced *` gives italic "spaced".
@@ -44,9 +44,9 @@ Done when: CI green; Claude's review is Approved (one diff read, plus a check th
 Decisions: 2 (pure logic in `src/core/`), 18 (chat is a card test bench).
 
 ## Progress (executor, update every commit)
-Done:
-Left:
-Next action:
+Done: Verified updated `main` at `01ab1a5eafab3ff239f5b378dd75173ef9c0eda8`; Task 018 is merged. Created `wip/019`.
+Left: Implement the pure formatter/parser, wire only the specified render function and user-message call site, add the no-DOM tests.
+Next action: Write the parser from the task-card rules only, then run CI and request Claude review.
 
 ## Result (executor, when finished)
 Pull request:
