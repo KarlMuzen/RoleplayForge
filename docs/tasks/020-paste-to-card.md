@@ -19,7 +19,7 @@ Design (the whole spec; do not improvise):
 4. If JSON parsing fails, look for labeled text (step 6). If fewer than 2 labeled lines match known labels, it is `plain-text` (step 7). A JSON failure must never throw out of `readPastedText`; it returns a result.
 5. Field mapper (shared by unknown JSON and labeled text). Normalize every key or label with: lowercase, then remove everything except letters and digits. Alias table, normalized form to field (first match wins, in this order):
    - `name`: name, charactername, charname, character, title
-   - `description`: description, bio, biography, about, summary, profile, overview
+   - `description`: description, bio, biography, backstory, background, history, story, about, summary, profile, overview
    - `personality`: personality, traits, persona, temperament, charactertraits
    - `scenario`: scenario, setting, situation, world, context
    - `first_mes`: firstmessage, firstmes, greeting, opening, openingmessage, openingline, startingmessage
@@ -31,7 +31,7 @@ Design (the whole spec; do not improvise):
    - `tags`: tags (string split on commas, or array of strings)
    - `alternate_greetings`: alternategreetings, greetings (array of strings only)
    - Lorebook: keys `character_book`, `lorebook`, `world_info`, `worldinfo` are passed through to `normalizeRawToV3Card` untouched, which already handles them.
-   Build one flat object with the canonical keys and call `normalizeRawToV3Card(flat)`. Values that are not strings are converted: numbers and booleans with `String`, arrays of strings joined with `, `, objects and other arrays with compact `JSON.stringify`.
+   If two source keys map to the same field (for example `Bio` and `Backstory`), the first in source order fills the field; the later one is appended to Description as `Key: value` and listed in `addedToDescription`. Never overwrite, never drop. Build one flat object with the canonical keys and call `normalizeRawToV3Card(flat)`. Values that are not strings are converted: numbers and booleans with `String`, arrays of strings joined with `, `, objects and other arrays with compact `JSON.stringify`.
    Nothing may be dropped silently: every key or label with no alias is appended to the Description as its own line `Key: value`, after any real description text, separated by a blank line. List those keys in `addedToDescription`, and add the warning "Some data had no matching field and was added to Description." If Description would pass `LIMITS.LONG_TEXT`, do not cut it: keep it whole and add the warning "Description is longer than the card limit; shorten it before export." (the existing validation already flags length).
 6. Labeled text: split into lines. A label line starts at the beginning of a line, optionally after `#` marks, `**`, `[` or `-`, has a label of at most 40 characters, then `:` (value on the same line) or ends the line when it was a `#` heading. The label must normalize to a key in the alias table. A value continues on the following lines until the next label line. Unknown labels followed by a colon inside a value are NOT labels (only known labels start a new field, so prose like "Note: be kind" inside a value stays in the value). Labeled mode needs at least 2 matched known labels; text before the first label line becomes Description. `{{char}}` and `{{user}}` are left as written. Result kind `labeled-text`, then the mapper in step 5.
 7. Plain text: Description is the whole text (same no-cut rule), no First message is invented, Name is empty, warning "Nothing recognized. The text was saved as Description. Add a name before creating." The old file fallback is not used and not changed.
@@ -46,6 +46,7 @@ Tests (`test/pasteImport.test.ts`, vitest, no DOM; one test per line):
    - Trailing commas are accepted.
    - A braces-inside-string case (`"description":"use { and }"`) is not cut early.
    - Unknown JSON `{"Character Name":"Mira","Backstory":"b","Opening Line":"hi","Hair":"red","Age":27}` gives `unknown-json`, Name Mira, Description starts with "b" and contains `Hair: red` and `Age: 27`, First message "hi", `addedToDescription` has Hair and Age.
+   - Unknown JSON `{"Bio":"x","Backstory":"y"}`: Description starts with "x" and contains `Backstory: y`; `addedToDescription` has Backstory.
    - Unknown JSON with `world_info` entries passes the lorebook through.
    - A `lorebook_v3` JSON gives `lorebook-json` and no card.
    - An array of two cards uses the first and warns.
