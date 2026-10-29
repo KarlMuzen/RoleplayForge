@@ -148,6 +148,11 @@ function parseSegment(
       const contentStart = index + marker.delimiter.length;
 
       if (marker.type === 'code') {
+        if (line[contentStart] === '`') {
+          appendText(tokens, '``');
+          index = contentStart + 1;
+          continue;
+        }
         const closingIndex = findCodeClose(line, contentStart);
         if (closingIndex >= 0) {
           const codeText = line.slice(contentStart, closingIndex);
