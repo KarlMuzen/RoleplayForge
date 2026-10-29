@@ -20,9 +20,9 @@ This order supersedes the phase order below where they differ. The phases keep t
 
 ### Priority 1 - Phone usability
 
-- [ ] HANDOFF step 2: quick-wins batch (Guide close band, cover-image fallback, consistent Chat button, label unlabelled controls, 12px minimum text).
-- [ ] HANDOFF step 3: reorder Details so writing fields come first.
-- [ ] HANDOFF step 4: one sticky ContextBar replacing `WorkspaceSubNav` and `LabSubNav`, with Undo/Redo on all Forge tabs.
+- [x] HANDOFF step 2: quick-wins batch except the 12px minimum text, which is done per screen (Tasks 001-007).
+- [x] HANDOFF step 3: reorder Details so writing fields come first (Tasks 013-015).
+- [x] HANDOFF step 4, first part: one ContextBar replacing `WorkspaceSubNav` and `LabSubNav`, Undo/Redo and save chip on Forge tabs (Tasks 017-018). Still open: overflow menu, card switcher sheet.
 - [ ] Phone chrome budget: one top bar (back, name, status chip, undo/redo), one tab strip, bottom nav, nothing else fixed. Save state is a small dot, not a bar.
 - [ ] Status chip shows always-on tokens and issue count. Tapping it opens one Status sheet with the token breakdown and the issues.
 - [ ] Keyboard-open mode: hide bottom nav and shrink the header so typing keeps most of the screen.
@@ -67,6 +67,19 @@ This order supersedes the phase order below where they differ. The phases keep t
 - [ ] Table of which sampling settings each provider supports, flagging non-portable ones.
 - [ ] Preset export that never includes keys or connection secrets.
 - [ ] SillyTavern prompt-manager presets wait until their semantics are verified.
+
+### Next cards (ordered 2026-10-30; only the first is written)
+
+Source: `docs/research/001-st-spec-verification.md` and its cross-check section. Only items verified there or in code are listed. Each becomes a card when it is next to run.
+
+1. **021** (carded): SillyTavern standalone lorebook import, plus a UTF-8 round-trip guard test.
+2. **022 Linter additions:** invisible characters and curly quotes in lorebook keys (with one-tap fix); `{ { char } }` and single-brace `{user}`; 1-3 letter keys as a suggestion; empty Personality becomes info-only (Decision 8). Not included until verified: `{{Char}}` letter case, negative-prompt "paradox", Author's-Note position mismatch, `#` / `[` stop sequences (research 001: not an ST default), the 2,000-token threshold.
+3. **023 Conversion receipts (Priority 3):** preserved, transformed, unsupported, dropped, with field path and reason, after every import and export. `@@depth N` to `extensions.depth` and position 4 is our own lossy conversion (ST does not do it); log it, keep the original lines. CHARX to PNG lists every dropped asset by type. Read both `embeded://` and `embedded://`, write `embeded://`.
+4. **024 Lorebook budget and size:** wording "low order drops first when the budget is hit, and it stops at the first overflow" (research 001, claim 2); duplicate-entry check; entry list in pages of 25 only after measuring a 600-entry fixture.
+5. **025 Syntax ribbon:** a 44px bar above the keyboard with `{{char}}`, `{{user}}`, `<START>` and quotes, built together with keyboard-open mode (Priority 1). Needs a check of `visualViewport` behavior on Android Chrome first.
+6. **Open decision (owner needed):** PNG duplicate-chunk choice, see `PROJECT_STATE.md` risks. Needs real exported fixtures first (research 001, open item 1).
+
+Parked: `@@` decorator down-conversion for V2 export (ST strips leading `@@` lines itself; other frontends unchecked); SHA-256 receipt signing (no user need).
 
 ### Working rules
 
