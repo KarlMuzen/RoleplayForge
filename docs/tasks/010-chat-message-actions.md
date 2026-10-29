@@ -22,9 +22,9 @@ Done when: CI green. Owner on the preview, phone: after sending a message, the r
 Decisions: 18.
 
 ## Progress (executor, update every commit)
-Done: Added all five pure `chatHistory.ts` helpers and focused tests covering no-user regeneration, group-turn trimming, deletion, replacement, and immutability.
-Left: Wire the last-message action row, inline edit mode, regenerate/send shared generation path, then verify CI.
-Next action: Update `ChatPreviewModal.tsx` without changing the header or input bar.
+Done: Added all five pure `chatHistory.ts` helpers and tests; wired the last-message-only action row, inline edit/save/cancel, delete, and regenerate through the same generation/error/typing path as Send. Header and Task 009 input bar remain intact.
+Left: Review scope and code, open PR, verify `test-and-lint`, and merge only when green.
+Next action: Inspect the current diff and create the Task 010 PR.
 
 ## Result (executor, when finished)
 Pull request: 
