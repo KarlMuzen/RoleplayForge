@@ -22,6 +22,8 @@ import { GalleryToolbar } from './gallery/GalleryToolbar';
 import { GalleryImportStatus } from './gallery/GalleryImportStatus';
 import { GalleryFilterBar } from './gallery/GalleryFilterBar';
 import { GalleryCardsGrid } from './gallery/GalleryCardsGrid';
+import { PasteImportModal } from './gallery/PasteImportModal';
+import type { CharacterCardV3 } from '../schemas/cardSchema';
 import { getCardCoverUrl, getCardRating, type DuplicateChoice } from './gallery/galleryUtils';
 
 export { getCardCoverUrl, getCardRating };
@@ -66,6 +68,7 @@ export const GalleryView: React.FC = () => {
   const [isChubModalOpen, setIsChubModalOpen] = useState(false);
   const [chubUrlInput, setChubUrlInput] = useState('');
   const [isChubImporting, setIsChubImporting] = useState(false);
+  const [isPasteModalOpen, setIsPasteModalOpen] = useState(false);
 
   // Rating filter state
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<'all' | 'sfw' | 'nsfw' | 'unrated'>('all');
@@ -175,6 +178,29 @@ export const GalleryView: React.FC = () => {
     } finally {
       setIsChubImporting(false);
     }
+  };
+
+  const handleCreateFromPaste = async (
+    card: CharacterCardV3,
+    embeddedAssets?: Record<string, Uint8Array>
+  ): Promise<boolean> => {
+    setImportError(null);
+    setImportWarning(null);
+    setImportSuccessMessage(null);
+    applyDuplicateChoiceToAllRef.current = null;
+
+    const match = findDuplicateCard(cards, card);
+    let overwriteUuid: string | undefined;
+    if (match) {
+      const choice = await askDuplicateChoice('Pasted text', match.existing.name, match.kind);
+      if (choice === 'cancel') return false;
+      if (choice === 'overwrite') overwriteUuid = match.existing.uuid;
+    }
+
+    await importCardRecord(card, embeddedAssets, overwriteUuid);
+    setImportSuccessMessage(`Successfully imported "${card.data.name}" from pasted text!`);
+    setIsPasteModalOpen(false);
+    return true;
   };
 
   // Unique tags across all cards
@@ -473,6 +499,7 @@ export const GalleryView: React.FC = () => {
         setIsExportDropdownOpen={setIsExportDropdownOpen}
         exportDropdownRef={exportDropdownRef}
         onOpenChubModal={() => setIsChubModalOpen(true)}
+        onOpenPasteModal={() => setIsPasteModalOpen(true)}
         onBulkExportAllZip={handleBulkExportAllZip}
         onBulkExportSelectedZip={handleBulkExportSelectedZip}
         onExportAllJsonBundle={handleExportAllJsonBundle}
@@ -482,6 +509,14 @@ export const GalleryView: React.FC = () => {
           setActiveTab('editor');
         }}
       />
+
+      {isPasteModalOpen && (
+        <PasteImportModal
+          isOpen={isPasteModalOpen}
+          onClose={() => setIsPasteModalOpen(false)}
+          onCreateCard={handleCreateFromPaste}
+        />
+      )}
 
       {/* Import Status & Modals */}
       <GalleryImportStatus

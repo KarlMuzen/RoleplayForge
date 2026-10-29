@@ -1,6 +1,6 @@
 # Task 020: Paste raw text or JSON, get a character card
 
-Status: planned
+Status: in progress
 Review: required
 Goal: In the Library, the owner opens "Paste text or JSON", pastes any raw block (card JSON of any known layout, unknown JSON, labeled text, or plain prose), sees what the app understood, and creates a card with one tap. No file, no AI, no network.
 Files to touch: new `src/core/pasteImport.ts`; new `src/components/gallery/PasteImportModal.tsx`; `src/components/gallery/GalleryToolbar.tsx` (one new menu item and one new prop); `src/components/GalleryView.tsx` (modal state and one handler); new `test/pasteImport.test.ts`.
@@ -64,9 +64,9 @@ Done when: CI green; Claude's review is Approved (one diff read; check that noth
 Decisions: 1 (no silent data loss), 2, 7 (nothing leaves the device here).
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Verified main at ed6f285; fast-forwarded wip/020 to that head. Added the offline paste reader, modal, Library menu entry, and requested unit tests in the working change set.
+Left: Commit the change set, open one PR, and wait for green test-and-lint.
+Next action: Open the PR and verify CI.
 
 ## Result (executor, when finished)
 Pull request: 

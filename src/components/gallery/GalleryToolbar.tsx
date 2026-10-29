@@ -28,6 +28,7 @@ export interface GalleryToolbarProps {
   setIsExportDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
   exportDropdownRef: React.RefObject<HTMLDivElement | null>;
   onOpenChubModal: () => void;
+  onOpenPasteModal: () => void;
   onBulkExportAllZip: (format?: 'png' | 'json' | 'charx') => void;
   onBulkExportSelectedZip: (format?: 'png' | 'json' | 'charx') => void;
   onExportAllJsonBundle: () => void;
@@ -51,6 +52,7 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
   setIsExportDropdownOpen,
   exportDropdownRef,
   onOpenChubModal,
+  onOpenPasteModal,
   onBulkExportAllZip,
   onBulkExportSelectedZip,
   onExportAllJsonBundle,
@@ -198,6 +200,20 @@ export const GalleryToolbar: React.FC<GalleryToolbarProps> = ({
                 <div>
                   <div className="font-semibold">Standard File Import</div>
                   <div className="text-[10px] text-knight-400">Select .png, .json, or .charx files</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsImportDropdownOpen(false);
+                  onOpenPasteModal();
+                }}
+                className="w-full min-h-11 flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs text-mist-100 hover:bg-maroon-950/60 hover:text-maroon-300 transition-colors text-left"
+              >
+                <FileCode className="w-4 h-4 text-maroon-300 shrink-0" />
+                <div>
+                  <div className="font-semibold">Paste text or JSON</div>
+                  <div className="text-[10px] text-knight-400">Paste raw data, no file needed</div>
                 </div>
               </button>
 
