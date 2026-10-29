@@ -1,6 +1,6 @@
 # Task 011: No Vercel deployments for wip branches
 
-Status: in progress
+Status: done
 Review: skip
 Goal: Branches named `wip/*` stop creating Vercel deployments, so pull requests stop using the Hobby plan's 100 deployments per day and stop showing a red Vercel status.
 Files to touch: `vercel.json`
@@ -23,16 +23,16 @@ Done when: CI green. Nothing visible for the owner. Cannot be verified until Ver
 Decisions: 17, 19.
 
 ## Progress (executor, update every commit)
-Done: Added the `git.deploymentEnabled` rule for `wip/*` in `vercel.json`; preserved `ignoreCommand` and the complete `headers` block.
-Left: Open PR, check `test-and-lint`, fill in Result, merge on green CI.
-Next action: Open the PR and inspect required CI.
+Done: Added `git.deploymentEnabled` for `wip/*` in `vercel.json`; preserved `ignoreCommand` and all security headers; PR #11 squash-merged.
+Left: None.
+Next action: Task 011 is complete; proceed to Task 009.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/11
+Checks run by executor: Not run locally; repository CI is authoritative.
+CI: Passed `test-and-lint` (lint, tests, production build), run 40844139362, on `ff89c2a8c7d883dd1a61bc689d225bdb97b04fcb`.
 Preview link: n/a (Decision 19)
-Deviations from the card: 
+Deviations from the card: Auto-merge was rejected with "Pull request is in clean status"; manually squash-merged after `test-and-lint` passed, per Decision 19.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
