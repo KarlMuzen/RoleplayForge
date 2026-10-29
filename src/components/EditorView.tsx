@@ -572,7 +572,7 @@ export const EditorView: React.FC = () => {
 
         {/* Export & Verify Menu */}
         <div className="flex flex-wrap items-center gap-2">
-          <select
+          <select aria-label="Export card as"
             onChange={(e) => {
               const val = e.target.value;
               if (val === 'visual_png' || val === 'png' || val === 'json' || val === 'charx') {
@@ -622,7 +622,7 @@ export const EditorView: React.FC = () => {
 
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-knight-400">Context Limit:</span>
-            <select
+            <select aria-label="Context limit"
               value={tokenBudgetLimit}
               onChange={(e) => setTokenBudgetLimit(Number(e.target.value))}
               className="bg-void-800 border border-knight-700/80 rounded-lg px-2 py-1 text-xs text-mist-100 font-mono focus:outline-none"
@@ -711,7 +711,7 @@ export const EditorView: React.FC = () => {
 
             {/* AI Cover Art Style Selector & Trigger */}
             <div className="flex items-center gap-1.5 bg-void-950/80 border border-maroon-900/60 p-1 rounded-xl">
-              <select
+              <select aria-label="Cover art style"
                 value={selectedStyle}
                 onChange={(e) =>
                   setSelectedStyle(

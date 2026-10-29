@@ -1,6 +1,6 @@
 # Task 005: Give every select an accessible name
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: All 8 `<select>` elements have an accessible name, so screen readers and the audit stop reporting `select-name`.
 Files to touch: `src/components/EditorView.tsx` (3 selects, about lines 575, 625, 717), `src/components/editor/AdvancedPromptsSection.tsx` (about line 373), `src/components/crucible/ScenarioPicker.tsx` (about line 164), `src/components/crucible/TrustScoreReportPanel.tsx` (about lines 108 and 130), `src/components/settings/ConnectionProfilesSection.tsx` (about line 505)
@@ -13,16 +13,16 @@ Done when: CI green. If `scripts/ui-audit.py` can run, the `select-name` count i
 Decisions: HANDOFF step 2.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Added `aria-label` attributes to the eight selects named in the card: Export card as, Context limit, Cover art style, Related character, Turn length, Card A, Card B, and Provider. No handlers, option lists, styling, or other elements were changed.
+Left: Verify CI for the final task-card update, retry auto-merge, and confirm the squash merge.
+Next action: Enable auto-merge when the new required check is pending.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Preview link: 
-Deviations from the card: 
+Pull request: #7 — https://github.com/KarlMuzen/RoleplayForge/pull/7
+Checks run by executor: Not run locally; `git clone` could not resolve `github.com`. `scripts/ui-audit.py` was not run locally for the same reason.
+CI: `test-and-lint` passed on implementation commit `9ebee4d6d1617c40d4aca4e5cf3ab35740fb0897` (lint, tests, production build). The final task-card update will trigger a fresh required check before merge.
+Preview link: https://roleplayforge-git-wip-005-xiorolab.vercel.app
+Deviations from the card: None in code. The local UI audit could not be run in this environment. GitHub rejected the first auto-merge request with “Pull request is in clean status”; it will be retried during the fresh CI run, with manual squash merge as fallback.
 
 ## Review (Claude, if required)
 n/a (Review: skip)

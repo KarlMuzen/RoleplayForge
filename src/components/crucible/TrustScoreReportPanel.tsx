@@ -105,7 +105,7 @@ export const TrustScoreReportPanel: React.FC<TrustScoreReportPanelProps> = ({
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-purple-300">Card A:</span>
-              <select
+              <select aria-label="Card A"
                 value={variantCardAUuid}
                 onChange={(e) => setSelectedVariantAUuid(e.target.value)}
                 className="bg-void-900 border border-knight-700 text-xs text-mist-100 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-purple-500"
@@ -127,7 +127,7 @@ export const TrustScoreReportPanel: React.FC<TrustScoreReportPanelProps> = ({
 
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-purple-300">Card B:</span>
-              <select
+              <select aria-label="Card B"
                 value={variantCardBUuid}
                 onChange={(e) => setSelectedVariantBUuid(e.target.value)}
                 className="bg-void-900 border border-knight-700 text-xs text-mist-100 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-purple-500"
