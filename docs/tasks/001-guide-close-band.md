@@ -1,6 +1,6 @@
 # Task 001: Guide close band
 
-Status: in progress
+Status: done
 Review: skip
 Goal: The Guide's close (X) button floats over the content, with no empty grey band at the top and nothing covered when scrolled.
 Files to touch: `src/components/GuideView.tsx`
@@ -13,14 +13,14 @@ Done when: CI green. Owner on the Vercel preview, phone: at the top of the Guide
 Decisions: HANDOFF finding 1.
 
 ## Progress (executor, update every commit)
-Done: Replaced the close-button wrapper with the specified zero-height, unstyled wrapper and added `shadow-lg` to the existing button class. The existing hero padding leaves space below the button at 360px, so no hero padding change was needed.
-Left: Verify CI for the final task-card update, then confirm the squash merge.
-Next action: Wait for the latest required check and complete the merge.
+Done: Replaced the close-button wrapper with the specified zero-height, unstyled wrapper and added `shadow-lg` to the existing button class. The existing hero padding leaves space below the button at 360px, so no hero padding change was needed. PR #3 squash-merged after CI passed.
+Left: None.
+Next action: None; task complete.
 
 ## Result (executor, when finished)
 Pull request: #3 — https://github.com/KarlMuzen/RoleplayForge/pull/3
 Checks run by executor: Not run locally; `git clone` could not resolve `github.com`. GitHub CI is authoritative.
-CI: `test-and-lint` passed on code commit `c926d297e366bebbc93f95776118904ac1d75412` (lint, tests, production build). This task-card result update will trigger a fresh required check before merge.
+CI: Green — `test-and-lint` passed on final PR head `32cd7b0b9741ada1f7010a3c6531d6782bfe7608` (lint, tests, production build). Auto-merge completed with squash.
 Preview link: https://roleplayforge-git-wip-001-xiorolab.vercel.app
 Deviations from the card: None.
 
