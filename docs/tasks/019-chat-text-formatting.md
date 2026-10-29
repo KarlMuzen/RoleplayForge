@@ -44,9 +44,9 @@ Done when: CI green; Claude's review is Approved (one diff read, plus a check th
 Decisions: 2 (pure logic in `src/core/`), 18 (chat is a card test bench).
 
 ## Progress (executor, update every commit)
-Done: Verified updated `main` at `01ab1a5eafab3ff239f5b378dd75173ef9c0eda8`; Task 018 is merged. Created `wip/019`.
-Left: Implement the pure formatter/parser, wire only the specified render function and user-message call site, add the no-DOM tests.
-Next action: Write the parser from the task-card rules only, then run CI and request Claude review.
+Done: Verified updated `main` at `01ab1a5eafab3ff239f5b378dd75173ef9c0eda8`; Task 018 is merged. Created `wip/019`; implemented the pure display-only formatter/parser, wired the specified renderer and user-message call site, and added no-DOM tests for all required cases plus empty inline-code pairs and the nesting-depth limit.
+Left: Open PR, verify CI, and request the required Claude review.
+Next action: Open PR #21, confirm `test-and-lint` is green, then hand it to Claude for review. Do not merge pending approval.
 
 ## Result (executor, when finished)
 Pull request:
