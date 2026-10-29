@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-29 · **`main` head when written:** `c5f7c51`
+**Last updated:** 2026-10-29 · **`main` head when written:** `b05072d`
 
 ## Goal
 
@@ -44,27 +44,28 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 22. Vercel deploys only for code commits on `main` (Task 016 closes the last gap with an ignore command that skips any other branch). Project name stays `roleplayforge` (Decision 20). Vercel sometimes never starts a build for a `main` push (no record at all for 010, 011, 014, 015 on 2026-10-29; usage meters were far below limits, so the cause is unknown). Recovery: with the Vercel connector, `create_deployment` for project `roleplayforge`, target `production`, `gitSource` `{type: github, org: KarlMuzen, repo: RoleplayForge, ref: main, sha: <latest CODE commit>}`. Use a code commit, not the docs commit on top of it: a docs-only head is skipped by `ignoreCommand`. Check afterwards that the alias `roleplayforge.vercel.app` points to the new deployment.
 23. Small owner-requested fixes (PWA install toast, logo and icon masking, theme contrast) were committed by Claude directly to `main` on 2026-10-29 (`7e22276`, `768c784`, `e7aefc4`, `f93096d`), before cards 012-015. This is an exception to Decision 13 on the owner's instruction; the executor still uses `wip/NNN` pull requests. Any further direct code commit by Claude needs the owner's instruction and a line here.
 24. ContextBar (HANDOFF step 4, spec 4.4): one component for Forge and Test, two rows, replaces `WorkspaceSubNav` and `LabSubNav` (Task 017). Undo, Redo and a save-status chip live in it on Forge tabs only (Task 018). The Save Card and Variant buttons stay on the Details toolbar until the overflow-menu card. Card switcher sheet and overflow menu are later cards.
+25. Paste-to-card (Task 020): a paste box in the Library Import menu reads raw card JSON, unknown JSON and labeled text with fixed rules, no AI and no network, and shows what it understood before creating. Unmatched data is appended to Description, never dropped. AI reading of messy prose is a separate later card and must show "Sent to <provider>" (Decision 7).
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-1. **Executor (ChatGPT), in this order:** `docs/tasks/016` (Vercel builds only for `main`, one file, `Review: required`), then `docs/tasks/017` (one ContextBar replaces both sub-navs, `Review: required`), then `docs/tasks/018` (Undo/Redo and save chip in the ContextBar, `Review: skip`). One pull request per card, wait for green `test-and-lint`; for `Review: required` stop and report so Claude reviews the diff before the merge (Decision 15). Merge on green CI only (Decision 19). 017 and 018 both touch `ContextBar.tsx`, so 018 starts only after 017 is merged.
-2. **Claude, next:** review 016 and 017 when reported. After each merge confirm the merge commit produced a READY production deployment (project id above). Then plan the rest of HANDOFF step 4 and the spec: ContextBar overflow menu (Help, Install, Test chat, Export), card switcher sheet, keyboard-open mode. The Decision 17 hold on new tooling has ended; Claude decides on Dependabot and CI additions.
+1. **Executor (ChatGPT):** `docs/tasks/020-paste-to-card.md` (paste raw text or JSON, get a card; `Review: required`). One pull request, wait for green `test-and-lint`, stop and report so Claude reviews the diff before the merge (Decision 15). Merge on green CI only (Decision 19).
+2. **Claude, next:** review 020 when reported; confirm the merge commit produced a READY production deployment. Then: optional AI "Smart fill" card for messy prose (owner decides), then the rest of HANDOFF step 4 (ContextBar overflow menu, card switcher sheet, keyboard-open mode).
 
-Cards 001-015 are merged (quick wins, CardAvatar, rating-filter and Assist/Chat layout, Chat header menu, multi-line message box, last-message actions, no Vercel deployments for `wip/*`, Chat menu fixes, Details reorder). Cards 016-018 are written and not started. Owner phone check of 001-015 is pending and is not a merge gate (Decision 17).
+Cards 001-019 are merged (019 = chat text formatting, PR #21, `7528c5b`; 016-018 = Vercel builds only for `main`, ContextBar, Undo/Redo and save chip). Owner phone check of 001-019 is pending and is not a merge gate (Decision 17).
 
-HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Step 3 rewrote the Details components, so do it per screen now, not before.
+HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Do it per screen now.
 
 Verify `main` head first.
 
 ## In progress
 
-See open pull requests (branch `wip/NNN`). None known (checked 2026-10-29). Cards 016, 017, 018 are committed and not started.
+See open pull requests (branch `wip/NNN`). None known (checked 2026-10-29; `origin` has only `main`). Card 020 is committed and not started.
 
 ## Done
 
-See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11 (011), #12 (009), #13 (010), #14 (012), #15 (013), #16 (014), #17 (015). Direct commits by Claude (Decision 23): `7e22276`, `768c784`, `e7aefc4`, `f93096d` (PWA install toast and welcome, new Forge logo with real maskable icon source and splash color, themed emerald/red/cyan/purple in `src/status-colors.css`, invisible Replace-recovery-key button, PwaSection branding; CI green on a clean checkout: lint, 165 tests, build). Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
+See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11 (011), #12 (009), #13 (010), #14 (012), #15 (013), #16 (014), #17 (015), then 016-019 (019 is PR #21). Direct commits by Claude (Decision 23): `7e22276`, `768c784`, `e7aefc4`, `f93096d` (PWA install toast and welcome, new Forge logo with real maskable icon source and splash color, themed emerald/red/cyan/purple in `src/status-colors.css`, invisible Replace-recovery-key button, PwaSection branding; CI green on a clean checkout: lint, 165 tests, build). Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
@@ -78,7 +79,7 @@ See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11
 
 ## Known bugs and risks
 
-- Chat: `**bold**` shows stray asterisks (`renderRoleplayText` only handles `*action*`). Not carded.
+- Chat formatting (Task 019, merged): owner phone check pending; `"quoted dialogue"` coloring, underline and tables were left out on purpose.
 - Details chip reads "1 alerts" with exactly one warning (wording given in Task 014). Cards 012-015 are verified by CI and code diff only; whether the Details token row stays on one line at 393px is unchecked on a phone.
 - Chat tasks 008-010 are verified by CI only; not yet checked on a phone.
 - Vercel (checked 2026-10-29): production now serves `c19deac` (Task 015) via manual deploy `dpl_AnKFe27…`, so Tasks 010-015 are live. Vercel never created deployments for the pushes of 010, 011, 014 and 015; 012 and 013 deployed within seconds. Usage meters are far below limits and about 62 deployments were recorded in 24 hours (limit 100), so a rate limit is not shown. A canceled record for the docs commit `bad5b0e` appeared about 25 minutes after its push, which suggests late or dropped push delivery. Cause unverified. Not checkable by Claude: GitHub app repository access (owner: GitHub Settings, Applications, Installed GitHub Apps, Vercel). Task 016 plus a check after each merge covers it.
