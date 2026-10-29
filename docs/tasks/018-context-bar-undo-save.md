@@ -1,6 +1,6 @@
 # Task 018: Undo, Redo and save status in the ContextBar on every Forge tab
 
-Status: in progress
+Status: done
 Review: skip
 Goal: Undo and Redo are reachable on Details, Lorebook, Prompt and Assist, next to a small save-status chip. They are not shown on Test tabs, which do not edit the card.
 Files to touch: `src/components/ContextBar.tsx`, `src/components/EditorView.tsx`, `test/ContextBar.test.tsx`.
@@ -15,14 +15,14 @@ Done when: CI green. Owner, phone: on Lorebook and Assist the Undo and Redo butt
 Decisions: 3, 6, 17, 19, 24.
 
 ## Progress (executor, update every commit)
-Done: Created `wip/018`; added Undo/Redo controls and live save-status chip to ContextBar for Forge tabs with an active card; removed only the duplicate Undo/Redo controls and now-unused imports/selectors from the Details toolbar; added tests for mode gating, lorebook restoration through `updateActiveCardData`, and all save states.
-Left: Open the PR and verify CI.
-Next action: Open PR #20, check `test-and-lint`, and merge after it is green (Review: skip).
+Done: Added Undo/Redo controls and a polite live save-status chip to ContextBar for Forge tabs with an active card; removed only the duplicate Undo/Redo controls and unused imports/selectors from the Details toolbar; added tests for mode gating, lorebook restoration through `updateActiveCardData`, and all four save states. PR #20 was squash-merged.
+Left: None for code. Owner phone verification remains part of the broader ContextBar check.
+Next action: Continue to Task 019 on the updated `main` head.
 
 ## Result (executor, when finished)
-Pull request:
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/20 (squash-merged; merge commit `aa4606df7fa30b658e6ddc20e87024baf1df8536`)
 Checks run by executor: Not run locally; the environment could not resolve github.com for a git clone. GitHub Actions is the authoritative CI check.
-CI: Pending.
+CI: Passed `test-and-lint` (lint, tests, production PWA build), run 40872786214, on PR head `9d20e25b5f4cda6da7681f9e51ad4d48fb050999`.
 Preview link: n/a (Decision 19)
 Deviations from the card: None.
 
