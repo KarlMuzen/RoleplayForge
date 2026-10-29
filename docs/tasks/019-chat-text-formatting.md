@@ -1,6 +1,6 @@
 # Task 019: Chat text formatting in the SillyTavern way
 
-Status: in progress
+Status: done
 Review: required
 Goal: Chat messages (card and user) show `*actions*`, `**bold**`, `~~strike~~` and `` `code` `` correctly, and broken or half-finished asterisks no longer show as stray `*` characters. Behavior follows SillyTavern's chat display, written from scratch.
 Files to touch: new `src/core/chatMarkup.ts`; `src/components/ChatPreviewModal.tsx` (only `renderRoleplayText` and its one call site); new `test/chatMarkup.test.ts`.
@@ -44,16 +44,18 @@ Done when: CI green; Claude's review is Approved (one diff read, plus a check th
 Decisions: 2 (pure logic in `src/core/`), 18 (chat is a card test bench).
 
 ## Progress (executor, update every commit)
-Done: Applied Claude's requested fix in commit `06db68cb9c823e25243ad6a3f9ca04c997971c15`: `previousTokens` now copies the array before `tokens` is cleared. Added both requested regression tests in commit `e43b1c5d89fc9927c4a04ce75ebde6791596d497`. CI passed on review-fix code and on PR head `046baf379dfb202d28e4b2d595a44c90aeaea4e6`: lint, tests, and production PWA build all green (run 40878035822).
-Left: Claude needs to re-check the fix commit.
-Next action: Stop and report PR #21 and the fix commit to Claude. Do not merge.
+Done: Applied Claude's requested parser fix in commit `06db68cb9c823e25243ad6a3f9ca04c997971c15`, added both regression tests in `e43b1c5d89fc9927c4a04ce75ebde6791596d497`, and incorporated Claude's approval on PR head `1e41fcd538226aae4cc53b0cacacc231343b3e87`. PR #21 was squash-merged as `7528c5b730b7f0380a74f1a3ff6fe6c4653dba18`. PR `test-and-lint` passed on the reviewed head (run 40880061957), and main CI passed on the merge commit (run 40880576785). Vercel production deployment `dpl_27gVbugEcdYErUDwUqS1XzLthH6x` is READY for the exact merge SHA, with alias `roleplayforge.vercel.app`.
+Left: Owner phone check after merge (not a merge gate; Decision 17).
+Next action: Owner checks chat formatting in the Chub Helper card chat when convenient.
 
 ## Result (executor, when finished)
 Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/21
-Checks run by executor: Not run locally; GitHub Actions is authoritative because this environment cannot clone github.com.
-CI: Passed `test-and-lint`, including lint, tests, and production PWA build, run 40878035822 on PR head `046baf379dfb202d28e4b2d595a44c90aeaea4e6`. The parser fix and both requested regression tests passed.
-Preview link: n/a (Decision 19)
-Deviations from the card: None. Only the requested array copy and two tests were changed in source/test files.
+Merge commit: https://github.com/KarlMuzen/RoleplayForge/commit/7528c5b730b7f0380a74f1a3ff6fe6c4653dba18
+Checks run by executor: Not run locally; GitHub Actions is authoritative.
+CI: Passed `test-and-lint` on reviewed PR head `1e41fcd538226aae4cc53b0cacacc231343b3e87` (run 40880061957). CI also passed on the merge commit on `main` (run 40880576785).
+Production: READY deployment `dpl_27gVbugEcdYErUDwUqS1XzLthH6x`, built from merge commit `7528c5b730b7f0380a74f1a3ff6fe6c4653dba18`. The `roleplayforge.vercel.app` alias is assigned to it. No manual recovery deployment was needed.
+Preview link: n/a (Decision 19; production deployment verified instead).
+Deviations from the card: None. The parser fix and both requested regression tests passed; Claude approved the fix.
 
 ## Review (Claude, required)
 Changes needed (reviewed head `3299effa5bbe9c916eaeb29dc086347c876e2dff`, 2026-10-29). Fix on the same branch `wip/019`, same PR #21, then report. Do not merge until Claude re-checks the fix commit.
