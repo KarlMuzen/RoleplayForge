@@ -1,6 +1,6 @@
 # Task 009: Multi-line message box in Chat
 
-Status: in progress
+Status: done
 Review: skip
 Goal: The Chat message box takes several lines. On a phone Enter adds a new line and the send button sends. On a computer Enter sends and Shift+Enter adds a new line.
 Files to touch: `src/components/ChatPreviewModal.tsx`, `src/utils/chatKeys.ts` (new), `test/chatKeys.test.ts` (new)
@@ -16,16 +16,16 @@ Done when: CI green. Owner on the preview, phone: Enter makes a new line, the bo
 Decisions: 18.
 
 ## Progress (executor, update every commit)
-Done: Replaced the single-line Chat input with an autosizing textarea (capped at 160px, scrollable after the cap, reset on clear), bottom-aligned the send button, added `shouldSendOnEnter`, and covered its five required behaviors in `test/chatKeys.test.ts`.
-Left: Open PR, verify `test-and-lint`, record the Result, and merge only on green CI.
-Next action: Review the branch diff and create the Task 009 PR.
+Done: Replaced the single-line Chat input with an autosizing textarea (capped at 160px, scrollable after the cap, reset on clear), bottom-aligned the send button, added `shouldSendOnEnter`, covered all five required behaviors, and squash-merged PR #12.
+Left: None.
+Next action: Task 009 is complete; proceed to Task 010.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Preview link: 
-Deviations from the card: 
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/12
+Checks run by executor: Not run locally; repository CI is authoritative.
+CI: Passed `test-and-lint` (lint, tests, production build), run 40844640629, on `620288e54540ba49e74e34ed9d60ce45bf8710b8`.
+Preview link: n/a (Decision 19)
+Deviations from the card: Auto-merge was rejected with "Pull request is in clean status"; manually squash-merged after `test-and-lint` passed, per Decision 19.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
