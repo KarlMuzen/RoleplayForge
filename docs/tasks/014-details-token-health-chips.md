@@ -17,9 +17,9 @@ Done when: CI green. Owner, phone, Details tab: under the toolbar one short row 
 Decisions: 6, 8, 9, 17, 19.
 
 ## Progress (executor, update every commit)
-Done: Started Task 014 from the verified post-Task-013 main head; inspected the token panel, context-limit control, breakdown chips, and health banner to preserve calculations and warnings verbatim.
-Left: Combine them under a compact two-chip details summary below the toolbar; verify CI and merge only on green `test-and-lint`.
-Next action: Replace the two large panels with the compact summary and expanded details.
+Done: Replaced the separate token and health panels with one closed-by-default details row under the toolbar. The summary displays a threshold-colored estimated token chip, a green OK or amber alert-count chip, and a chevron; the old token breakdown, context limit, density bar, and warning content remain inside the expanded section. Token calculations and warning logic are unchanged.
+Left: Open PR, verify `test-and-lint`, record Result, and merge only on green CI.
+Next action: Confirm only `EditorView.tsx` and this task card changed, then create the PR.
 
 ## Result (executor, when finished)
 Pull request: 
