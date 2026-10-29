@@ -16,9 +16,9 @@ Done when: CI green. Owner, phone, Details tab: no cover art or Export select ab
 Decisions: 6, 17, 19.
 
 ## Progress (executor, update every commit)
-Done: Started Task 013 from `main` after Task 012 merged; located the existing Export & Verify Menu, cover/avatar block, and Advanced Prompts form boundary.
-Left: Move both existing UI blocks to a collapsed bottom section without changing handlers or state; verify CI and merge only on green `test-and-lint`.
-Next action: Move the export row and cover block into `Cover art and export` after Advanced Prompts.
+Done: Moved the existing Export & Verify Menu and complete cover/avatar block into a closed-by-default `Cover art and export` details section after `AdvancedPromptsSection`; handlers, inputs, labels, titles, styles, and surrounding editor state remain unchanged.
+Left: Open PR, verify `test-and-lint`, fill Result, and merge only on green CI.
+Next action: Confirm the diff is limited to `EditorView.tsx` plus this card, then create the PR.
 
 ## Result (executor, when finished)
 Pull request: 
