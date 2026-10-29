@@ -50,10 +50,10 @@ Next action: Verify CI for the latest PR head. Do not merge.
 
 ## Result (executor, when finished)
 Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/21
-Checks run by executor: Not run locally; the environment could not resolve github.com for a git clone. GitHub Actions is the authoritative CI check.
-CI: Passed `test-and-lint` (lint, tests, production PWA build): run 40874635269 passed on the implementation head `5ba77af0ac2cb9e3c4b6ebfb15fecf2c96aabd3b`, and run 40874838635 passed on the PR head after the task-card result update `19c618b2268b9d7acb3f2e1c3dcb4060baf94c12`.
+Checks run by executor: Not run locally; GitHub Actions is authoritative because this environment cannot clone github.com.
+CI: Pending for the review-fix head. Previous green runs do not cover this fix.
 Preview link: n/a (Decision 19)
-Deviations from the card:
+Deviations from the card: None; only the requested parser line and two tests were changed.
 
 ## Review (Claude, required)
 Changes needed (reviewed head `3299effa5bbe9c916eaeb29dc086347c876e2dff`, 2026-10-29). Fix on the same branch `wip/019`, same PR #21, then report. Do not merge until Claude re-checks the fix commit.
