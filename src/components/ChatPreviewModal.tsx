@@ -6,6 +6,7 @@ import { CardAvatar } from './CardAvatar';
 import type { StoredCard } from '../db';
 import { countTokens, countTokensAsync } from '../utils/tokenizer';
 import { shouldSendOnEnter } from '../utils/chatKeys';
+import { fixChatMarkup, parseChatMarkup } from '../core/chatMarkup';
 import {
   canRegenerate,
   dropLast,
@@ -285,19 +286,34 @@ export const ChatPreviewModal: React.FC = () => {
     await generateConversationTurn(history, '');
   };
 
-  // Render roleplay message formatting (*actions* in subtle italic amber)
+  // Render the small, safe chat-markup subset in display only.
   const renderRoleplayText = (text: string) => {
-    const parts = text.split(/(\*[^*]+\*)/g);
-    return parts.map((part, idx) => {
-      if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
-        return (
-          <em key={idx} className="text-amber-300/90 not-italic italic font-serif opacity-90">
-            {part.slice(1, -1)}
-          </em>
-        );
-      }
-      return <span key={idx}>{part}</span>;
-    });
+    const renderTokens = (tokens: ReturnType<typeof parseChatMarkup>): React.ReactNode[] =>
+      tokens.map((token, idx) => {
+        const children = token.children ? renderTokens(token.children) : token.text;
+        switch (token.type) {
+          case 'italic':
+            return (
+              <em key={idx} className="text-amber-300/90 not-italic italic font-serif opacity-90">
+                {children}
+              </em>
+            );
+          case 'bold':
+            return <strong key={idx} className="font-semibold">{children}</strong>;
+          case 'strike':
+            return <s key={idx}>{children}</s>;
+          case 'code':
+            return (
+              <code key={idx} className="rounded bg-black/20 px-1 font-mono text-[0.9em]">
+                {token.text}
+              </code>
+            );
+          case 'text':
+            return <span key={idx}>{token.text}</span>;
+        }
+      });
+
+    return renderTokens(parseChatMarkup(fixChatMarkup(text)));
   };
 
   return (
@@ -689,7 +705,7 @@ export const ChatPreviewModal: React.FC = () => {
                           </button>
                         </div>
                       </div>
-                    ) : isUser ? m.text : renderRoleplayText(m.text)}
+                    ) : renderRoleplayText(m.text)}
                   </div>
                   {isLastMessage && hasUserMessage(messages) && !isGenerating && !isEditingLastMessage && (
                     <div className="mt-1 flex items-center gap-2 px-1">
