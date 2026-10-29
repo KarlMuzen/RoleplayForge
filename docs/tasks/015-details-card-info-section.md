@@ -1,6 +1,6 @@
 # Task 015: Details, creator/version/nickname/tags move below the writing fields
 
-Status: in progress
+Status: done
 Review: skip
 Goal: On the Details tab, Character Name is followed straight by Description, Personality and Scenario. Creator, Version, Nickname and Tags live in their own "Card Info" section after Advanced Prompts.
 Files to touch: `src/components/editor/IdentitySection.tsx`, new `src/components/editor/MetadataSection.tsx`, `src/components/EditorView.tsx`
@@ -15,16 +15,16 @@ Done when: CI green. Owner, phone, Details tab: Name, then Description right awa
 Decisions: 6, 17, 19.
 
 ## Progress (executor, update every commit)
-Done: Added `MetadataSection` with Creator, Version, Nickname and Tags; reduced `IdentitySection` to Character Name followed by Description, Personality and Scenario; inserted `Card Info` after Advanced Prompts and before the existing collapsed cover/export section. Original field names, placeholders, styles, and `onChange` handlers are retained.
-Left: Open PR, verify `test-and-lint`, record Result, and merge only on green CI.
-Next action: Confirm the diff has exactly the three specified code files plus this task card, then create the PR.
+Done: Added `MetadataSection` with Creator, Version, Nickname and Tags; reduced `IdentitySection` to Character Name followed by Description, Personality and Scenario; inserted `Card Info` after Advanced Prompts and before the existing collapsed cover/export section. Original field names, placeholders, styles, and `onChange` handlers are retained. PR #17 squash-merged.
+Left: None.
+Next action: Task 015 is complete; wait for the next task.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/17
+Checks run by executor: Not run locally; repository CI is authoritative.
+CI: Passed `test-and-lint` (lint, tests, production build), run 40852384343, on `fd3da66daead39b47a4bfdbc3b680de08215b5b0`.
 Preview link: n/a (Decision 19)
-Deviations from the card: 
+Deviations from the card: Auto-merge was rejected with "Pull request is in clean status"; manually squash-merged after `test-and-lint` passed, per Decision 19.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
