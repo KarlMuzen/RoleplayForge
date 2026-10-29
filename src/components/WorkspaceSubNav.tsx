@@ -148,7 +148,7 @@ export const WorkspaceSubNav: React.FC = () => {
               <button onClick={() => setIsOnboardingOpen(true)} aria-label="Help and documentation" title="Help and documentation" className="flex items-center justify-center min-w-9 min-h-9 rounded-lg text-knight-400 hover:text-mist-100 hover:bg-void-800 transition-colors touch-fast"><HelpCircle className="w-4 h-4" /></button>
 
 
-          {activeCard && activeTab !== 'editor' && (
+          {activeCard && (
             <button
               onClick={() => setChatPreviewOpen(true)}
               className="sm:hidden flex items-center gap-1 px-2.5 py-1 bg-maroon-950/80 hover:bg-maroon-900 border border-maroon-800/60 text-maroon-300 rounded-lg text-[11px] font-semibold transition-all touch-fast active:scale-95 shrink-0"
