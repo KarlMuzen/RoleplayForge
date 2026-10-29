@@ -1,6 +1,6 @@
 # Task 019: Chat text formatting in the SillyTavern way
 
-Status: changes needed
+Status: in progress
 Review: required
 Goal: Chat messages (card and user) show `*actions*`, `**bold**`, `~~strike~~` and `` `code` `` correctly, and broken or half-finished asterisks no longer show as stray `*` characters. Behavior follows SillyTavern's chat display, written from scratch.
 Files to touch: new `src/core/chatMarkup.ts`; `src/components/ChatPreviewModal.tsx` (only `renderRoleplayText` and its one call site); new `test/chatMarkup.test.ts`.
@@ -44,9 +44,9 @@ Done when: CI green; Claude's review is Approved (one diff read, plus a check th
 Decisions: 2 (pure logic in `src/core/`), 18 (chat is a card test bench).
 
 ## Progress (executor, update every commit)
-Done: Implemented `fixChatMarkup` and `parseChatMarkup` as pure functions, wired only `renderRoleplayText` and the user-message call site, and added no-DOM tests for the required cases plus empty inline-code pairs and the nesting-depth limit. Opened PR #21; GitHub Actions `test-and-lint` passed.
-Left: Required Claude review and approval before merge.
-Next action: Claude reviews PR #21 and confirms the diff contains no copied SillyTavern code. Do not merge pending approval.
+Done: Applied Claude's requested terminal-closer fix in `parseSegment` by copying `tokens` before it is cleared. Added both requested no-cycle tests for `**bold** text**` and `Hi *there* friend**`, asserting JSON serialization and the expected child token arrays. Changes are on the existing `wip/019` branch and PR #21.
+Left: Wait for green `test-and-lint` on the updated PR head, record the result, and report so Claude can re-check the fix commit.
+Next action: Verify CI for the latest PR head. Do not merge.
 
 ## Result (executor, when finished)
 Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/21
