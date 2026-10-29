@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-29 · **`main` head when written:** `cfad9f5`
+**Last updated:** 2026-10-29 · **`main` head when written:** `9f33f96`
 
 ## Goal
 
@@ -35,15 +35,19 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 13. Code changes by the executor go on branch `wip/NNN` with a pull request to `main`, and merge only when CI is green. Docs-only changes may go straight to `main`. This replaces the earlier practice of pushing code directly to `main`, because CI only runs after a direct push.
 14. Claude is the only writer of this file. The executor writes code and its own task card. Status comes from pull requests: open = in progress, squash-merged = done. This supersedes the section split in the first version of `AI_WORKFLOW.md`.
 15. Merges are automatic: required check `test-and-lint` on `main`, auto-merge with squash. Card says `Review: skip`, or Review is Approved, before the executor enables it. The executor gets 2 fix attempts after a red CI, then stops and records the failure in the card.
+16. Every place that shows a card cover uses one `CardAvatar` component with an initials fallback (Tasks 002-003).
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-1. **Owner:** finish the GitHub settings in `docs/AI_WORKFLOW.md` and `docs/AUTOMATION.md` (auto-merge + squash + auto-delete branches; confirm the ruleset `main-ci-gate` requires `test-and-lint`; confirm secret scanning and push protection). The ruleset exists and is active; its rules were not visible.
-2. **Claude:** split HANDOFF step 2 (quick-wins batch) into small cards in `docs/tasks/`, each with `Review: required` or `skip`. Then a Dependabot card (after owner step 1).
+1. **Owner:** GitHub settings (auto-merge, squash, auto-delete branches; ruleset requires `test-and-lint`) reported done by the owner on 2026-10-29, not seen by Claude. Secret scanning and push protection seen on. Dependabot and code scanning status not seen.
+2. **Executor (ChatGPT):** quick-wins cards are written: `docs/tasks/001` to `006`. All `Review: skip`. Order: 001, 002, then 003 (needs 002 merged), 004, 005, 006. 001, 002, 004, 005, 006 are independent. The owner checks each preview link on the phone.
+3. **Claude, next:** Dependabot card (`.github/dependabot.yml`), then the card plan for HANDOFF step 3 (Details reorder).
 
-Automation audit is done: `docs/AUTOMATION.md`. Verify `main` head first.
+HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Step 3 rewrites the Details components anyway, so do it per screen after step 3, not before.
+
+Verify `main` head first.
 
 ## In progress
 
@@ -51,7 +55,7 @@ See open pull requests (branch `wip/NNN`). None known.
 
 ## Done
 
-See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate.
+See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
@@ -65,14 +69,14 @@ See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan 
 
 ## Known bugs and risks
 
-- Guide close band: empty ~110px band at scroll top, covers content when scrolled (`GuideView.tsx` ~line 183).
+- Guide close band: empty ~110px band at scroll top, covers content when scrolled (`GuideView.tsx` ~line 183). Task 001.
 - Details first screen shows no writing fields; token header wraps on real cards.
-- Broken cover image has no fallback (offline PWA, blocked avatar host).
-- `Chat` button shows on Lorebook but not Details.
+- Broken cover image has no fallback (offline PWA, blocked avatar host). Tasks 002-003.
+- `Chat` button shows on Lorebook but not Details. Task 004.
 - Lorebook delete: not verified whether it confirms.
 - `usePWAUpdate` may fail on an undefined registration (seen when service workers are blocked; verify before changing).
 - `selectCardForEditing` does not flush pending autosave on the Library tap path (D-13).
-- Accessibility: light theme has more contrast failures than dark. 5 unlabelled selects, 3 unnamed buttons.
+- Accessibility: light theme has more contrast failures than dark. 5 unlabelled selects (Task 005; 8 selects in code, all get names), 3 unnamed buttons (Task 006).
 - CI skips docs-only pushes, so the required check cannot report on them. Docs pushes to `main` work only through the ruleset bypass. The ChatGPT connector was not seen on the bypass list; it uses pull requests.
 - `docs/PROJECT_STATUS.md` header still names `13d4442` as the checkpoint; `main` is later. Refresh when next touched.
 - Unverified: whether Vercel posts preview links on pull requests, Vercel runtime headers/CSP in production, Android installed-PWA behavior, iOS Safari, passkey flow on phone, Ollama on `localhost:11434` from https.
