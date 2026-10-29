@@ -1,6 +1,6 @@
 # Task 017: One ContextBar replaces WorkspaceSubNav and LabSubNav
 
-Status: not started
+Status: in progress
 Review: required
 Goal: Forge and Test screens share one sticky two-row bar. Row 1: card avatar and name, incomplete-card checklist, Pre-Flight Audit, Chat (phone), Help. Row 2: section tabs, each at least 44px tall. The bar clears the phone status bar in the installed app.
 Files to touch: new `src/components/ContextBar.tsx`; `src/App.tsx`; delete `src/components/WorkspaceSubNav.tsx` and `src/components/LabSubNav.tsx`; rename `test/WorkspaceSubNav.test.tsx` to `test/ContextBar.test.tsx`.
@@ -19,9 +19,9 @@ Done when: CI green; no remaining import of the old components (`grep -r "SubNav
 Decisions: 5, 6, 17, 19, 24.
 
 ## Progress (executor, update every commit)
-Done:
-Left:
-Next action:
+Done: Verified `main` at `802e00803d0e4e3e9ced497f4b71768e8ca7e217`, checked the AI workflow and Task 017 scope, and created `wip/017`. Implementing the shared bar and focused regression tests.
+Left: Open the PR, confirm CI, and obtain the required Claude review.
+Next action: Finish the component, App integration, component deletion/test rename, then validate on PR CI.
 
 ## Result (executor, when finished)
 Pull request:
