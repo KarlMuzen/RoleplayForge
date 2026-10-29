@@ -1,6 +1,6 @@
 # Task 004: Chat button on Details
 
-Status: in progress
+Status: done
 Review: skip
 Goal: The phone `Chat` button shows on every Forge tab, including Details, not only on some.
 Files to touch: `src/components/WorkspaceSubNav.tsx`
@@ -12,16 +12,16 @@ Done when: CI green. Owner on the preview, phone: Details shows the same Chat bu
 Decisions: HANDOFF finding 4.
 
 ## Progress (executor, update every commit)
-Done: Changed only the Chat button condition in `WorkspaceSubNav.tsx` so it renders whenever `activeCard` exists, including on Details. Kept `sm:hidden` and all button styling unchanged.
-Left: Verify CI for the final task-card update, retry auto-merge, and confirm the squash merge.
-Next action: Enable auto-merge when the new required check is pending.
+Done: Changed only the Chat button condition in `WorkspaceSubNav.tsx` so it renders whenever `activeCard` exists, including on Details. Kept `sm:hidden` and all button styling unchanged. PR #6 was squash-merged after CI passed.
+Left: None.
+Next action: None; task complete.
 
 ## Result (executor, when finished)
 Pull request: #6 — https://github.com/KarlMuzen/RoleplayForge/pull/6
 Checks run by executor: Not run locally; `git clone` could not resolve `github.com`. GitHub CI is authoritative.
-CI: `test-and-lint` passed on implementation commit `29213f49c6c40dca0a470ad47a75df2432ebec6d` (lint, tests, production build). The final task-card update will trigger a fresh required check before merge.
+CI: Green — `test-and-lint` passed on final PR head `6b325383d7a29dddcc35c74ef6a53f2fe6467819` (lint, tests, production build). Squash-merged as `2be2bcbd3fe2cd16a78c92e22f0adcfd4578a557`.
 Preview link: https://roleplayforge-git-wip-004-xiorolab.vercel.app
-Deviations from the card: None in the code change. GitHub rejected the first auto-merge request with “Pull request is in clean status”; auto-merge will be retried during the fresh CI run, with manual squash merge as the fallback.
+Deviations from the card: None in the code change. Auto-merge remained enabled but did not complete after all checks went green, so PR #6 was manually squash-merged as instructed.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
