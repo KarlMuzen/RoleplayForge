@@ -22,9 +22,9 @@ Done when: CI green. Owner on the preview, phone: after sending a message, the r
 Decisions: 18.
 
 ## Progress (executor, update every commit)
-Done: Added pure `chatHistory.ts` helpers for user-message detection, regenerate eligibility/history trimming, deleting the last message, and replacing its text.
-Left: Add helper tests, wire the UI actions and shared generation path, then verify CI.
-Next action: Add focused tests for all five history helpers.
+Done: Added all five pure `chatHistory.ts` helpers and focused tests covering no-user regeneration, group-turn trimming, deletion, replacement, and immutability.
+Left: Wire the last-message action row, inline edit mode, regenerate/send shared generation path, then verify CI.
+Next action: Update `ChatPreviewModal.tsx` without changing the header or input bar.
 
 ## Result (executor, when finished)
 Pull request: 
