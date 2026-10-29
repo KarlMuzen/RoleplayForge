@@ -1,6 +1,6 @@
 # Task 015: Details, creator/version/nickname/tags move below the writing fields
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: On the Details tab, Character Name is followed straight by Description, Personality and Scenario. Creator, Version, Nickname and Tags live in their own "Card Info" section after Advanced Prompts.
 Files to touch: `src/components/editor/IdentitySection.tsx`, new `src/components/editor/MetadataSection.tsx`, `src/components/EditorView.tsx`
@@ -15,9 +15,9 @@ Done when: CI green. Owner, phone, Details tab: Name, then Description right awa
 Decisions: 6, 17, 19.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Started Task 015 from the verified post-Task-014 main head; identified the metadata inputs to move and the insertion point after Advanced Prompts.
+Left: Create `MetadataSection`, simplify `IdentitySection`, insert `Card Info` in `EditorView`, then verify CI and merge only on green `test-and-lint`.
+Next action: Move Creator, Version, Nickname, and Tags into the new section without changing any `onChange` logic.
 
 ## Result (executor, when finished)
 Pull request: 
