@@ -559,6 +559,7 @@ export const ConnectionProfilesSection: React.FC<ConnectionProfilesSectionProps>
                   />
                   <button
                     type="button"
+                    aria-label={showApiKey ? 'Hide API key' : 'Show API key'}
                     onClick={() => setShowApiKey(!showApiKey)}
                     className="absolute right-3 top-2.5 text-knight-400 hover:text-mist-100"
                   >

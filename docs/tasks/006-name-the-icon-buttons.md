@@ -1,6 +1,6 @@
 # Task 006: Name the three unnamed buttons
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: The 3 icon-only buttons the audit flagged (2 on the Assist screen, 1 on Settings) get an accessible name.
 Files to touch: `src/components/AssistantView.tsx` and the one file under `src/components/settings/` that holds the Settings button. At most 3 files.
@@ -13,9 +13,9 @@ Done when: CI green. `button-name` count is 0 on Assist and Settings if the audi
 Decisions: HANDOFF step 2.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Added accessible names to the two Assist buttons (`Generate cover`, `Send message`) and the Settings API-key visibility toggle (`Show API key` / `Hide API key`). Each label matches its handler; no visuals or handlers changed.
+Left: Open PR, verify CI, and record the final result.
+Next action: Open PR to main.
 
 ## Result (executor, when finished)
 Pull request: 
