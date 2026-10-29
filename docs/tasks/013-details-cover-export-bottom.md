@@ -1,6 +1,6 @@
 # Task 013: Details, cover art and export move to one collapsed section at the bottom
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: On the Details tab the cover art block and the export controls no longer sit above the writing fields. They live in one collapsed section, "Cover art and export", after the last form section.
 Files to touch: `src/components/EditorView.tsx`
@@ -16,9 +16,9 @@ Done when: CI green. Owner, phone, Details tab: no cover art or Export select ab
 Decisions: 6, 17, 19.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Moved the existing Export & Verify Menu and complete cover/avatar block into a closed-by-default `Cover art and export` details section after `AdvancedPromptsSection`; handlers, inputs, labels, titles, styles, and surrounding editor state remain unchanged.
+Left: Open PR, verify `test-and-lint`, fill Result, and merge only on green CI.
+Next action: Confirm the diff is limited to `EditorView.tsx` plus this card, then create the PR.
 
 ## Result (executor, when finished)
 Pull request: 
