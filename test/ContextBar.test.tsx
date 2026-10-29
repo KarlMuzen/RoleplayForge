@@ -77,7 +77,7 @@ describe('ContextBar', () => {
   });
 
   it('shows Test tabs and the incomplete-card checklist in Test mode', () => {
-    useCardStore.setState({ activeTab: 'crucible' });
+    act(() => useCardStore.setState({ activeTab: 'crucible' }));
     render(<ContextBar />);
 
     const nav = screen.getByRole('navigation', { name: 'Test sections' });
