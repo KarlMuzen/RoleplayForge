@@ -393,7 +393,7 @@ function errorResult(message: string): PasteReadResult {
   return { ...emptyResult('error'), error: message };
 }
 
-export async function readPastedText(text: string): Promise<PasteReadResult> {
+async function readPastedTextImpl(text: string): Promise<PasteReadResult> {
   if (text.length > MAX_INPUT_LENGTH) {
     return errorResult('Pasted text exceeds the 1,000,000 character limit.');
   }
@@ -458,4 +458,12 @@ export async function readPastedText(text: string): Promise<PasteReadResult> {
   }
 
   return mapFields(Object.entries(parsed), 'unknown-json', prefixWarnings);
+}
+
+export async function readPastedText(text: string): Promise<PasteReadResult> {
+  try {
+    return await readPastedTextImpl(text);
+  } catch (error) {
+    return errorResult(error instanceof Error ? error.message : 'Unable to read pasted text.');
+  }
 }

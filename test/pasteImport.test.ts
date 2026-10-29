@@ -163,7 +163,8 @@ describe('readPastedText', () => {
     expect(({} as { x?: number }).x).toBeUndefined();
   });
 
-  it('does not throw for malformed garbage', async () => {
+  it('returns a result instead of throwing for malformed input', async () => {
     await expect(readPastedText('{{{')).resolves.toMatchObject({ kind: 'plain-text' });
+    await expect(readPastedText('{\"name\":')).resolves.toMatchObject({ kind: 'plain-text' });
   });
 });

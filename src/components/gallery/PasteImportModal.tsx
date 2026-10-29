@@ -29,7 +29,14 @@ export const PasteImportModal: React.FC<PasteImportModalProps> = ({ isOpen, onCl
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const latestRunRef = useRef(0);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const modalRef = useModalA11y(isOpen, onClose) as React.RefObject<HTMLDivElement | null>;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const focusTimer = window.setTimeout(() => textAreaRef.current?.focus(), 80);
+    return () => window.clearTimeout(focusTimer);
+  }, [isOpen]);
 
   useEffect(() => {
     const runId = ++latestRunRef.current;
@@ -87,7 +94,7 @@ export const PasteImportModal: React.FC<PasteImportModalProps> = ({ isOpen, onCl
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-4"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-4"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -121,6 +128,7 @@ export const PasteImportModal: React.FC<PasteImportModalProps> = ({ isOpen, onCl
             </label>
             <textarea
               id="paste-character-text"
+              ref={textAreaRef}
               autoFocus
               aria-label="Paste raw character text or JSON"
               rows={8}
