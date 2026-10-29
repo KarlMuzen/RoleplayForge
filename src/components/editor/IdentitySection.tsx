@@ -26,78 +26,16 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
         Essential Fields & Persona
       </h3>
 
-      {/* Character Name & Creator */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-medium text-knight-400 mb-1">Character Name *</label>
-          <input
-            type="text"
-            value={d.name || ''}
-            onChange={(e) =>
-              updateActiveCardData((c) => ({ ...c, data: { ...c.data, name: e.target.value } }))
-            }
-            placeholder="e.g. Aeliana the Starlight Weaver"
-            className="w-full px-3.5 py-2 bg-void-800/80 border border-knight-700/80 rounded-xl text-mist-100 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-knight-400 mb-1">Creator / Author</label>
-          <input
-            type="text"
-            value={d.creator || ''}
-            onChange={(e) =>
-              updateActiveCardData((c) => ({ ...c, data: { ...c.data, creator: e.target.value } }))
-            }
-            placeholder="e.g. StarweaverStudio"
-            className="w-full px-3.5 py-2 bg-void-800/80 border border-knight-700/80 rounded-xl text-mist-100 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50"
-          />
-        </div>
-      </div>
-
-      {/* Version & Nickname */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-medium text-knight-400 mb-1">Character Version</label>
-          <input
-            type="text"
-            value={d.character_version || ''}
-            onChange={(e) =>
-              updateActiveCardData((c) => ({ ...c, data: { ...c.data, character_version: e.target.value } }))
-            }
-            placeholder="e.g. 1.0.0"
-            className="w-full px-3.5 py-2 bg-void-800/80 border border-knight-700/80 rounded-xl text-mist-100 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-knight-400 mb-1">Nickname</label>
-          <input
-            type="text"
-            value={d.nickname || ''}
-            onChange={(e) =>
-              updateActiveCardData((c) => ({ ...c, data: { ...c.data, nickname: e.target.value } }))
-            }
-            placeholder="e.g. Aeli"
-            className="w-full px-3.5 py-2 bg-void-800/80 border border-knight-700/80 rounded-xl text-mist-100 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50"
-          />
-        </div>
-      </div>
-
-      {/* Tags */}
+      {/* Character Name */}
       <div>
-        <label className="block text-xs font-medium text-knight-400 mb-1">Tags (comma-separated)</label>
+        <label className="block text-xs font-medium text-knight-400 mb-1">Character Name *</label>
         <input
           type="text"
-          value={(d.tags || []).join(', ')}
-          onChange={(e) => {
-            const tagsArray = e.target.value
-              .split(',')
-              .map((t) => t.trim())
-              .filter(Boolean);
-            updateActiveCardData((c) => ({ ...c, data: { ...c.data, tags: tagsArray } }));
-          }}
-          placeholder="fantasy, mage, protective, hero"
+          value={d.name || ''}
+          onChange={(e) =>
+            updateActiveCardData((c) => ({ ...c, data: { ...c.data, name: e.target.value } }))
+          }
+          placeholder="e.g. Aeliana the Starlight Weaver"
           className="w-full px-3.5 py-2 bg-void-800/80 border border-knight-700/80 rounded-xl text-mist-100 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50"
         />
       </div>
