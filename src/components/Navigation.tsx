@@ -19,6 +19,7 @@ import {
   Coins,
 } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { CardAvatar } from './CardAvatar';
 
 
 export const Navigation: React.FC = () => {
@@ -196,13 +197,14 @@ export const Navigation: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-7 h-7 rounded-lg bg-void-800 border border-knight-700 shrink-0 overflow-hidden flex items-center justify-center">
-                  {activeCard.data.avatar ? (
-                    <img src={activeCard.data.avatar} alt="Avatar" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-[10px] font-bold text-maroon-400">
-                      {activeCard.data.name?.substring(0, 2).toUpperCase() || 'CC'}
-                    </span>
-                  )}
+                  <CardAvatar
+                    src={activeCard.data.avatar}
+                    name={activeCard.data.name}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                    fallbackClassName="text-[10px]"
+                    fallbackIconClassName="w-4 h-4"
+                  />
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] text-knight-500 font-mono uppercase tracking-wider">Active</p>

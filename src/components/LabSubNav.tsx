@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useCardStore, type TabType } from '../store/useCardStore';
 import { ShieldAlert, Sparkles, MessageSquare, AlertTriangle, HelpCircle } from 'lucide-react';
 import { validateCardCompleteness } from '../utils/validation';
+import { CardAvatar } from './CardAvatar';
 
 const SUB_TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
   { id: 'crucible', label: 'Stress tests', icon: <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> },
@@ -40,12 +41,17 @@ export const LabSubNav: React.FC = () => {
         <div className="flex items-center justify-between gap-2 min-w-0">
           <div className="flex items-center gap-2 min-w-0">
             <div className="w-6 h-6 rounded-md bg-void-800 border border-knight-700/60 overflow-hidden flex items-center justify-center shrink-0">
-              {activeCard?.data.avatar ? (
-                <img src={activeCard.data.avatar} alt="" className="w-full h-full object-cover" />
+              {activeCard ? (
+                <CardAvatar
+                  src={activeCard.data.avatar}
+                  name={activeCard.data.name}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  fallbackClassName="text-[9px]"
+                  fallbackIconClassName="w-3.5 h-3.5"
+                />
               ) : (
-                <span className="text-[9px] font-bold text-maroon-400">
-                  {activeCard?.data.name?.substring(0, 2).toUpperCase() || 'RF'}
-                </span>
+                <span className="text-[9px] font-bold text-maroon-400">RF</span>
               )}
             </div>
             <div className="min-w-0 flex items-center gap-1.5">

@@ -1,6 +1,6 @@
 # Task 003: CardAvatar at the remaining sites
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: Every other place that shows a card cover uses `CardAvatar`, so none can show a broken image.
 Files to touch: `src/components/LabSubNav.tsx` (about line 44), `src/components/WorkspaceSubNav.tsx` (about line 72), `src/components/ChatPreviewModal.tsx` (about lines 230 and 456), `src/components/Navigation.tsx` (about line 200), `src/components/editor/ExportVerifyModal.tsx` (about line 117)
@@ -14,9 +14,9 @@ Done when: CI green. Owner on the preview: with a dead avatar address, the top b
 Decisions: 16.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Replaced card-avatar images in LabSubNav, WorkspaceSubNav, both ChatPreviewModal character-avatar sites, and Navigation with the shared CardAvatar component while preserving each site's alt text, image classes, and existing referrerPolicy settings (none were set at these sites). Kept the generated poster preview in ExportVerifyModal unchanged because it is a local blob URL created from the app-rendered PNG bytes.
+Left: Open PR, verify CI, and record the final result.
+Next action: Open PR to main.
 
 ## Result (executor, when finished)
 Pull request: 
