@@ -7,7 +7,7 @@ Files to touch: `src/components/LabSubNav.tsx` (about line 44), `src/components/
 Do not touch: `CardAvatar.tsx` itself (change it only if a site truly cannot work, and say so in Result), store, db, frozen identifiers.
 Changes:
 1. Start only after Task 002 is merged to `main`.
-2. Replace each card-cover `<img>` above with `CardAvatar`, keeping the site's size, shape, `alt` and `referrerPolicy`.
+2. Replace each card-cover `<img>` above with `CardAvatar`, keeping the site's size, shape, `alt` and `referrerPolicy`. Pass `fallbackClassName` with a text size that fits the box (about a third of its height; for example `text-xs` in a 32px circle).
 3. Leave the logo images (`/forge-mark.svg`) alone.
 4. If the image in `ExportVerifyModal.tsx` is a local image the app generated itself (data or blob address) and not a remote cover, leave it and say so in Result.
 Done when: CI green. Owner on the preview: with a dead avatar address, the top bars, Test Chat and the side nav show initials, never a broken icon.
