@@ -16,9 +16,9 @@ Done when: CI green. Owner on the preview, phone: Enter makes a new line, the bo
 Decisions: 18.
 
 ## Progress (executor, update every commit)
-Done: Started Task 009 from the verified main head; implementing the multi-line message box and isolated Enter-key logic/tests.
-Left: Finish implementation, open PR, and merge only after `test-and-lint` is green.
-Next action: Replace the single-line Chat input with the specified autosizing textarea and add unit coverage.
+Done: Replaced the single-line Chat input with an autosizing textarea, set the input row to `items-end`, and wired Enter behavior to the planned helper.
+Left: Add the Enter-key helper and unit tests, open PR, and merge only after `test-and-lint` is green.
+Next action: Add `src/utils/chatKeys.ts` and its five specified test cases.
 
 ## Result (executor, when finished)
 Pull request: 
