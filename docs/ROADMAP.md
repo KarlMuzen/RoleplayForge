@@ -2,6 +2,85 @@
 
 This roadmap is dependency-ordered. Items remain planned until code, tests and compatibility evidence show they are complete.
 
+## Priority plan (set 2026-10-29)
+
+**Goal:** a creator never loses a card, never silently breaks it, and can find and fix problems without paying for AI.
+
+This order supersedes the phase order below where they differ. The phases keep the detailed checklists. Each item is one commit with `npm run lint && npm test && npm run build` passing.
+
+| # | Priority | Detail lives in |
+|---|---|---|
+| 1 | Phone usability | `docs/HANDOFF.md` steps 2-6, plus the items below |
+| 2 | Data safety | Phase 1 |
+| 3 | Fixtures and conversion receipts | Phases 1-2 |
+| 4 | Free tools: token view, card linter, lorebook activation simulator | Phase 5, pulled forward |
+| 5 | Privacy-first AI assist | Phase 5 |
+| 6 | Test Lab upgrade | Phase 4 |
+| 7 | Presets, narrow first | Phase 3 |
+
+### Priority 1 - Phone usability
+
+- [ ] HANDOFF step 2: quick-wins batch (Guide close band, cover-image fallback, consistent Chat button, label unlabelled controls, 12px minimum text).
+- [ ] HANDOFF step 3: reorder Details so writing fields come first.
+- [ ] HANDOFF step 4: one sticky ContextBar replacing `WorkspaceSubNav` and `LabSubNav`, with Undo/Redo on all Forge tabs.
+- [ ] Phone chrome budget: one top bar (back, name, status chip, undo/redo), one tab strip, bottom nav, nothing else fixed. Save state is a small dot, not a bar.
+- [ ] Status chip shows always-on tokens and issue count. Tapping it opens one Status sheet with the token breakdown and the issues.
+- [ ] Keyboard-open mode: hide bottom nav and shrink the header so typing keeps most of the screen.
+- [ ] Full-screen editor for long fields. No scroll boxes nested inside the page scroll.
+- [ ] HANDOFF step 5: contrast pass (light theme first), 44px targets, axe + mobile Playwright smoke test in CI.
+- [ ] HANDOFF step 6 (D-13): flush pending autosave inside `selectCardForEditing`, with a store test.
+- [ ] Routes: keep `#/forge`, `#/test`, `#/settings`. Add a `variants` sub-route. Any renamed section keeps its old route as an alias.
+- [ ] Wording rules: worst-case lore is "could exceed", never "over limit". Empty optional fields are info-only and are not counted in the issue badge.
+
+### Priority 2 - Data safety
+
+- [ ] Check whether persistent storage is already requested; if not, request it (`navigator.storage.persist()`) and show the result in Settings.
+- [ ] Show "last backup" date, a reminder when it is old, and one-tap backup to a file.
+
+### Priority 3 - Fixtures and conversion receipts
+
+- [ ] Phase 1 golden fixtures and fuzz tests (import -> edit -> export -> re-import).
+- [ ] A receipt after every import and export: preserved, transformed, unsupported, dropped, each with field path and reason.
+- [ ] Adapter status (`implemented`, `partial`, `verified`) with last-tested date, visible in the UI.
+- [ ] No platform is called verified without fixtures. Receipts are the lead feature.
+
+### Priority 4 - Free tools (no AI, new pure code in `src/core/`)
+
+- [ ] One token function as the single source for every token number in the UI: always-on, max-triggered, per section. The breakdown must sum to the headline. Counts come from `gpt-tokenizer`, so label them as estimates.
+- [ ] Card linter: offline rules with severity (error, warning, suggestion, info). Heuristic rules are suggestions, not errors.
+- [ ] Lorebook activation simulator: paste text, see which entries fire and why. Verify SillyTavern matching rules against current docs or a test instance first. Label output "simulation, rules as of <date>".
+
+### Priority 5 - Privacy-first AI assist
+
+- [ ] Per-field assist button on each field label and one whole-card Assist in the header menu. No floating button over the text.
+- [ ] Before every request, show "Sent to <provider>: <fields>". Local Ollama stays first-class.
+- [ ] Each proposal shows token change and cost estimate. Per-field selection stays; per-hunk selection stays deferred.
+- [ ] `Change`/`apply` for multi-step undo, only after Priority 3 tests exist. First use: AI patches and undo only. If a revisions store is added, it is additive and capped (about 20 per card).
+
+### Priority 6 - Test Lab upgrade
+
+- [ ] Saved scenario suites re-run against variants, with transcript evidence behind scores and visible evaluator uncertainty (see Phase 4).
+- [ ] Show estimated cost before a suite runs.
+
+### Priority 7 - Presets, narrow first
+
+- [ ] Table of which sampling settings each provider supports, flagging non-portable ones.
+- [ ] Preset export that never includes keys or connection secrets.
+- [ ] SillyTavern prompt-manager presets wait until their semantics are verified.
+
+### Working rules
+
+- Verify the `main` head before every direct commit.
+- New pure logic goes in `src/core/`. Existing files are not moved.
+- Large views (`LorebookView`, `GuideView`, `EditorView`, `cardSlice`) are split only when they are being edited anyway.
+- Edit large files from a local clone; the GitHub tool resends whole files.
+- Every adapter and simulator carries a last-tested date.
+- Frozen: DB name `CardCrucibleDB`, settings keys, `enc.v1.` format, passkey and sync identifiers.
+
+### Not doing now
+
+Marketplace, accounts, cloud sync, plugin system, CRDT sync, path-based routing, a folder reshuffle into `core/features/ports/adapters`, Clock/FileIO ports, a provider capability matrix beyond the sampler table.
+
 ## Phase 0 — Repository and product boundaries
 
 - [x] Establish `KarlMuzen/RoleplayForge` as the canonical public GitHub repository.
@@ -18,6 +97,7 @@ This roadmap is dependency-ordered. Items remain planned until code, tests and c
 - [ ] Test import → edit → export → re-import across PNG, JSON and CHARX; compare known fields and preserve unknown fields.
 - [ ] Add property-based/fuzz tests for malformed or oversized inputs and user-facing error handling.
 - [ ] Review backup/restore, encrypted API-key storage, migration behavior and local data-loss paths.
+- [ ] Request persistent storage and surface backup age (Priority 2).
 - [ ] Put source dates beside pricing estimates and make stale/unknown rates visible.
 - [ ] Add a release checklist covering tests, build, dependency audit, data migration and installed-PWA smoke tests.
 
@@ -29,7 +109,7 @@ This roadmap is dependency-ordered. Items remain planned until code, tests and c
 - [ ] Document Character Card V2/V3 format behavior separately from platform-specific behavior.
 - [ ] Create a SillyTavern-focused fixture set and validate each supported lorebook/preset field against current authoritative documentation or a test instance.
 - [ ] Keep Chub import covered by fixtures and failure-path tests.
-- [ ] Add conversion receipts describing preserved, transformed, unsupported and dropped fields.
+- [ ] Add conversion receipts describing preserved, transformed, unsupported and dropped fields (Priority 3).
 - [ ] Add adapters only when schemas, fixtures and clear user need are available. RisuAI and other frontends are candidates, not current support promises.
 
 **Exit criteria:** each verified adapter has a documented scope, sample fixtures, automated tests and a last-tested date.
@@ -41,6 +121,7 @@ This roadmap is dependency-ordered. Items remain planned until code, tests and c
 - [ ] Separate sampling parameters, context limits, prompt templates, provider/model settings and platform-only fields.
 - [ ] Add editable preset profiles, comparison and version history.
 - [ ] Prevent accidental export of API keys or connection secrets.
+- [ ] Start narrow: sampler-support table and secret-free export first (Priority 7).
 
 **Exit criteria:** presets can be round-tripped without leaking secrets, and cross-platform differences are visible before export.
 
@@ -55,6 +136,8 @@ This roadmap is dependency-ordered. Items remain planned until code, tests and c
 **Exit criteria:** a saved run can be inspected and repeated with the same known inputs; score changes link to transcript evidence.
 
 ## Phase 5 — Specialist AI workflows
+
+The non-AI parts of the Lorebook Designer (activation simulation) and the card linter are pulled forward to Priority 4.
 
 - [ ] Support mode: source-grounded troubleshooting with dated citations and explicit uncertainty.
 - [ ] Card Builder: structured field-by-field generation and user-reviewed patches.
