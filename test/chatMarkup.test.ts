@@ -113,6 +113,23 @@ describe('parseChatMarkup', () => {
     ]);
   });
 
+  it('leaves formatting beyond three nesting levels literal', () => {
+    const tokens = parseDisplayText('*one **two ~~three *four*~~** end*');
+    expect(tokens[0].type).toBe('italic');
+    expect(tokens[0].children).toEqual([
+      { type: 'text', text: 'one ' },
+      {
+        type: 'bold',
+        text: 'two ~~three *four*~~',
+        children: [
+          { type: 'text', text: 'two ' },
+          { type: 'strike', text: 'three *four*' },
+        ],
+      },
+      { type: 'text', text: ' end' },
+    ]);
+  });
+
   it('does not treat underscores as formatting markers', () => {
     for (const input of ['snake_case_word', 'a_b_c']) {
       expect(tokenShape(parseDisplayText(input))).toEqual([
