@@ -5,6 +5,7 @@ import { useModalA11y } from '../hooks/useModalA11y';
 import { CardAvatar } from './CardAvatar';
 import type { StoredCard } from '../db';
 import { countTokens, countTokensAsync } from '../utils/tokenizer';
+import { shouldSendOnEnter } from '../utils/chatKeys';
 import { scanLorebook, type LorebookScanDebugInfo } from '../utils/lorebookScan';
 import {
   buildInitialGreetingMessages,
@@ -54,6 +55,10 @@ export const ChatPreviewModal: React.FC = () => {
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatMenuRef = useRef<HTMLDivElement>(null);
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
+  const isTouchDevice =
+    typeof window !== 'undefined' &&
+    (window.matchMedia?.('(pointer: coarse)').matches ?? false);
 
   const lorebookDebug = useMemo(() => {
     if (!activeCard || !activeCard.data.character_book) return null;
@@ -126,6 +131,13 @@ export const ChatPreviewModal: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isGenerating]);
+
+  useEffect(() => {
+    const textarea = messageInputRef.current;
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`;
+  }, [inputMsg]);
 
   const [exactChatTokens, setExactChatTokens] = useState<number | null>(null);
 
@@ -595,14 +607,26 @@ export const ChatPreviewModal: React.FC = () => {
 
         {/* Input Bar */}
         <div className="p-3 sm:p-4 border-t border-knight-700/40 bg-void-950/90 backdrop-blur-md shrink-0 pb-[max(0.75rem,calc(0.75rem+env(safe-area-inset-bottom,0px)))] sm:pb-4">
-          <div className="max-w-4xl mx-auto flex items-center gap-2">
-            <input
-              type="text"
+          <div className="max-w-4xl mx-auto flex items-end gap-2">
+            <textarea
+              ref={messageInputRef}
+              rows={1}
               value={inputMsg}
-              onChange={(e) => setInputMsg(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+              onChange={(e) => {
+                const textarea = e.currentTarget;
+                setInputMsg(textarea.value);
+                textarea.style.height = 'auto';
+                textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`;
+              }}
+              onKeyDown={(e) => {
+                if (shouldSendOnEnter(e, isTouchDevice)) {
+                  e.preventDefault();
+                  void handleSendMessage();
+                }
+              }}
               placeholder={`Reply to ${d.name || 'character'}...`}
-              className="flex-1 px-4 py-3 bg-void-900 border border-knight-700/40 rounded-xl text-mist-100 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50"
+              aria-label="Message"
+              className="flex-1 min-w-0 px-4 py-3 bg-void-900 border border-knight-700/40 rounded-xl text-mist-100 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50 resize-none overflow-y-auto max-h-40"
             />
             <button
               onClick={handleSendMessage}
