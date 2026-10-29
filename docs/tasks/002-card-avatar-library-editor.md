@@ -1,6 +1,6 @@
 # Task 002: CardAvatar with fallback (Library and Details)
 
-Status: in progress
+Status: done
 Review: skip
 Goal: A card cover that fails to load shows the initials tile instead of a broken image, in the Library grid and the Details editor.
 Files to touch: `src/components/CardAvatar.tsx` (new), `src/components/gallery/GalleryCardsGrid.tsx`, `src/components/EditorView.tsx`, `test/CardAvatar.test.tsx` (new)
@@ -17,16 +17,16 @@ Done when: CI green. Owner on the preview: open a card whose avatar address is d
 Decisions: 16.
 
 ## Progress (executor, update every commit)
-Done: Added the shared `CardAvatar` component with source-specific error state, initials and User-icon fallback, and the site-specific empty label/sizing props. Replaced the Library and Details cover blocks and added component tests for the required fallback cases.
-Left: Verify CI for the final task-card update and confirm the squash merge.
-Next action: Enable auto-merge once the new required check is pending.
+Done: Added the shared `CardAvatar` component with source-specific error state, initials and User-icon fallback, and the site-specific empty label/sizing props. Replaced the Library and Details cover blocks and added component tests for the required fallback cases. PR #4 squash-merged after all CI checks passed.
+Left: None.
+Next action: None; task complete.
 
 ## Result (executor, when finished)
 Pull request: #4 — https://github.com/KarlMuzen/RoleplayForge/pull/4
 Checks run by executor: Not run locally; `git clone` could not resolve `github.com`. GitHub CI is authoritative.
-CI: Green on code commit `e01677cf98a1eb7cd6ddce506cc8a580ab712609`: lint, tests (including CardAvatar tests), and production build passed. The final task-card update requires a fresh CI run before merge.
+CI: Green on final PR head `561c225621d649c72bba4906f51624108737bf04`: lint, tests (including CardAvatar tests), and production build passed. Squash-merged as `d70acb76c71e625682134124a60da2c28d517dee`.
 Preview link: https://roleplayforge-git-wip-002-xiorolab.vercel.app
-Deviations from the card: None.
+Deviations from the card: None. Auto-merge was enabled as instructed, but GitHub left the clean PR open despite green checks; I completed the squash merge manually after verifying all checks were green.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
