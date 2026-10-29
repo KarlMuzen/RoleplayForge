@@ -19,16 +19,16 @@ Done when: CI green; no remaining import of the old components (`grep -r "SubNav
 Decisions: 5, 6, 17, 19, 24.
 
 ## Progress (executor, update every commit)
-Done: Verified `main` at `802e00803d0e4e3e9ced497f4b71768e8ca7e217`; created `wip/017`; added `ContextBar.tsx`, replaced the two App nav slots with one shared component, removed both old sub-nav components, and renamed/reworked the navigation tests. Tests cover checklist accessibility/dismissal, Test mode checklist and tabs, 44px tab targets, active-tab selection, and active-tab semantics.
-Left: Open the PR, confirm CI, and obtain the required Claude review.
-Next action: Create the PR, inspect the latest `test-and-lint` result, and report it for Claude review.
+Done: Verified `main` at `802e00803d0e4e3e9ced497f4b71768e8ca7e217`; created `wip/017`; added `ContextBar.tsx`, replaced the two App nav slots with one shared component, removed both old sub-nav components, and replaced the old sub-nav test with ContextBar regression coverage. The PR is open.
+Left: Confirm CI on the latest PR head and obtain the required Claude review.
+Next action: Check the latest `test-and-lint` result; report PR #19 for Claude review. Do not merge until review is Approved.
 
 ## Result (executor, when finished)
-Pull request:
-Checks run by executor:
-CI:
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/19
+Checks run by executor: Not run locally; the environment could not resolve github.com for a git clone. GitHub Actions is the authoritative CI check.
+CI: Pending on the PR head at commit `b9f9e3559e0f80ff46ab7e802b47890f0fc57666` when first checked.
 Preview link: n/a (Decision 19)
-Deviations from the card:
+Deviations from the card: None.
 
 ## Review (Claude, if required)
 Pending
