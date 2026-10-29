@@ -3,13 +3,14 @@
 **Snapshot date:** 2026-10-29  
 **Canonical repository:** [KarlMuzen/RoleplayForge](https://github.com/KarlMuzen/RoleplayForge)  
 **Default branch:** `main`  
-**Latest verified implementation checkpoint:** [`13d44425413d`](https://github.com/KarlMuzen/RoleplayForge/commit/13d44425413d0239a3e3b2b2f8efc98853806791)  
-**Verified CI run:** [`40767763788`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40767763788)
+**Latest verified implementation checkpoint:** [`c19deacf4c10`](https://github.com/KarlMuzen/RoleplayForge/commit/c19deacf4c10fcbfdb4559b6283491a4f59be277) (Task 015, PR #17; `main` head `bad5b0e` is a docs commit on top)  
+**Verified CI run:** [`40852384343`](https://github.com/KarlMuzen/RoleplayForge/actions/runs/40852384343)  
+**Production:** `roleplayforge.vercel.app` serves `c19deac` (manual deploy on 2026-10-29; see `PROJECT_STATE.md`, Decision 22)
 
 ## Repository checkpoint
 
 - The application source is present in the public repository and `main` is the source of truth.
-- PR #1 (`Update from Owner`) was merged into `main` on 2026-10-28. Follow-up changes are being pushed directly to `main` without opening PRs.
+- PR #1 (`Update from Owner`) was merged into `main` on 2026-10-28. Since Decision 13 (see `PROJECT_STATE.md`) code changes go through `wip/NNN` pull requests gated by `test-and-lint`; docs-only changes may go straight to `main`.
 - The current CI workflow successfully runs dependency installation, lint/type checking, automated tests and a production PWA build.
 - The first review-driven Roleplay Forge UI pass is in place: warm parchment/charcoal theme, early theme bootstrap, app and package identity, PWA manifest/icon generation, labeled mobile navigation, contextual help, reduced-motion/accessibility refinements, and Library/AI patch-review improvements.
 - The app remains CardCrucible-derived. The deeper screen-by-screen redesign and manual installed-PWA validation are not complete.

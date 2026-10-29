@@ -8,14 +8,14 @@ Date: 2026-10-29. `main` head when written: `cfad9f5`. Sources: repo files (read
 
 - **GitHub Actions:** one workflow, `ci.yml`, one job `test-and-lint` (type check + lint, tests, production build). Runs on every pull request to `main` and on pushes to `main` except `docs/**` and `*.md`. Superseded runs are cancelled. npm cache is on.
 - **Ruleset `main-ci-gate`** (owner screenshot): active, targets `main` only. Bypass list: repository admin (always) and the Claude GitHub connector (always). Owner reports the required check is set.
-- **Vercel project `roleplayforge`:** production deploys from `main`. Preview deployments are made for pull-request branches (seen for the PR #2 branch). `vercel.json` has an `ignoreCommand` that skips docs-only commits; the recent docs commits show state CANCELED, so it works. Security headers and CSP are set in `vercel.json`.
+- **Vercel project `roleplayforge`:** production deploys from `main`. Preview deployments for `wip/*` branches are switched off (Task 011); only `main` deploys, and Task 016 extends the skip to every other branch. Vercel sometimes never starts a build for a `main` push; recovery is in `PROJECT_STATE.md`, Decision 22. `vercel.json` has an `ignoreCommand` that skips docs-only commits; the recent docs commits show state CANCELED, so it works. Security headers and CSP are set in `vercel.json`.
 - **Secret scanning and push protection:** on (owner screenshot).
 - **Not present** in `.github/`: Dependabot config, CodeQL workflow, pull-request template, CODEOWNERS.
 - `scripts/ui-audit.py` (Playwright) exists but is not in CI.
 
 ## Worth doing later, best value first
 
-1. **Phone test, no new tooling.** Each executor pull request already gets a Vercel preview. The executor puts the preview link in the card's Result. Not a merge gate (see PROJECT_STATE, Current task). Unverified: whether Vercel posts the link as a pull-request comment. The connector gets 403 on protected previews, so the owner opens it, not Claude.
+1. **Phone test, no new tooling.** Superseded by Decisions 17 and 19: executor pull requests get no Vercel preview; the owner checks production in a batch. (Original text: each executor pull request gets a Vercel preview and the executor puts the link in the card's Result.) Not a merge gate (see PROJECT_STATE, Current task). Unverified: whether Vercel posts the link as a pull-request comment. The connector gets 403 on protected previews, so the owner opens it, not Claude.
 2. **Dependabot** (`.github/dependabot.yml`): weekly, grouped, npm and github-actions, major versions ignored, small open-PR limit. Gives security patches without manual watching. Cost: some PR noise. Deferred.
 3. **Secret scanning and push protection:** already on.
 4. **CodeQL default setup:** optional toggle in Settings, Code security. Expect some noise on a client-side app. Deferred.
