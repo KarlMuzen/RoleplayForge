@@ -19,9 +19,9 @@ Done when: CI green; no remaining import of the old components (`grep -r "SubNav
 Decisions: 5, 6, 17, 19, 24.
 
 ## Progress (executor, update every commit)
-Done: Verified `main` at `802e00803d0e4e3e9ced497f4b71768e8ca7e217`, checked the AI workflow and Task 017 scope, and created `wip/017`. Implementing the shared bar and focused regression tests.
+Done: Verified `main` at `802e00803d0e4e3e9ced497f4b71768e8ca7e217`; created `wip/017`; added `ContextBar.tsx`, replaced the two App nav slots with one shared component, removed both old sub-nav components, and renamed/reworked the navigation tests. Tests cover checklist accessibility/dismissal, Test mode checklist and tabs, 44px tab targets, active-tab selection, and active-tab semantics.
 Left: Open the PR, confirm CI, and obtain the required Claude review.
-Next action: Finish the component, App integration, component deletion/test rename, then validate on PR CI.
+Next action: Create the PR, inspect the latest `test-and-lint` result, and report it for Claude review.
 
 ## Result (executor, when finished)
 Pull request:
