@@ -1,6 +1,6 @@
 # Task 019: Chat text formatting in the SillyTavern way
 
-Status: not started
+Status: in progress
 Review: required
 Goal: Chat messages (card and user) show `*actions*`, `**bold**`, `~~strike~~` and `` `code` `` correctly, and broken or half-finished asterisks no longer show as stray `*` characters. Behavior follows SillyTavern's chat display, written from scratch.
 Files to touch: new `src/core/chatMarkup.ts`; `src/components/ChatPreviewModal.tsx` (only `renderRoleplayText` and its one call site); new `test/chatMarkup.test.ts`.
@@ -22,7 +22,7 @@ Design (the whole spec; do not improvise):
 3. In `ChatPreviewModal.tsx`, `renderRoleplayText(text)` calls `parseChatMarkup(fixChatMarkup(text))` and maps tokens to elements: italic keeps today's classes (`<em className="text-amber-300/90 not-italic italic font-serif opacity-90">`), bold `<strong className="font-semibold">`, strike `<s>`, code `<code className="rounded bg-black/20 px-1 font-mono text-[0.9em]">`, text `<span>`. Keep `whitespace-pre-wrap` on the bubble, so single newlines stay line breaks.
 4. User messages use the same function (replace `isUser ? m.text : renderRoleplayText(m.text)` with the single call). The message edit box and stored text stay raw.
 5. The stored message, the text sent to the AI, copy, and edit all use the raw text. Only the display changes.
-Tests (`test/chatMarkup.test.ts`, vitest, no DOM). Each case: input, then expected tokens (type and text only, newline tokens omitted below):
+Tests (`test/chatMarkup.test.ts`, vitest, no DOM). Each case: input, then expected tokens (type and text only, newline tokens included where specified):
    - `*waves* hello` gives italic "waves", text " hello".
    - `**bold**` gives bold "bold".
    - `* spaced *` gives italic "spaced".
@@ -44,16 +44,29 @@ Done when: CI green; Claude's review is Approved (one diff read, plus a check th
 Decisions: 2 (pure logic in `src/core/`), 18 (chat is a card test bench).
 
 ## Progress (executor, update every commit)
-Done:
-Left:
-Next action:
+Done: Applied Claude's requested fix in commit `06db68cb9c823e25243ad6a3f9ca04c997971c15`: `previousTokens` now copies the array before `tokens` is cleared. Added both requested regression tests in commit `e43b1c5d89fc9927c4a04ce75ebde6791596d497`. CI passed on review-fix code and on PR head `046baf379dfb202d28e4b2d595a44c90aeaea4e6`: lint, tests, and production PWA build all green (run 40878035822).
+Left: Claude needs to re-check the fix commit.
+Next action: Stop and report PR #21 and the fix commit to Claude. Do not merge.
 
 ## Result (executor, when finished)
-Pull request:
-Checks run by executor:
-CI:
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/21
+Checks run by executor: Not run locally; GitHub Actions is authoritative because this environment cannot clone github.com.
+CI: Passed `test-and-lint`, including lint, tests, and production PWA build, run 40878035822 on PR head `046baf379dfb202d28e4b2d595a44c90aeaea4e6`. The parser fix and both requested regression tests passed.
 Preview link: n/a (Decision 19)
-Deviations from the card:
+Deviations from the card: None. Only the requested array copy and two tests were changed in source/test files.
 
 ## Review (Claude, required)
-Pending
+Changes needed (reviewed head `3299effa5bbe9c916eaeb29dc086347c876e2dff`, 2026-10-29). Fix on the same branch `wip/019`, same PR #21, then report. Do not merge until Claude re-checks the fix commit.
+
+1. Crash bug in `src/core/chatMarkup.ts`, function `parseSegment`, the branch commented "A terminal unmatched closer wraps the line's preceding text". `previousTokens` is set to `tokens` (the same array), then `tokens.length = 0` empties it, then the new token is pushed with `children: previousTokens`. The token's `children` is the array that contains the token itself, a circular reference. `renderTokens` in `ChatPreviewModal.tsx` then recurses forever and the chat view crashes. Reproduced locally on the PR head: `**bold** text**` and `Hi *there* friend**` both produce a cycle. Any line with a finished span followed by a lone closing marker at the end of the line triggers it.
+   Fix: copy the array before clearing it: `const previousTokens = containsFormatting(tokens) ? [...tokens] : undefined;`. Nothing else in this branch changes.
+2. Add two tests to `test/chatMarkup.test.ts`, both on `parseDisplayText`:
+   - `**bold** text**`: assert `JSON.stringify(tokens)` does not throw, and the result is one bold token whose `children` are bold "bold" and text " text".
+   - `Hi *there* friend**`: assert `JSON.stringify(tokens)` does not throw, and the result is one bold token whose `children` are text "Hi ", italic "there", text " friend".
+   If the real output differs from these shapes but has no cycle, report the real shape in Result instead of changing the parser further.
+
+Checked and fine: no SillyTavern code copied (own recursive parser, own names and structure, no showdown or `fixMarkdown` logic); only the allowed files are touched; stored text, AI input, copy and edit still use raw text; tokens render as React elements, no `innerHTML`; the Chub greeting shape `**Use V2 Spec. (Menu > Configuration)` renders as bold with no stray `*`.
+
+Not blocking, no change now: `2 * 3 * 4` displays as `2 *3* 4` with "3" in italics, because the card's own `fixChatMarkup` rule trims spaces inside any `*` pair (SillyTavern's auto-fix behaves the same way). Claude decides later whether to restrict it.
+
+Re-check (2026-10-29, head `7430c558cca8d272553078a19ec452ba4ce36d95`): **Approved.** Fix `06db68c` copies the array before it is cleared; no cycle remains. Both regression tests (`e43b1c5`) pass with the shapes asked for. Verified on a clean checkout: 22 tests in `test/chatMarkup.test.ts` pass, lint has 0 errors, and a 200,000-input random fuzz run (markers, spaces, newlines, fences) produced no circular token, no exception and no nesting deeper than the limit. Only the three allowed files plus this card changed since the first review. Merge on green CI (Decision 19). Owner phone check after merge, as in Done when.
