@@ -15,16 +15,16 @@ Done when: CI green. Owner, phone: on Lorebook and Assist the Undo and Redo butt
 Decisions: 3, 6, 17, 19, 24.
 
 ## Progress (executor, update every commit)
-Done: Verified `main` at `0632297da7fbab7d52da832e7f544480fc92f401`; Task 017 is squash-merged and its reviewed PR CI passed. Created `wip/018`.
-Left: Add the ContextBar actions and save-state chip, remove only the duplicate Editor toolbar buttons, and extend tests.
-Next action: Implement the task-card changes, then open a PR and verify CI.
+Done: Created `wip/018`; added Undo/Redo controls and live save-status chip to ContextBar for Forge tabs with an active card; removed only the duplicate Undo/Redo controls and now-unused imports/selectors from the Details toolbar; added tests for mode gating, lorebook restoration through `updateActiveCardData`, and all save states.
+Left: Open the PR and verify CI.
+Next action: Open PR #20, check `test-and-lint`, and merge after it is green (Review: skip).
 
 ## Result (executor, when finished)
 Pull request:
-Checks run by executor:
-CI:
+Checks run by executor: Not run locally; the environment could not resolve github.com for a git clone. GitHub Actions is the authoritative CI check.
+CI: Pending.
 Preview link: n/a (Decision 19)
-Deviations from the card:
+Deviations from the card: None.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
