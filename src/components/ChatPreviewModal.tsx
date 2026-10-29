@@ -24,6 +24,7 @@ import {
   Bot,
   Users,
   BookOpen,
+  EllipsisVertical,
 } from 'lucide-react';
 
 export const ChatPreviewModal: React.FC = () => {
@@ -35,12 +36,14 @@ export const ChatPreviewModal: React.FC = () => {
     cards,
     profiles,
     activeProfileUuid,
+    setActiveProfileUuid,
   } = useCardStore();
   const activeProfile = profiles.find((p) => p.uuid === activeProfileUuid);
   const provider = activeProfile?.provider;
 
   const [inputMsg, setInputMsg] = useState('');
   const [userName, setUserName] = useState('User');
+  const [userNameDraft, setUserNameDraft] = useState('User');
   const [activeGreetingIdx, setActiveGreetingIdx] = useState<number>(0);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -48,8 +51,9 @@ export const ChatPreviewModal: React.FC = () => {
   const [groupMemberUuids, setGroupMemberUuids] = useState<string[]>([]);
   const [isGroupPickerOpen, setIsGroupPickerOpen] = useState(false);
   const [isLorebookDebugOpen, setIsLorebookDebugOpen] = useState(false);
+  const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const groupPickerRef = useRef<HTMLDivElement>(null);
+  const chatMenuRef = useRef<HTMLDivElement>(null);
 
   const lorebookDebug = useMemo(() => {
     if (!activeCard || !activeCard.data.character_book) return null;
@@ -90,21 +94,34 @@ export const ChatPreviewModal: React.FC = () => {
   const isGroupMode = sceneCharacters.length > 1;
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (groupPickerRef.current && !groupPickerRef.current.contains(e.target as Node)) {
-        setIsGroupPickerOpen(false);
+    if (!isChatMenuOpen) return;
+
+    const handleClickOutside = (event: PointerEvent) => {
+      if (chatMenuRef.current && !chatMenuRef.current.contains(event.target as Node)) {
+        setIsChatMenuOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
+  }, [isChatMenuOpen]);
 
   useEffect(() => {
     if (!activeCard || sceneCharacters.length === 0) return;
     const initialMsgs = buildInitialGreetingMessages(sceneCharacters, userName, activeGreetingIdx);
     setMessages(initialMsgs);
+    // userName is handled separately so editing the name cannot reset an active conversation.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCard, activeGreetingIdx, userName, groupMemberUuids.join(',')]);
+  }, [activeCard, activeGreetingIdx, groupMemberUuids.join(',')]);
+
+  useEffect(() => {
+    if (!activeCard || sceneCharacters.length === 0) return;
+    if (messages.some((message) => message.role === 'user')) return;
+
+    setMessages(buildInitialGreetingMessages(sceneCharacters, userName, activeGreetingIdx));
+    // Read the latest messages only when userName changes; do not rebuild after chat has started.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userName]);
 
   useEffect(() => {
     scrollToBottom();
@@ -149,6 +166,12 @@ export const ChatPreviewModal: React.FC = () => {
     setGroupMemberUuids((prev) =>
       prev.includes(uuid) ? prev.filter((u) => u !== uuid) : [...prev, uuid]
     );
+  };
+
+  const commitUserNameDraft = () => {
+    const nextName = userNameDraft.trim() || 'User';
+    setUserNameDraft(nextName);
+    setUserName(nextName);
   };
 
   const handleResetChat = () => {
@@ -216,8 +239,8 @@ export const ChatPreviewModal: React.FC = () => {
     >
       <div className="bg-void-900 w-full h-full flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-3 sm:p-4 border-b border-knight-700/40 flex items-center justify-between bg-void-950/90 backdrop-blur-md shrink-0">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <div className="p-3 sm:p-4 border-b border-knight-700/40 flex items-center justify-between gap-3 bg-void-950/90 backdrop-blur-md shrink-0">
+          <div className="flex flex-1 items-center gap-2.5 sm:gap-3 min-w-0">
             <button
               onClick={() => setChatPreviewOpen(false)}
               className="p-2 min-w-10 min-h-10 flex items-center justify-center text-knight-400 hover:text-mist-100 rounded-xl hover:bg-void-800 transition-colors touch-fast active:scale-95 shrink-0"
@@ -236,7 +259,7 @@ export const ChatPreviewModal: React.FC = () => {
                 fallbackIconClassName="w-5 h-5"
               />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h3 className="font-bold text-sm sm:text-base text-mist-100 truncate">
                 {isGroupMode ? sceneCharacters.map((sc) => sc.name).join(' + ') : d.name || 'Character'}
               </h3>
@@ -255,117 +278,171 @@ export const ChatPreviewModal: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <div className="hidden sm:flex items-center gap-1 bg-void-800/80 border border-knight-700/80 rounded-xl px-2 py-1">
-              <span className="text-[10px] text-knight-400 font-mono">User:</span>
-              <input
-                type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                placeholder="User"
-                aria-label="Your name in the chat"
-                data-testid="chat-user-name-header"
-                className="bg-transparent text-mist-100 text-xs font-medium w-14 sm:w-20 focus:outline-none"
-              />
-            </div>
-
-            <div className="relative flex items-center gap-1.5" ref={groupPickerRef}>
+            <div className="relative shrink-0" ref={chatMenuRef}>
               <button
-                onClick={() => setIsLorebookDebugOpen((prev) => !prev)}
-                className={`p-2 min-w-10 min-h-10 flex items-center justify-center rounded-xl transition-colors touch-fast active:scale-95 ${
-                  isLorebookDebugOpen || (lorebookDebug?.activatedEntries.length ?? 0) > 0
-                    ? 'text-indigo-300 bg-indigo-950/40 hover:bg-indigo-950/60'
-                    : 'text-knight-400 hover:text-mist-100 hover:bg-void-800'
-                }`}
-                title="Lorebook Debug"
+                type="button"
+                onClick={() => setIsChatMenuOpen((open) => !open)}
+                className="p-2 min-w-10 min-h-10 flex items-center justify-center text-knight-400 hover:text-mist-100 rounded-xl hover:bg-void-800 transition-colors touch-fast active:scale-95"
+                aria-label="Chat menu"
+                aria-haspopup="true"
+                aria-expanded={isChatMenuOpen}
+                aria-controls="chat-header-menu"
               >
-                <BookOpen className="w-4 h-4" />
+                <EllipsisVertical className="w-5 h-5" />
               </button>
 
-              <button
-                onClick={() => setIsGroupPickerOpen((prev) => !prev)}
-                className={`p-2 min-w-10 min-h-10 flex items-center justify-center rounded-xl transition-colors touch-fast active:scale-95 relative ${
-                  isGroupMode
-                    ? 'text-amber-300 bg-amber-950/40 hover:bg-amber-950/60'
-                    : 'text-knight-400 hover:text-mist-100 hover:bg-void-800'
-                }`}
-                title="Group Preview — add other characters to the scene"
-              >
-                <Users className="w-4 h-4" />
-                {groupMemberUuids.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-maroon-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                    {groupMemberUuids.length}
-                  </span>
-                )}
-              </button>
+              {isChatMenuOpen && (
+                <div
+                  id="chat-header-menu"
+                  className="absolute right-0 top-full mt-2 z-30 w-72 max-w-[calc(100vw-1.5rem)] max-h-[70dvh] overflow-y-auto rounded-xl border border-knight-700/60 bg-void-900 shadow-2xl p-2"
+                >
+                  <div className="min-h-11 flex items-center gap-2 rounded-lg px-2">
+                    <label htmlFor="chat-user-name" className="text-xs font-medium text-knight-300 shrink-0">Your name</label>
+                    <input
+                      id="chat-user-name"
+                      type="text"
+                      value={userNameDraft}
+                      onChange={(event) => setUserNameDraft(event.target.value)}
+                      onBlur={commitUserNameDraft}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          event.preventDefault();
+                          commitUserNameDraft();
+                        }
+                      }}
+                      placeholder="User"
+                      aria-label="Your name in the chat"
+                      data-testid="chat-user-name"
+                      className="min-w-0 flex-1 bg-transparent border border-knight-700/80 rounded-lg px-2 py-2 text-xs text-mist-100 focus:outline-none focus:ring-2 focus:ring-maroon-400/60"
+                    />
+                  </div>
 
-              {isGroupPickerOpen && (
-                <div className="absolute right-0 mt-2 w-64 max-h-80 overflow-y-auto bg-void-900 border border-knight-700/60 rounded-xl shadow-2xl z-10 p-2">
-                  <p className="text-[10px] uppercase tracking-wider text-knight-500 font-mono px-1 pb-1.5">
-                    Add characters to scene
-                  </p>
-                  {cards.filter((c) => c.uuid !== activeCardUuid).length === 0 ? (
-                    <p className="text-[11px] text-knight-500 px-1 py-2">
-                      No other cards in your gallery yet.
-                    </p>
-                  ) : (
-                    cards
-                      .filter((c) => c.uuid !== activeCardUuid)
-                      .map((c) => {
-                        const checked = groupMemberUuids.includes(c.uuid);
-                        return (
-                          <button
-                            key={c.uuid}
-                            onClick={() => toggleGroupMember(c.uuid)}
-                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${
-                              checked ? 'bg-maroon-500/15 text-maroon-200' : 'hover:bg-void-800 text-mist-100'
-                            }`}
-                          >
-                            <span
-                              className={`w-3.5 h-3.5 rounded border shrink-0 flex items-center justify-center ${
-                                checked ? 'bg-maroon-500 border-maroon-400' : 'border-knight-600'
-                              }`}
-                            >
-                              {checked && <span className="w-1.5 h-1.5 bg-white rounded-sm" />}
-                            </span>
-                            <span className="truncate">{c.name}</span>
-                          </button>
-                        );
-                      })
-                  )}
+                  <div className="min-h-11 px-2 py-2 rounded-lg">
+                    <div className="flex items-center justify-between gap-2">
+                      <label htmlFor="chat-model-profile" className="text-xs font-medium text-knight-300">Model profile</label>
+                      {profiles.length > 0 ? (
+                        <select
+                          id="chat-model-profile"
+                          aria-label="Model profile"
+                          value={activeProfileUuid ?? ''}
+                          onChange={(event) => { void setActiveProfileUuid(event.target.value || null); }}
+                          className="min-w-0 max-w-40 rounded-lg border border-knight-700/80 bg-void-950 px-2 py-2 text-xs text-mist-100 focus:outline-none focus:ring-2 focus:ring-maroon-400/60"
+                        >
+                          <option value="">Select profile...</option>
+                          {profiles.map((profile) => (
+                            <option key={profile.uuid} value={profile.uuid}>{profile.name}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span className="text-[11px] text-knight-400">No profile. Add one in Settings.</span>
+                      )}
+                    </div>
+                    <p className="mt-1 text-[10px] text-knight-400">Same profile as Settings.</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsLorebookDebugOpen((open) => !open)}
+                    className={`relative flex min-h-11 w-full items-center justify-between gap-2 rounded-lg px-2 text-left text-xs transition-colors ${
+                      isLorebookDebugOpen || (lorebookDebug?.activatedEntries.length ?? 0) > 0
+                        ? 'text-indigo-300 bg-indigo-950/40 hover:bg-indigo-950/60'
+                        : 'text-knight-300 hover:text-mist-100 hover:bg-void-800'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <BookOpen className="w-4 h-4" />
+                      Lorebook Debug
+                    </span>
+                    {(lorebookDebug?.activatedEntries.length ?? 0) > 0 && (
+                      <span className="rounded-full border border-indigo-500/20 bg-indigo-900/40 px-1.5 py-0.5 text-[10px] font-mono text-indigo-300">
+                        {lorebookDebug?.activatedEntries.length}
+                      </span>
+                    )}
+                  </button>
+
+                  <div className="rounded-lg">
+                    <button
+                      type="button"
+                      onClick={() => setIsGroupPickerOpen((open) => !open)}
+                      className={`flex min-h-11 w-full items-center justify-between gap-2 rounded-lg px-2 text-left text-xs transition-colors ${
+                        isGroupMode
+                          ? 'bg-amber-950/40 text-amber-300 hover:bg-amber-950/60'
+                          : 'text-knight-300 hover:bg-void-800 hover:text-mist-100'
+                      }`}
+                      aria-expanded={isGroupPickerOpen}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        Group Preview
+                      </span>
+                      {groupMemberUuids.length > 0 && (
+                        <span className="absolute -top-1 right-1 bg-maroon-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                          {groupMemberUuids.length}
+                        </span>
+                      )}
+                    </button>
+
+                    {isGroupPickerOpen && (
+                      <div className="mt-1 border-l border-knight-700/60 pl-2">
+                        <p className="px-2 py-1 text-[10px] uppercase tracking-wider text-knight-500 font-mono">
+                          Add characters to scene
+                        </p>
+                        {cards.filter((c) => c.uuid !== activeCardUuid).length === 0 ? (
+                          <p className="px-2 py-2 text-[11px] text-knight-500">
+                            No other cards in your gallery yet.
+                          </p>
+                        ) : (
+                          cards
+                            .filter((c) => c.uuid !== activeCardUuid)
+                            .map((c) => {
+                              const checked = groupMemberUuids.includes(c.uuid);
+                              return (
+                                <button
+                                  key={c.uuid}
+                                  type="button"
+                                  onClick={() => toggleGroupMember(c.uuid)}
+                                  className={`flex min-h-11 w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition-colors ${
+                                    checked ? 'bg-maroon-500/15 text-maroon-200' : 'text-mist-100 hover:bg-void-800'
+                                  }`}
+                                >
+                                  <span
+                                    className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded border ${
+                                      checked ? 'bg-maroon-500 border-maroon-400' : 'border-knight-600'
+                                    }`}
+                                  >
+                                    {checked && <span className="h-1.5 w-1.5 rounded-sm bg-white" />}
+                                  </span>
+                                  <span className="truncate">{c.name}</span>
+                                </button>
+                              );
+                            })
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleResetChat();
+                      setIsChatMenuOpen(false);
+                    }}
+                    className="mt-1 flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-knight-300 transition-colors hover:bg-void-800 hover:text-amber-300"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Reset chat
+                  </button>
                 </div>
               )}
             </div>
 
             <button
-              onClick={handleResetChat}
-              className="p-2 text-knight-400 hover:text-amber-300 hover:bg-void-800 rounded-xl transition-colors touch-fast active:scale-95"
-              title="Reset Chat Session"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-
-            <button
               onClick={() => setChatPreviewOpen(false)}
-              className="p-2 text-knight-400 hover:text-mist-100 rounded-xl hover:bg-void-800 transition-colors touch-fast active:scale-95"
+              className="hidden sm:flex p-2 text-knight-400 hover:text-mist-100 rounded-xl hover:bg-void-800 transition-colors touch-fast active:scale-95"
               title="Close Chat"
             >
               <X className="w-5 h-5" />
             </button>
-          </div>
-        </div>
-
-        <div className="sm:hidden flex items-center gap-2 px-3 py-1.5 border-b border-knight-700/40 bg-void-950/90 shrink-0">
-          <div className="flex flex-1 min-w-0 items-center gap-1 bg-void-800/80 border border-knight-700/80 rounded-xl px-2 py-1">
-            <span className="text-[10px] text-knight-400 font-mono shrink-0">User:</span>
-            <input
-              type="text"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              placeholder="User"
-              aria-label="Your name in the chat"
-              data-testid="chat-user-name-phone"
-              className="flex-1 min-w-0 bg-transparent text-mist-100 text-xs font-medium focus:outline-none"
-            />
           </div>
         </div>
 
