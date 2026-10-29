@@ -21,16 +21,16 @@ Done when: CI green. Owner on the preview, phone: the Chat header is one row wit
 Decisions: 6, 18.
 
 ## Progress (executor, update every commit)
-Done: Replaced the header actions with one menu; moved name, profile switch, Lorebook Debug, Group Preview, and Reset into the menu; separated the name draft from committed chat identity.
-Left: Open PR, verify CI, and record the final merge outcome.
-Next action: Commit changes on wip/008, open a PR to main, then verify test-and-lint.
+Done: Implemented the one-row header and menu, profile switch, Lorebook Debug and Group Preview controls, Reset action, and name draft/commit handling that preserves started conversations.
+Left: Vercel reports the preview deployment is rate-limited; all checks must be green before manual squash merge.
+Next action: Verify the fresh CI run after this card update, then merge manually only once every check is green.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Preview link: 
-Deviations from the card: 
+Pull request: #10 — https://github.com/KarlMuzen/RoleplayForge/pull/10
+Checks run by executor: Not run locally; this environment cannot resolve github.com for a local clone.
+CI: Required test-and-lint passed on run 40841308768 (lint, tests, production build). Vercel deployment status failed with “Deployment rate limited — retry in 24 hours.” The task-card update will trigger a fresh CI run.
+Preview link: Unavailable; Vercel rate-limited the preview deployment.
+Deviations from the card: No code-scope deviations. Auto-merge was attempted after test-and-lint passed, but GitHub rejected it with “Pull request is in unstable status.” The PR is not merged because the Vercel status is red; manual squash merge is pending until all checks are green.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
