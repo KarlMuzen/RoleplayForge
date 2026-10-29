@@ -1,11 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <rect width="64" height="64" fill="#22211E"/>
-  <rect x="1" y="1" width="62" height="62" stroke="#5A443B" stroke-opacity=".75"/>
-  <path d="M21 13H38L44 19V41H21V13Z" stroke="#F2E7D6" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M38 13V19H44" stroke="#CF7964" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M26 25H37M26 31H39M26 36H34" stroke="#B1A391" stroke-width="2" stroke-linecap="round"/>
-  <path d="M26 31H39" stroke="#CF7964" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M15 45H49L44 47L41 51H23L20 47L15 45Z" fill="#CF7964"/>
-  <path d="M23 47L26 52H38L41 47" stroke="#F2E7D6" stroke-width="2.2" stroke-linejoin="round"/>
-  <path d="M18 54H46" stroke="#CF7964" stroke-width="2.8" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <title>Roleplay Forge</title>
+  <rect width="512" height="512" rx="112" fill="#22211E"/>
+  <g transform="translate(256 256) scale(1.2) translate(-256 -248)">
+  <g>
+    <!-- character card -->
+    <rect x="176" y="96" width="160" height="194" rx="22" fill="#F2E7D6"/>
+    <circle cx="256" cy="152" r="26" fill="#CF7964"/>
+    <path d="M208 224C208 192 304 192 304 224Z" fill="#CF7964"/>
+    <rect x="204" y="240" width="104" height="12" rx="6" fill="#B1A391"/>
+    <rect x="204" y="262" width="72" height="12" rx="6" fill="#CBBFAE"/>
+    <!-- anvil -->
+    <path d="M116 316C150 316 170 304 200 304H368Q376 304 376 312V332H322C322 352 332 364 346 374V396H166V374C180 364 190 352 190 332H196C160 332 130 326 116 316Z" fill="#CF7964"/>
+    <path d="M204 312H364" stroke="#E9A08B" stroke-width="4" stroke-linecap="round"/>
+    <!-- sparks -->
+    <path d="M372 208L378 224L394 230L378 236L372 252L366 236L350 230L366 224Z" fill="#E8C473"/>
+    <path d="M398 168L401 177L410 180L401 183L398 192L395 183L386 180L395 177Z" fill="#E8C473"/>
+  </g>
+  </g>
 </svg>

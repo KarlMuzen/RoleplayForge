@@ -6,20 +6,24 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const publicDir = path.resolve(__dirname, '../public');
-const sourceLogo = path.join(publicDir, 'forge-mark.svg');
+const sourceLogo = path.join(publicDir, 'forge-mark.svg'); // rounded tile (any / favicon / in-app)
+const sourceMaskable = path.join(publicDir, 'forge-mark-maskable.svg'); // full-bleed, safe-zone artwork
 
-if (!fs.existsSync(sourceLogo)) {
-  console.error(`Source logo not found at: ${sourceLogo}`);
-  process.exit(1);
+for (const src of [sourceLogo, sourceMaskable]) {
+  if (!fs.existsSync(src)) {
+    console.error(`Source logo not found at: ${src}`);
+    process.exit(1);
+  }
 }
 
 /**
- * The SVG keeps the character-card motif centered within the maskable safe
- * zone and supplies its own full-bleed charcoal background. Reuse this source
- * for every raster size so PWA, browser and Apple icons never drift apart.
+ * Two sources, one artwork. `forge-mark.svg` is a rounded tile used where the
+ * icon is shown as-is. `forge-mark-maskable.svg` is full-bleed with the artwork
+ * inside the safe zone, so Android launcher masks and the splash screen never
+ * clip it or reveal a box. iOS adds its own rounding, so it gets the full-bleed one.
  */
-async function generateIcon(size, filename) {
-  await sharp(sourceLogo)
+async function generateIcon(size, filename, source = sourceLogo) {
+  await sharp(source, { density: 384 })
     .resize(size, size, { fit: 'contain' })
     .png()
     .toFile(path.join(publicDir, filename));
@@ -30,9 +34,9 @@ async function generateIcons() {
   console.log('Generating Roleplay Forge icons from:', sourceLogo);
   await generateIcon(192, 'pwa-192x192.png');
   await generateIcon(512, 'pwa-512x512.png');
-  await generateIcon(192, 'pwa-maskable-192x192.png');
-  await generateIcon(512, 'pwa-maskable-512x512.png');
-  await generateIcon(180, 'apple-touch-icon.png');
+  await generateIcon(192, 'pwa-maskable-192x192.png', sourceMaskable);
+  await generateIcon(512, 'pwa-maskable-512x512.png', sourceMaskable);
+  await generateIcon(180, 'apple-touch-icon.png', sourceMaskable);
   await generateIcon(64, 'favicon.png');
   await generateIcon(512, 'brand_logo.png');
   console.log('All Roleplay Forge icons generated successfully!');
