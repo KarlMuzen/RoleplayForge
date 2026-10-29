@@ -1,6 +1,6 @@
 # Task 004: Chat button on Details
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: The phone `Chat` button shows on every Forge tab, including Details, not only on some.
 Files to touch: `src/components/WorkspaceSubNav.tsx`
@@ -12,9 +12,9 @@ Done when: CI green. Owner on the preview, phone: Details shows the same Chat bu
 Decisions: HANDOFF finding 4.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Changed only the Chat button condition in `WorkspaceSubNav.tsx` so it renders whenever `activeCard` exists, including on Details. Kept `sm:hidden` and all button styling unchanged.
+Left: Open PR, verify CI, and record the final result.
+Next action: Open PR to main.
 
 ## Result (executor, when finished)
 Pull request: 
