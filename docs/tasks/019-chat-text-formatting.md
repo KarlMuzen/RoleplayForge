@@ -44,16 +44,16 @@ Done when: CI green; Claude's review is Approved (one diff read, plus a check th
 Decisions: 2 (pure logic in `src/core/`), 18 (chat is a card test bench).
 
 ## Progress (executor, update every commit)
-Done: Applied the requested shallow-copy fix in `parseSegment` and added both requested no-cycle tests. PR #21's review-fix head `1ffb8d3cec567a31871d7503133d89c108a925bc` passed `test-and-lint` (lint, tests, production PWA build), run 40877794827.
-Left: Claude must re-check the fix commit, as requested in the Review section.
-Next action: Verify CI on this task-card update's new PR head, then stop and report. Do not merge.
+Done: Applied Claude's requested fix in commit `06db68cb9c823e25243ad6a3f9ca04c997971c15`: `previousTokens` now copies the array before `tokens` is cleared. Added both requested regression tests in commit `e43b1c5d89fc9927c4a04ce75ebde6791596d497`. CI passed on review-fix code and on PR head `046baf379dfb202d28e4b2d595a44c90aeaea4e6`: lint, tests, and production PWA build all green (run 40878035822).
+Left: Claude needs to re-check the fix commit.
+Next action: Stop and report PR #21 and the fix commit to Claude. Do not merge.
 
 ## Result (executor, when finished)
 Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/21
 Checks run by executor: Not run locally; GitHub Actions is authoritative because this environment cannot clone github.com.
-CI: Passed `test-and-lint` on review-fix head `1ffb8d3cec567a31871d7503133d89c108a925bc`, run 40877794827. That run includes lint, tests, and the production PWA build. The task-card update will be checked separately.
+CI: Passed `test-and-lint`, including lint, tests, and production PWA build, run 40878035822 on PR head `046baf379dfb202d28e4b2d595a44c90aeaea4e6`. The parser fix and both requested regression tests passed.
 Preview link: n/a (Decision 19)
-Deviations from the card: None. The parser change is only the requested array copy; the two tests assert JSON serialization does not throw and the specified children arrays.
+Deviations from the card: None. Only the requested array copy and two tests were changed in source/test files.
 
 ## Review (Claude, required)
 Changes needed (reviewed head `3299effa5bbe9c916eaeb29dc086347c876e2dff`, 2026-10-29). Fix on the same branch `wip/019`, same PR #21, then report. Do not merge until Claude re-checks the fix commit.
