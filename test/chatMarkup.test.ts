@@ -42,6 +42,31 @@ describe('parseChatMarkup', () => {
     ]);
   });
 
+  it('keeps bold content and trailing text acyclic before a terminal bold closer', () => {
+    const tokens = parseDisplayText('**bold** text**');
+
+    expect(() => JSON.stringify(tokens)).not.toThrow();
+    expect(tokens).toHaveLength(1);
+    expect(tokens[0].type).toBe('bold');
+    expect(tokens[0].children).toEqual([
+      { type: 'bold', text: 'bold' },
+      { type: 'text', text: ' text' },
+    ]);
+  });
+
+  it('keeps mixed text and italic content acyclic before a terminal bold closer', () => {
+    const tokens = parseDisplayText('Hi *there* friend**');
+
+    expect(() => JSON.stringify(tokens)).not.toThrow();
+    expect(tokens).toHaveLength(1);
+    expect(tokens[0].type).toBe('bold');
+    expect(tokens[0].children).toEqual([
+      { type: 'text', text: 'Hi ' },
+      { type: 'italic', text: 'there' },
+      { type: 'text', text: ' friend' },
+    ]);
+  });
+
   it('leaves a marker that is neither a valid opener nor closer as plain text', () => {
     expect(tokenShape(parseDisplayText('a * b'))).toEqual([
       { type: 'text', text: 'a * b' },
