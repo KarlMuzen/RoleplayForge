@@ -1,6 +1,6 @@
 # Task 009: Multi-line message box in Chat
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: The Chat message box takes several lines. On a phone Enter adds a new line and the send button sends. On a computer Enter sends and Shift+Enter adds a new line.
 Files to touch: `src/components/ChatPreviewModal.tsx`, `src/utils/chatKeys.ts` (new), `test/chatKeys.test.ts` (new)
@@ -16,9 +16,9 @@ Done when: CI green. Owner on the preview, phone: Enter makes a new line, the bo
 Decisions: 18.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Replaced the single-line Chat input with an autosizing textarea (capped at 160px, scrollable after the cap, reset on clear), bottom-aligned the send button, added `shouldSendOnEnter`, and covered its five required behaviors in `test/chatKeys.test.ts`.
+Left: Open PR, verify `test-and-lint`, record the Result, and merge only on green CI.
+Next action: Review the branch diff and create the Task 009 PR.
 
 ## Result (executor, when finished)
 Pull request: 
