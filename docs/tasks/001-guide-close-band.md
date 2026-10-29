@@ -1,6 +1,6 @@
 # Task 001: Guide close band
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: The Guide's close (X) button floats over the content, with no empty grey band at the top and nothing covered when scrolled.
 Files to touch: `src/components/GuideView.tsx`
@@ -13,16 +13,16 @@ Done when: CI green. Owner on the Vercel preview, phone: at the top of the Guide
 Decisions: HANDOFF finding 1.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Replaced the close-button wrapper with the specified zero-height, unstyled wrapper and added `shadow-lg` to the existing button class. The existing hero padding leaves space below the button at 360px, so no hero padding change was needed.
+Left: Verify CI for the final task-card update, then confirm the squash merge.
+Next action: Wait for the latest required check and complete the merge.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Preview link: 
-Deviations from the card: 
+Pull request: #3 — https://github.com/KarlMuzen/RoleplayForge/pull/3
+Checks run by executor: Not run locally; `git clone` could not resolve `github.com`. GitHub CI is authoritative.
+CI: `test-and-lint` passed on code commit `c926d297e366bebbc93f95776118904ac1d75412` (lint, tests, production build). This task-card result update will trigger a fresh required check before merge.
+Preview link: https://roleplayforge-git-wip-001-xiorolab.vercel.app
+Deviations from the card: None.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
