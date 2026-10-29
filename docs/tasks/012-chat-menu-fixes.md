@@ -1,6 +1,6 @@
 # Task 012: Chat menu fixes (follow-ups to Task 008)
 
-Status: in progress
+Status: done
 Review: skip
 Goal: Three small bugs in the Chat header menu are fixed: the Group Preview count badge sits on its own row, a typed name is kept when the menu closes by tapping outside, and the profile list has no blank choice once a profile is active.
 Files to touch: `src/components/ChatPreviewModal.tsx`
@@ -16,16 +16,16 @@ Done when: CI green. Owner, phone: with Group Preview members chosen, the count 
 Decisions: 6, 18, 19.
 
 ## Progress (executor, update every commit)
-Done: Fixed the Group Preview count badge positioning, added a menu-close name commit effect while preserving blur/Enter handling, and prevented the profile select from clearing an active profile via its blank choice.
-Left: Open PR, verify `test-and-lint`, record Result, and merge only on green CI.
-Next action: Inspect Task 012-only changes and create the PR.
+Done: Fixed the Group Preview count badge positioning, added a menu-close name commit effect while preserving blur/Enter handling, and prevented the profile select from clearing an active profile via its blank choice. PR #14 squash-merged.
+Left: None.
+Next action: Task 012 is complete; proceed to Task 013.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/14
+Checks run by executor: Not run locally; repository CI is authoritative.
+CI: Passed `test-and-lint` (lint, tests, production build), run 40850822374, on `f6fcee664ce4ebb1f9e88f8980a4bdab6f680709`.
 Preview link: n/a (Decision 19)
-Deviations from the card: 
+Deviations from the card: Auto-merge was rejected with "Pull request is in clean status"; manually squash-merged after `test-and-lint` passed, per Decision 19.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
