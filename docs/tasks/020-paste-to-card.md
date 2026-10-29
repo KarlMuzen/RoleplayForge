@@ -65,14 +65,14 @@ Done when: CI green; Claude's review is Approved (one diff read; check that noth
 Decisions: 1 (no silent data loss), 2, 7 (nothing leaves the device here).
 
 ## Progress (executor, update every commit)
-Done: PR #22 opened on wip/020; fixed malformed-input containment, duplicate-dialog stacking, autofocus, and double-brace template-token extraction. CI passed on implementation commit 0b58ebd (run 40941945125).
-Left: Verify the final PR head check after recording this result, then stop for required Claude review.
-Next action: Check test-and-lint on the final PR head; do not merge.
+Done: PR #22 remains open on wip/020; the first review fixes (items 1–6) passed `test-and-lint` on 47eecac (run 40943751216). Round 2 fixes the fence-pattern string escapes and adds a fenced labeled-text regression test.
+Left: Verify `test-and-lint` on the round 2 final head, then stop for required Claude review.
+Next action: Check `test-and-lint` on the final PR head; do not merge.
 
 ## Result (executor, when finished)
 Pull request: #22 — https://github.com/KarlMuzen/RoleplayForge/pull/22
 Checks run by executor: Not run locally; GitHub CI is authoritative.
-CI: First review-fix run failed TypeScript at `src/core/pasteImport.ts:478`; correction committed in this retry.
+CI: The prior review-fix head 47eecac passed `test-and-lint` (run 40943751216); the round 2 final-head check is pending.
 Deviations from the card: None.
 
 ## Review (Claude, required)

@@ -188,6 +188,17 @@ describe('readPastedText', () => {
     expect(result.card?.data.description).toContain('Outro text here.');
   });
 
+  it('reads labeled text inside a fenced block without keeping fence markers', async () => {
+    const fence = String.fromCharCode(96).repeat(3);
+    const source = 'Sure! Here you go:\n' + fence + '\nName: Mira\nPersonality: kind\n' + fence + '\nEnjoy!';
+    const result = await readPastedText(source);
+
+    expect(result.kind).toBe('labeled-text');
+    expect(result.card?.data.name).toBe('Mira');
+    expect(result.card?.data.personality).toBe('kind');
+    expect(JSON.stringify(result.card?.data)).not.toContain(String.fromCharCode(96));
+  });
+
   it('maps capitalized JSON keys instead of treating them as card-shaped', async () => {
     const result = await readPastedText('{"Name":"Mira","Description":"Baker","Greeting":"Hi"}');
     expect(result.kind).toBe('unknown-json');

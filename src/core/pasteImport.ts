@@ -210,7 +210,7 @@ function parseJsonCandidate(candidate: string): unknown | null {
 function cleanInput(input: string): CleanInput {
   const original = input.replace(/^\uFEFF/, '').trim();
   const fenceMarker = String.fromCharCode(96).repeat(3);
-  const fencePattern = new RegExp(fenceMarker + '(?:[A-Za-z0-9_-]+)?[ \t]*\r?\n?([\s\S]*?)' + fenceMarker);
+  const fencePattern = new RegExp(fenceMarker + '(?:[A-Za-z0-9_-]+)?[ \\t]*\\r?\\n?([\\s\\S]*?)' + fenceMarker);
   const fence = original.match(fencePattern);
 
   if (fence) {
