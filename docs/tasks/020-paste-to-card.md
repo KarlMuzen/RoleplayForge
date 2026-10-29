@@ -1,0 +1,75 @@
+# Task 020: Paste raw text or JSON, get a character card
+
+Status: planned
+Review: required
+Goal: In the Library, the owner opens "Paste text or JSON", pastes any raw block (card JSON of any known layout, unknown JSON, labeled text, or plain prose), sees what the app understood, and creates a card with one tap. No file, no AI, no network.
+Files to touch: new `src/core/pasteImport.ts`; new `src/components/gallery/PasteImportModal.tsx`; `src/components/gallery/GalleryToolbar.tsx` (one new menu item and one new prop); `src/components/GalleryView.tsx` (modal state and one handler); new `test/pasteImport.test.ts`.
+Do not touch: `src/io/*` (reuse only), the store, schemas, the file-import flow's behavior, the Chub import, frozen identifiers. No new npm package. No `innerHTML` or `dangerouslySetInnerHTML`. No `eval`, no `Function`, no network call, no AI call.
+Context: `importCardData` (`src/io/index.ts`) and `normalizeRawToV3Card` (`src/io/converter.ts`) already read V1, V2, V3 and wrapped card JSON (keys `data`, `character`, `card`, `result`, `definition`, `character_card`), many field aliases, avatar data URIs and lorebooks. What is missing: (1) there is no way to paste, only a file picker and the Chub URL box; (2) JSON with unfamiliar keys and non-JSON text fall into a poor fallback that dumps the text into Description and invents a first message. This card adds the paste door and a better reader for those two cases, and leaves the file path alone.
+Design (the whole spec; do not improvise):
+1. `src/core/pasteImport.ts` exports `async function readPastedText(text: string): Promise<PasteReadResult>` and the types. No React, no DOM.
+   `PasteReadResult = { kind: 'card-json' | 'lorebook-json' | 'unknown-json' | 'labeled-text' | 'plain-text' | 'empty' | 'error'; card?: CharacterCardV3; embeddedAssets?: Record<string, Uint8Array>; filled: string[]; addedToDescription: string[]; warnings: string[]; error?: string }`.
+   `filled` = display names of card fields that received content (for example `Name`, `Description`, `First message`). `addedToDescription` = source keys or labels that had no matching field and were appended to Description.
+2. Cleaning, in this order: remove a leading BOM; trim; if the text is wrapped in a fenced block (three backticks, optional language word), take the inside of the first fenced block; if the text does not start with `{` or `[` but contains one, take the first balanced `{...}` or `[...]` block (count braces, skip those inside double-quoted strings); remove trailing commas before `}` or `]`. Input over 1,000,000 characters returns `kind: 'error'` with a plain message. Empty or whitespace-only input returns `kind: 'empty'`.
+3. If the cleaned text parses with `JSON.parse`:
+   - Spec `lorebook_v3` returns `kind: 'lorebook-json'` with no card and a warning "This is a lorebook, not a character. Import it from the Lorebook screen." (Do not create anything.)
+   - An array: use its first element if that is an object, and add the warning "N items found; only the first was used." Anything else returns `kind: 'error'`.
+   - Card-shaped: spec is `chara_card_v2` or `chara_card_v3`, or the object, or its child under `data`, `character`, `card`, `result`, `definition` or `character_card`, has any of `name`, `char_name`, `description`, `personality`, `scenario`, `first_mes`, `char_greeting`, `greeting`. Then call `importCardData(cleanedText)` unchanged and return `kind: 'card-json'` with its card, assets and warnings. `filled` is computed from the resulting card.
+   - Otherwise `kind: 'unknown-json'`: go to the field mapper (step 5).
+4. If JSON parsing fails, look for labeled text (step 6). If fewer than 2 labeled lines match known labels, it is `plain-text` (step 7). A JSON failure must never throw out of `readPastedText`; it returns a result.
+5. Field mapper (shared by unknown JSON and labeled text). Normalize every key or label with: lowercase, then remove everything except letters and digits. Alias table, normalized form to field (first match wins, in this order):
+   - `name`: name, charactername, charname, character, title
+   - `description`: description, bio, biography, about, summary, profile, overview
+   - `personality`: personality, traits, persona, temperament, charactertraits
+   - `scenario`: scenario, setting, situation, world, context
+   - `first_mes`: firstmessage, firstmes, greeting, opening, openingmessage, openingline, startingmessage
+   - `mes_example`: examples, exampledialogue, exampledialogues, dialogueexamples, mesexample, sampledialogue
+   - `system_prompt`: systemprompt
+   - `post_history_instructions`: posthistoryinstructions, jailbreak
+   - `creator_notes`: creatornotes, notes
+   - `creator`: creator, author
+   - `tags`: tags (string split on commas, or array of strings)
+   - `alternate_greetings`: alternategreetings, greetings (array of strings only)
+   - Lorebook: keys `character_book`, `lorebook`, `world_info`, `worldinfo` are passed through to `normalizeRawToV3Card` untouched, which already handles them.
+   Build one flat object with the canonical keys and call `normalizeRawToV3Card(flat)`. Values that are not strings are converted: numbers and booleans with `String`, arrays of strings joined with `, `, objects and other arrays with compact `JSON.stringify`.
+   Nothing may be dropped silently: every key or label with no alias is appended to the Description as its own line `Key: value`, after any real description text, separated by a blank line. List those keys in `addedToDescription`, and add the warning "Some data had no matching field and was added to Description." If Description would pass `LIMITS.LONG_TEXT`, do not cut it: keep it whole and add the warning "Description is longer than the card limit; shorten it before export." (the existing validation already flags length).
+6. Labeled text: split into lines. A label line starts at the beginning of a line, optionally after `#` marks, `**`, `[` or `-`, has a label of at most 40 characters, then `:` (value on the same line) or ends the line when it was a `#` heading. The label must normalize to a key in the alias table. A value continues on the following lines until the next label line. Unknown labels followed by a colon inside a value are NOT labels (only known labels start a new field, so prose like "Note: be kind" inside a value stays in the value). Labeled mode needs at least 2 matched known labels; text before the first label line becomes Description. `{{char}}` and `{{user}}` are left as written. Result kind `labeled-text`, then the mapper in step 5.
+7. Plain text: Description is the whole text (same no-cut rule), no First message is invented, Name is empty, warning "Nothing recognized. The text was saved as Description. Add a name before creating." The old file fallback is not used and not changed.
+8. `src/components/gallery/PasteImportModal.tsx`: a modal in the style of the existing Chub URL modal, using `useModalA11y` like the other gallery modals. Contents: a large multi-line text box (autofocus, `aria-label="Paste raw character text or JSON"`), a "Paste from clipboard" button shown only when `navigator.clipboard?.readText` exists (on any failure, silently do nothing; the hint under the box says "Or long-press the box and paste"), then a result panel that updates 300 ms after the text changes (use a debounce, and ignore results of older runs): one line "Detected: <Card JSON | Unknown JSON layout | Labeled text | Plain text>", "Filled: <filled list>", and, when present, "Added to Description: <keys>", then warnings in amber and the error in red. A Name input shows the card's name and edits it (empty name blocks "Create card" with the hint "Name is required"). Buttons: Cancel, "Create card" (disabled until a card exists and a name is set, and while creating). Show everything as React text (never as HTML). A one-line note: "Stays on this device. Nothing is sent anywhere." Phone layout: full width, text box at least 8 rows, buttons at least 44px high.
+9. In `GalleryToolbar.tsx` add one item to the Import dropdown, after "Standard File Import": title "Paste text or JSON", subtitle "Paste raw data, no file needed", calls a new prop `onOpenPasteModal`. Use an icon already imported or another lucide-react icon. In `GalleryView.tsx` hold `isPasteModalOpen`, and on Create run the same duplicate check and the same duplicate dialog as file import (`findDuplicateCard`, `askDuplicateChoice`), then `importCardRecord(card, embeddedAssets, overwriteUuid)`, then the same success message style: `Successfully imported "<name>" from pasted text!`, close the modal. If reusing `importOne` requires moving it out of `handleFileUpload`, do that without changing file-import behavior; the existing `GalleryView.test.tsx` and `LibraryMobileUX.test.tsx` must stay green unchanged.
+Tests (`test/pasteImport.test.ts`, vitest, no DOM; one test per line):
+   - Empty and whitespace give `empty`.
+   - A V3 card JSON string gives `card-json`, with name and first_mes filled.
+   - A V2 card JSON string gives `card-json`.
+   - A V1-style flat JSON `{"name":"A","description":"B","first_mes":"C"}` gives `card-json`.
+   - The same JSON wrapped in a ```json fence, and with a sentence before it ("Here is the card: {...}"), parses.
+   - Trailing commas are accepted.
+   - A braces-inside-string case (`"description":"use { and }"`) is not cut early.
+   - Unknown JSON `{"Character Name":"Mira","Backstory":"b","Opening Line":"hi","Hair":"red","Age":27}` gives `unknown-json`, Name Mira, Description starts with "b" and contains `Hair: red` and `Age: 27`, First message "hi", `addedToDescription` has Hair and Age.
+   - Unknown JSON with `world_info` entries passes the lorebook through.
+   - A `lorebook_v3` JSON gives `lorebook-json` and no card.
+   - An array of two cards uses the first and warns.
+   - Labeled text with `Name:`, `Personality:` (two lines), `Scenario:`, `First message:` fills the fields, multi-line values kept.
+   - Markdown headings (`## Personality`) work as labels.
+   - A line "Note: be kind" inside a Description value stays in the value.
+   - A single known label in prose is `plain-text`.
+   - Plain prose gives `plain-text`, empty Name, whole text in Description, no first_mes.
+   - Text over 1,000,000 characters gives `error`.
+   - `{"__proto__":{"x":1},"name":"A"}` does not pollute `Object.prototype` (existing `sanitizeObject` must run).
+   - Garbage like `{{{` does not throw and gives `plain-text` or `error`.
+Not in this card: AI reading of messy prose (own card later, with the Decision 7 disclosure), W++ and PList formats, several characters from one paste, pasting a Chub URL here (use the Chub box), images, lorebook-only paste (needs the Lorebook screen), a clipboard auto-open on the Library screen.
+Done when: CI green; Claude's review is Approved (one diff read; check that nothing is sent over the network, no `innerHTML`, and file import behaves as before). Owner, phone: Library, Import menu, Paste text or JSON; paste a card JSON and a block of "Name: ..., Personality: ..." text; the panel says what it found, and Create card puts a card in the Library.
+Decisions: 1 (no silent data loss), 2, 7 (nothing leaves the device here).
+
+## Progress (executor, update every commit)
+Done: 
+Left: 
+Next action: 
+
+## Result (executor, when finished)
+Pull request: 
+Checks run by executor: 
+CI: 
+Deviations from the card: 
+
+## Review (Claude, required)
