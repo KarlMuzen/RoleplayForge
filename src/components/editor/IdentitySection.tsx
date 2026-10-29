@@ -28,32 +28,16 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
 
       {/* Character Name */}
       <div>
-        <div>
-          <label className="block text-xs font-medium text-knight-400 mb-1">Character Name *</label>
-          <input
-            type="text"
-            value={d.name || ''}
-            onChange={(e) =>
-              updateActiveCardData((c) => ({ ...c, data: { ...c.data, name: e.target.value } }))
-            }
-            placeholder="e.g. Aeliana the Starlight Weaver"
-            className="w-full px-3.5 py-2 bg-void-800/80 border border-knight-700/80 rounded-xl text-mist-100 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-knight-400 mb-1">Creator / Author</label>
-          <input
-            type="text"
-            value={d.creator || ''}
-            onChange={(e) =>
-              updateActiveCardData((c) => ({ ...c, data: { ...c.data, creator: e.target.value } }))
-            }
-            placeholder="e.g. StarweaverStudio"
-            className="w-full px-3.5 py-2 bg-void-800/80 border border-knight-700/80 rounded-xl text-mist-100 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50"
-          />
-        </div>
-      </div>
+        <label className="block text-xs font-medium text-knight-400 mb-1">Character Name *</label>
+        <input
+          type="text"
+          value={d.name || ''}
+          onChange={(e) =>
+            updateActiveCardData((c) => ({ ...c, data: { ...c.data, name: e.target.value } }))
+          }
+          placeholder="e.g. Aeliana the Starlight Weaver"
+          className="w-full px-3.5 py-2 bg-void-800/80 border border-knight-700/80 rounded-xl text-mist-100 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-400/60 ring-offset-2 ring-offset-void-950/50"
+        />
       </div>
 
       {/* Description */}
