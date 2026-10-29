@@ -15,6 +15,7 @@ import { ToastContainer } from './components/ToastContainer';
 import { WORKSPACE_TABS, LAB_TABS } from './constants/navigation';
 import { usePWAUpdate } from './hooks/usePWAUpdate';
 import { useHashRouting } from './routing/useHashRouting';
+import { useModalA11y } from './hooks/useModalA11y';
 
 const GalleryView = lazy(() => import('./components/GalleryView').then(module => ({ default: module.GalleryView })));
 const EditorView = lazy(() => import('./components/EditorView').then(module => ({ default: module.EditorView })));
@@ -57,6 +58,9 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [activeTab]);
 
+  // Guide overlay: Back button / Escape close it, and focus is trapped while open.
+  const guideRef = useModalA11y(isOnboardingOpen, () => setIsOnboardingOpen(false));
+
   const isWorkspaceTab = WORKSPACE_TABS.includes(activeTab);
   const isLabTab = LAB_TABS.includes(activeTab);
 
@@ -90,6 +94,8 @@ export default function App() {
 
       {isOnboardingOpen && (
         <div
+          ref={guideRef}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           aria-label="Roleplay Forge Guide and Onboarding"

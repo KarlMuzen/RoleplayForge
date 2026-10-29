@@ -1,6 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { isTouchDevice as checkTouchDevice } from '../utils/touch';
 
+// Back-button support: while a modal is open it owns one history entry, so the
+// system Back button closes the modal (through the modal's own close handler and
+// its guards) instead of navigating behind it.
+const modalStack: symbol[] = [];
+let ignorePopsUntil = 0;
+
 export function useModalA11y(isOpen: boolean, onClose: () => void) {
   const ref = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -80,6 +86,48 @@ export function useModalA11y(isOpen: boolean, onClose: () => void) {
     };
   }, [isOpen]);
 
+  const isOpenRef = useRef(isOpen);
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const token = Symbol('modal');
+    let owned = false; // true while our history entry is on the stack
+    let disposed = false;
+
+    const push = () => {
+      window.history.pushState({ rfModal: true }, '', window.location.href);
+      modalStack.push(token);
+      owned = true;
+    };
+
+    const onPop = () => {
+      if (performance.now() < ignorePopsUntil) return; // pop we triggered ourselves
+      if (modalStack[modalStack.length - 1] !== token) return; // only the top modal reacts
+      owned = false;
+      modalStack.pop();
+      onCloseRef.current();
+      window.setTimeout(() => {
+        // The modal refused to close (e.g. recovery key not yet saved): keep Back trapped.
+        if (!disposed && isOpenRef.current && !owned) push();
+      }, 50);
+    };
+
+    push();
+    window.addEventListener('popstate', onPop);
+    return () => {
+      disposed = true;
+      window.removeEventListener('popstate', onPop);
+      const i = modalStack.lastIndexOf(token);
+      if (i >= 0) modalStack.splice(i, 1);
+      if (owned && (window.history.state as { rfModal?: boolean } | null)?.rfModal) {
+        ignorePopsUntil = performance.now() + 150;
+        window.history.back();
+      }
+    };
+  }, [isOpen]);
+
   return ref;
 }
-
