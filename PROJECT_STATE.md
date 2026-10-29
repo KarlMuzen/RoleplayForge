@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-29 · **`main` head when written:** `9f33f96`
+**Last updated:** 2026-10-29 · **`main` head when written:** `792be51`
 
 ## Goal
 
@@ -12,7 +12,7 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 
 - React 19, Vite 6, TypeScript, Tailwind 4, Zustand 5, Dexie (IndexedDB), Zod, `gpt-tokenizer`, vitest. Deployed on Vercel as a PWA.
 - `src/`: `components`, `constants`, `db`, `hooks`, `io` (formats), `routing` (hash routes), `schemas`, `services` (AI providers), `store` (slices), `types`, `utils`.
-- `docs/`: `AI_WORKFLOW.md` (how the two AIs work), `tasks/` (task cards), `HANDOFF.md` (latest session notes), `ROADMAP.md` (priority plan + phases), `AUTOMATION.md` (what is automated, what is not worth it), `PROJECT_STATUS.md`, `PLATFORM_SUPPORT.md`, `TESTING_STRATEGY.md`, `UI_UX_REDESIGN_SPEC.md`, `PRODUCT_VISION.md`.
+- `docs/`: `AI_WORKFLOW.md` (how the two AIs work), `tasks/` (task cards), `HANDOFF.md` (latest session notes), `ROADMAP.md` (priority plan + phases), `AUTOMATION.md` (what is automated; extras on hold), `PROJECT_STATUS.md`, `PLATFORM_SUPPORT.md`, `TESTING_STRATEGY.md`, `UI_UX_REDESIGN_SPEC.md`, `PRODUCT_VISION.md`.
 - Scripts: `npm run lint && npm test && npm run build`. UI audit: `scripts/ui-audit.py`.
 - CI: `.github/workflows/ci.yml`, one job `test-and-lint` (lint, tests, build). Runs on pull requests to `main` and on non-docs pushes to `main`. Not on other branches until a pull request exists.
 - GitHub ruleset `main-ci-gate` targets `main`. Bypass: repository admin and the Claude GitHub connector (seen in owner screenshot, 2026-10-29).
@@ -36,14 +36,16 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 14. Claude is the only writer of this file. The executor writes code and its own task card. Status comes from pull requests: open = in progress, squash-merged = done. This supersedes the section split in the first version of `AI_WORKFLOW.md`.
 15. Merges are automatic: required check `test-and-lint` on `main`, auto-merge with squash. Card says `Review: skip`, or Review is Approved, before the executor enables it. The executor gets 2 fix attempts after a red CI, then stops and records the failure in the card.
 16. Every place that shows a card cover uses one `CardAvatar` component with an initials fallback (Tasks 002-003).
+17. Speed first: set up no new automation or tooling (Dependabot, CodeQL, CI mobile tests, analytics) until the quick-wins cards and the Details reorder are merged. See `docs/AUTOMATION.md`. Owner phone checks are not a merge gate: merge on green CI, the owner checks production later in a batch and reports problems as a new card.
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-1. **Owner:** GitHub settings (auto-merge, squash, auto-delete branches; ruleset requires `test-and-lint`) reported done by the owner on 2026-10-29, not seen by Claude. Secret scanning and push protection seen on. Dependabot and code scanning status not seen.
-2. **Executor (ChatGPT):** quick-wins cards are written: `docs/tasks/001` to `006`. All `Review: skip`. Order: 001, 002, then 003 (needs 002 merged), 004, 005, 006. 001, 002, 004, 005, 006 are independent. The owner checks each preview link on the phone.
-3. **Claude, next:** Dependabot card (`.github/dependabot.yml`), then the card plan for HANDOFF step 3 (Details reorder).
+1. **Executor (ChatGPT):** quick-wins cards `docs/tasks/001` to `006`, all `Review: skip`. Order: 001, 002, then 003 (needs 002 merged), 004, 005, 006. 001, 002, 004, 005, 006 are independent. Where a card says the owner checks the preview, that is not a merge gate (Decision 17).
+2. **Claude, next:** plan HANDOFF step 3 (Details reorder) as task cards. No Dependabot card for now.
+
+Owner GitHub settings reported done on 2026-10-29 (not seen by Claude except secret scanning and push protection, seen on).
 
 HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Step 3 rewrites the Details components anyway, so do it per screen after step 3, not before.
 
@@ -55,7 +57,7 @@ See open pull requests (branch `wip/NNN`). None known.
 
 ## Done
 
-See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit.
+See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
