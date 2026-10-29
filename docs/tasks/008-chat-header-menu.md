@@ -1,6 +1,6 @@
 # Task 008: Chat header menu, profile switch, name no longer wipes the chat
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: The Chat header is one clean row on a phone (back, avatar, character name, one menu button). Name, model profile, Lorebook Debug, Group Preview and Reset live in that menu. Typing your name never erases a chat in progress.
 Files to touch: `src/components/ChatPreviewModal.tsx`
@@ -21,9 +21,9 @@ Done when: CI green. Owner on the preview, phone: the Chat header is one row wit
 Decisions: 6, 18.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Replaced the header actions with one menu; moved name, profile switch, Lorebook Debug, Group Preview, and Reset into the menu; separated the name draft from committed chat identity.
+Left: Open PR, verify CI, and record the final merge outcome.
+Next action: Commit changes on wip/008, open a PR to main, then verify test-and-lint.
 
 ## Result (executor, when finished)
 Pull request: 
