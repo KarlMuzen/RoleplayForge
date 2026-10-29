@@ -110,6 +110,10 @@ function isKnownLabel(label: string): boolean {
 function extractFirstBalancedBlock(input: string): string | null {
   let start = -1;
   for (let i = 0; i < input.length; i++) {
+    if (input[i] === '{' && input[i + 1] === '{') {
+      i++;
+      continue;
+    }
     if (input[i] === '{' || input[i] === '[') {
       start = i;
       break;

@@ -64,14 +64,14 @@ Done when: CI green; Claude's review is Approved (one diff read; check that noth
 Decisions: 1 (no silent data loss), 2, 7 (nothing leaves the device here).
 
 ## Progress (executor, update every commit)
-Done: Implementation committed as c9c3a6a; PR #22 opened. Added error containment for malformed input, ensured the duplicate dialog appears above the paste modal, and made textarea autofocus win over the shared modal focus timer.
-Left: Commit refinements, then wait for green test-and-lint and report for required Claude review.
+Done: PR #22 opened; malformed-input handling and duplicate-dialog stacking fixed in 65f96bd. CI identified that {{user}} template tokens were being mistaken for embedded JSON; the reader now skips double-brace tokens while scanning.
+Left: Commit the label-scanner fix and wait for green test-and-lint.
 Next action: Check CI on the final PR head; do not merge.
 
 ## Result (executor, when finished)
 Pull request: #22 — https://github.com/KarlMuzen/RoleplayForge/pull/22
 Checks run by executor: Not run locally; clone was blocked because github.com DNS was unavailable. GitHub CI is authoritative.
-CI: Pending on PR #22 after initial commit; final head status to be checked.
+CI: First run found one failing labeled-text test because {{user}} was extracted as JSON; fix submitted, latest run pending.
 Deviations from the card: None.
 
 ## Review (Claude, required)
