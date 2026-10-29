@@ -1,6 +1,6 @@
 # Task 013: Details, cover art and export move to one collapsed section at the bottom
 
-Status: in progress
+Status: done
 Review: skip
 Goal: On the Details tab the cover art block and the export controls no longer sit above the writing fields. They live in one collapsed section, "Cover art and export", after the last form section.
 Files to touch: `src/components/EditorView.tsx`
@@ -16,16 +16,16 @@ Done when: CI green. Owner, phone, Details tab: no cover art or Export select ab
 Decisions: 6, 17, 19.
 
 ## Progress (executor, update every commit)
-Done: Moved the existing Export & Verify Menu and complete cover/avatar block into a closed-by-default `Cover art and export` details section after `AdvancedPromptsSection`; handlers, inputs, labels, titles, styles, and surrounding editor state remain unchanged.
-Left: Open PR, verify `test-and-lint`, fill Result, and merge only on green CI.
-Next action: Confirm the diff is limited to `EditorView.tsx` plus this card, then create the PR.
+Done: Moved the existing Export & Verify Menu and complete cover/avatar block into a closed-by-default `Cover art and export` details section after `AdvancedPromptsSection`; handlers, inputs, labels, titles, styles, and surrounding editor state remain unchanged. PR #15 squash-merged.
+Left: None.
+Next action: Task 013 is complete; proceed to Task 014.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/15
+Checks run by executor: Not run locally; repository CI is authoritative.
+CI: Passed `test-and-lint` (lint, tests, production build), run 40851263470, on `cd0ac42d21412d7c9de5e1611b5147baa4df3dc8`.
 Preview link: n/a (Decision 19)
-Deviations from the card: 
+Deviations from the card: Auto-merge was rejected with "Pull request is in clean status"; manually squash-merged after `test-and-lint` passed, per Decision 19.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
