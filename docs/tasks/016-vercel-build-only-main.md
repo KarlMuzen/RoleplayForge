@@ -18,16 +18,16 @@ Decisions: 17, 19, 20, 22.
 
 ## Progress (executor, update every commit)
 Done: Confirmed the two Vercel documentation facts, changed only `ignoreCommand`, preserved `git.deploymentEnabled` and `headers`, and opened PR #18. JSON parsing passed via `node -e`; `test-and-lint` passed on current code commit `200d758933f8ae5dac13e36e6dcab323a05aac15` (run 40862800567) and latest PR head `4c1a9c2da6aff9417bc811da26b9adb95b6b337a` (run 40863064296).
-Left: Required Claude review and approval before merge.
-Next action: Review PR #18; do not merge until the card's Review is Approved.
+Left: Confirm the production deployment for merge commit `1f7baab545dcf652035817d8487b0ea96a3258d4` reaches READY.
+Next action: Check deployment `dpl_Dqibbhm62qRyDH2i7R4SA5rEzk4h` at https://vercel.com/xiorolab/roleplayforge/Dqibbhm62qRyDH2i7R4SA5rEzk4h; if no READY deployment appears, follow Decision 22 for manual deployment.
 
 ## Result (executor, when finished)
-Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/18
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/18 (squash-merged; merge commit `1f7baab545dcf652035817d8487b0ea96a3258d4`)
 Checks run by executor: `node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"` passed against the candidate `vercel.json` contents.
-CI: Passed `test-and-lint` (lint, tests, production build), run 40862800567, on `200d758933f8ae5dac13e36e6dcab323a05aac15`.
+CI: Passed `test-and-lint` (lint, tests, production build), run 40863271679, on the reviewed PR head.
 Vercel documentation confirmed: `VERCEL_GIT_COMMIT_REF` is the triggering Git branch, https://vercel.com/docs/environment-variables/system-environment-variables (section `VERCEL_GIT_COMMIT_REF`); `ignoreCommand` exit code 0 skips the build and exit code 1 continues, https://vercel.com/docs/project-configuration/vercel-json (section `ignoreCommand`).
 Preview link: n/a (Decision 19)
-Deviations from the card: None. Review is required; waiting for Claude approval before merge.
+Deviations from the card: None. Claude review approved. Post-merge Vercel check: production deployment exists for the merge SHA and was `BUILDING` at the last check; task remains in progress until it reaches `READY`.
 
 ## Review (Claude, required)
 Approved (2026-10-29). Diff against `main` is `vercel.json` (one line, `ignoreCommand` only) plus this card. `headers` and `git.deploymentEnabled` unchanged. JSON valid. Shell-tested the exact command: on a code commit, ref `main` exits 1 (build); refs `wip/016`, `other`, and empty exit 0 (skip). On a docs-only commit with ref `main` it exits 0 (skip), as before. `test-and-lint` green on the PR head (run 40863271679).
