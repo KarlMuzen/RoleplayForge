@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import '../test/setup';
 import React from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ContextBar } from '../src/components/ContextBar';
 import { useCardStore } from '../src/store/useCardStore';
 import { createNewDefaultCard } from '../src/utils/cardDefaults';
@@ -18,7 +18,17 @@ describe('ContextBar', () => {
       activeTab: 'editor',
       activeCard: card,
       activeCardUuid: 'checklist-test',
+      undoStack: [],
+      redoStack: [],
+      saveState: 'idle',
+      saveTimeoutId: null,
     });
+  });
+
+  afterEach(() => {
+    const timeout = useCardStore.getState().saveTimeoutId;
+    if (timeout) clearTimeout(timeout);
+    useCardStore.setState({ saveTimeoutId: null, saveState: 'idle' });
   });
 
   it('opens an accessible completeness checklist with Escape and outside-tap dismissal', () => {
@@ -105,4 +115,97 @@ describe('ContextBar', () => {
     expect(useCardStore.getState().activeTab).toBe('lorebook');
     expect(within(nav).getByRole('button', { name: 'Lorebook' })).toHaveAttribute('aria-current', 'page');
   });
+
+  it('shows Undo and Redo on Forge tabs only when a card is active', () => {
+    render(<ContextBar />);
+
+    const undo = screen.getByRole('button', { name: 'Undo' });
+    const redo = screen.getByRole('button', { name: 'Redo' });
+    expect(undo).toBeDisabled();
+    expect(redo).toBeDisabled();
+
+    useCardStore.setState({ undoStack: [{ cardData: useCardStore.getState().activeCard! }], redoStack: [] });
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Redo' })).toBeDisabled();
+
+    useCardStore.setState({ activeTab: 'crucible' });
+    expect(screen.queryByRole('button', { name: 'Undo' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Redo' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Unsaved')).not.toBeInTheDocument();
+  });
+
+  it('undoes a normal lorebook update and restores the previous lorebook', () => {
+    const card = useCardStore.getState().activeCard!;
+    const originalLorebook = {
+      name: 'Original lorebook',
+      entries: [{
+        name: 'Original entry',
+        keys: ['original'],
+        content: 'Original content',
+        enabled: true,
+        insertion_order: 100,
+        use_regex: false,
+        extensions: {},
+      }],
+      extensions: {},
+    };
+    useCardStore.setState({
+      activeCard: { ...card, data: { ...card.data, character_book: originalLorebook } },
+    });
+
+    render(<ContextBar />);
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
+
+    act(() => {
+      useCardStore.getState().updateActiveCardData((current) => ({
+        ...current,
+        data: {
+          ...current.data,
+          character_book: {
+            ...current.data.character_book!,
+            name: 'Edited lorebook',
+            entries: [
+              ...current.data.character_book!.entries,
+              {
+                name: 'Added entry',
+                keys: ['added'],
+                content: 'Added content',
+                enabled: true,
+                insertion_order: 101,
+                use_regex: false,
+                extensions: {},
+              },
+            ],
+          },
+        },
+      }), { forceUndo: true });
+    });
+
+    expect(useCardStore.getState().activeCard?.data.character_book?.name).toBe('Edited lorebook');
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(useCardStore.getState().activeCard?.data.character_book).toEqual(originalLorebook);
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Redo' })).toBeEnabled();
+  });
+
+  it('shows the save-status chip for every saveState', () => {
+    render(<ContextBar />);
+
+    const states = [
+      ['idle', 'Unsaved'],
+      ['saving', 'Saving…'],
+      ['saved', 'Saved'],
+      ['error', 'Save failed'],
+    ] as const;
+
+    for (const [saveState, label] of states) {
+      act(() => useCardStore.setState({ saveState }));
+      expect(screen.getByText(label)).toBeInTheDocument();
+      expect(screen.getByText(label).getAttribute('aria-live')).toBe('polite');
+      expect(screen.getByText(label).className).toContain('whitespace-nowrap');
+    }
+  });
+
 });
