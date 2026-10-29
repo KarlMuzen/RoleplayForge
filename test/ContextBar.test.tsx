@@ -124,7 +124,7 @@ describe('ContextBar', () => {
     expect(undo).toBeDisabled();
     expect(redo).toBeDisabled();
 
-    useCardStore.setState({ undoStack: [{ cardData: useCardStore.getState().activeCard! }], redoStack: [] });
+    act(() => useCardStore.setState({ undoStack: [{ cardData: useCardStore.getState().activeCard! }], redoStack: [] }));
     expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Redo' })).toBeDisabled();
 
