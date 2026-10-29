@@ -22,11 +22,12 @@ Left: Open PR, verify `test-and-lint`, fill in Result, and stop for required Cla
 Next action: Check the exact branch diff and open the pull request.
 
 ## Result (executor, when finished)
-Pull request:
-Checks run by executor:
-CI:
+Pull request: https://github.com/KarlMuzen/RoleplayForge/pull/18
+Checks run by executor: `node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"` passed against the candidate `vercel.json` contents.
+CI: Passed `test-and-lint` (lint, tests, production build), run 40862800567, on `200d758933f8ae5dac13e36e6dcab323a05aac15`.
+Vercel documentation confirmed: `VERCEL_GIT_COMMIT_REF` is the triggering Git branch, https://vercel.com/docs/environment-variables/system-environment-variables (section `VERCEL_GIT_COMMIT_REF`); `ignoreCommand` exit code 0 skips the build and exit code 1 continues, https://vercel.com/docs/project-configuration/vercel-json (section `ignoreCommand`).
 Preview link: n/a (Decision 19)
-Deviations from the card:
+Deviations from the card: None. Review is required; waiting for Claude approval before merge.
 
 ## Review (Claude, required)
 Pending.
