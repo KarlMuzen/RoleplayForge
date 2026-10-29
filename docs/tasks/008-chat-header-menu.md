@@ -1,6 +1,6 @@
 # Task 008: Chat header menu, profile switch, name no longer wipes the chat
 
-Status: in progress
+Status: done
 Review: skip
 Goal: The Chat header is one clean row on a phone (back, avatar, character name, one menu button). Name, model profile, Lorebook Debug, Group Preview and Reset live in that menu. Typing your name never erases a chat in progress.
 Files to touch: `src/components/ChatPreviewModal.tsx`
@@ -21,16 +21,16 @@ Done when: CI green. Owner on the preview, phone: the Chat header is one row wit
 Decisions: 6, 18.
 
 ## Progress (executor, update every commit)
-Done: Implemented the one-row header and menu, profile switch, Lorebook Debug and Group Preview controls, Reset action, and name draft/commit handling that preserves started conversations.
-Left: Vercel reports the preview deployment is rate-limited; all checks must be green before manual squash merge.
-Next action: Verify the fresh CI run after this card update, then merge manually only once every check is green.
+Done: Implemented Task 008 and manually squash-merged PR #10 after confirming test-and-lint passed.
+Left: None for this task.
+Next action: Stop here; wait for the owner before starting Task 009.
 
 ## Result (executor, when finished)
 Pull request: #10 — https://github.com/KarlMuzen/RoleplayForge/pull/10
 Checks run by executor: Not run locally; this environment cannot resolve github.com for a local clone.
-CI: Required test-and-lint passed on run 40841308768 (lint, tests, production build). Vercel deployment status failed with “Deployment rate limited — retry in 24 hours.” The task-card update will trigger a fresh CI run.
+CI: Required test-and-lint passed on final run 40841560759 (lint, tests, production build). Vercel deployment status was rate-limited (“Deployment rate limited — retry in 24 hours”); per owner instruction this was not a merge gate.
 Preview link: Unavailable; Vercel rate-limited the preview deployment.
-Deviations from the card: No code-scope deviations. Auto-merge was attempted after test-and-lint passed, but GitHub rejected it with “Pull request is in unstable status.” The PR is not merged because the Vercel status is red; manual squash merge is pending until all checks are green.
+Deviations from the card: No code-scope deviations. Auto-merge was attempted after test-and-lint passed, but GitHub rejected it with “Pull request is in unstable status.” Manually squash-merged once test-and-lint was confirmed green. Merge commit: 0bbf4dde3cecb224997f0f7f6d1e8e16e5b7c52b.
 
 ## Review (Claude, if required)
 n/a (Review: skip)
