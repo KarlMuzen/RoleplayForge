@@ -570,43 +570,7 @@ export const EditorView: React.FC = () => {
           </button>
         </div>
 
-        {/* Export & Verify Menu */}
-        <div className="flex flex-wrap items-center gap-2">
-          <select aria-label="Export card as"
-            onChange={(e) => {
-              const val = e.target.value;
-              if (val === 'visual_png' || val === 'png' || val === 'json' || val === 'charx') {
-                handleExport(val);
-                e.target.value = '';
-              }
-            }}
-            defaultValue=""
-            className="px-3 py-2 bg-void-800 border border-knight-700 text-mist-100 text-xs rounded-xl focus:outline-none focus:ring-1 focus:ring-maroon-400"
-          >
-            <option value="" disabled>
-              Export Card As...
-            </option>
-            <option value="png">SillyTavern PNG (Embedded V3)</option>
-            <option value="json">V3 JSON Specification</option>
-            <option value="charx">CHARX Archive</option>
-            <option value="visual_png">Visual Card Poster PNG</option>
-          </select>
 
-          {lastExported && (
-            <button
-              onClick={handleVerifyExport}
-              className={`flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-medium border transition-all ${
-                lastExported.verified
-                  ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                  : 'bg-void-800 text-maroon-300 border-maroon-900/60 hover:bg-void-700'
-              }`}
-              title="Perform a bit-exact roundtrip import check on the exported file"
-            >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{lastExported.verified ? 'Verified' : 'Verify Export'}</span>
-            </button>
-          )}
-        </div>
       </div>
 
       {/* Token Budget & Density Bar */}
@@ -676,113 +640,6 @@ export const EditorView: React.FC = () => {
         </div>
       </div>
 
-      {/* COVER / AVATAR CARD HEADER */}
-      <div className="bg-void-900 border border-knight-700/40 rounded-2xl p-4 md:p-5 flex flex-col sm:flex-row items-center gap-4 shadow-sm min-w-0">
-        <div className="relative w-24 h-32 sm:w-28 sm:h-36 shrink-0 rounded-xl overflow-hidden bg-void-950 border border-knight-700/40 flex items-center justify-center group shadow-inner">
-          <CardAvatar
-            src={coverUrl}
-            name={d?.name || ''}
-            alt={d?.name || 'Character Cover'}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover"
-            fallbackClassName="text-3xl"
-            fallbackIconClassName="w-8 h-8 mb-1 opacity-60"
-            emptyLabel="No Cover"
-          />
-        </div>
-
-        <div className="flex-1 space-y-2.5 text-center sm:text-left">
-          <div>
-            <h3 className="text-sm font-semibold text-mist-100">Character Cover & Visual Card Export</h3>
-            <p className="text-xs text-knight-400 mt-0.5 leading-relaxed">
-              Upload custom artwork, generate an AI character portrait, or export a high-res visual card poster PNG
-              directly with embedded CCv3 specification metadata.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-            <input
-              ref={coverInputRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif"
-              onChange={handleCoverUpload}
-              className="hidden"
-            />
-
-            {/* AI Cover Art Style Selector & Trigger */}
-            <div className="flex items-center gap-1.5 bg-void-950/80 border border-maroon-900/60 p-1 rounded-xl">
-              <select aria-label="Cover art style"
-                value={selectedStyle}
-                onChange={(e) =>
-                  setSelectedStyle(
-                    e.target.value as 'anime' | 'fantasy' | 'cyberpunk' | 'gothic' | 'cinematic' | 'emblem'
-                  )
-                }
-                className="px-2 py-1 bg-void-900 text-mist-100 text-xs rounded-lg border border-knight-700/40 focus:outline-none"
-              >
-                <option value="anime">Anime Portrait</option>
-                <option value="fantasy">High Fantasy</option>
-                <option value="cyberpunk">Cyberpunk Neon</option>
-                <option value="gothic">Gothic Dark</option>
-                <option value="cinematic">Cinematic Portrait</option>
-                <option value="emblem">Classic Emblem</option>
-              </select>
-
-              <button
-                onClick={handleGenerateAICover}
-                disabled={isGeneratingCover}
-                className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-b from-maroon-500 to-maroon-600 hover:from-maroon-400 hover:to-maroon-500 text-white rounded-lg text-xs font-medium shadow-sm transition-all disabled:opacity-50"
-              >
-                <Wand2 className="w-3.5 h-3.5" />
-                {isGeneratingCover ? 'Generating Art...' : 'Generate Cover'}
-              </button>
-            </div>
-
-            <button
-              onClick={() => coverInputRef.current?.click()}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-knight-700 text-mist-100 border border-knight-700 rounded-xl text-xs font-medium transition-all"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              Upload Image
-            </button>
-
-            {/* Direct Visual Card Export & Preview Buttons */}
-            <button
-              onClick={() => handleExport('visual_png')}
-              disabled={isExportingVisual}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-b from-maroon-600 to-maroon-800 hover:from-maroon-500 hover:to-maroon-700 text-white border border-maroon-500/60 rounded-xl text-xs font-semibold shadow-md transition-all touch-fast active:scale-95 disabled:opacity-50"
-              title="Export visual character card poster as spec-compliant PNG image"
-            >
-              <FileImage className="w-3.5 h-3.5 text-maroon-300 shrink-0" />
-              <span>{isExportingVisual ? 'Exporting Visual...' : 'Export Visual PNG'}</span>
-            </button>
-
-            <button
-              onClick={handlePreviewVisualCard}
-              disabled={isGeneratingPreview}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-knight-700 text-maroon-300 border border-knight-700/80 rounded-xl text-xs font-medium transition-all touch-fast active:scale-95 disabled:opacity-50"
-              title="Preview the rendered visual card image poster"
-            >
-              {isGeneratingPreview ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-maroon-400" />
-              ) : (
-                <Eye className="w-3.5 h-3.5 text-maroon-400 shrink-0" />
-              )}
-              <span>Preview Card</span>
-            </button>
-
-            {coverUrl && (
-              <button
-                onClick={removeCardCoverImage}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-red-950/70 text-knight-300 hover:text-red-300 border border-knight-700/80 rounded-xl text-xs font-medium transition-all"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                Remove Cover
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
 
       {/* Quality & Health Check Banner */}
       {warnings.length > 0 ? (
@@ -848,6 +705,158 @@ export const EditorView: React.FC = () => {
             });
           }}
         />
+
+        <details className="bg-void-900 border border-knight-700/40 rounded-2xl shadow-sm">
+          <summary className="min-h-11 flex items-center px-4 cursor-pointer text-sm font-semibold text-mist-100">
+            Cover art and export
+          </summary>
+          <div className="p-4">
+          {/* Export & Verify Menu */}
+          <div className="flex flex-wrap items-center gap-2">
+            <select aria-label="Export card as"
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === 'visual_png' || val === 'png' || val === 'json' || val === 'charx') {
+                  handleExport(val);
+                  e.target.value = '';
+                }
+              }}
+              defaultValue=""
+              className="px-3 py-2 bg-void-800 border border-knight-700 text-mist-100 text-xs rounded-xl focus:outline-none focus:ring-1 focus:ring-maroon-400"
+            >
+              <option value="" disabled>
+                Export Card As...
+              </option>
+              <option value="png">SillyTavern PNG (Embedded V3)</option>
+              <option value="json">V3 JSON Specification</option>
+              <option value="charx">CHARX Archive</option>
+              <option value="visual_png">Visual Card Poster PNG</option>
+            </select>
+
+            {lastExported && (
+              <button
+                onClick={handleVerifyExport}
+                className={`flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-medium border transition-all ${
+                  lastExported.verified
+                    ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                    : 'bg-void-800 text-maroon-300 border-maroon-900/60 hover:bg-void-700'
+                }`}
+                title="Perform a bit-exact roundtrip import check on the exported file"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>{lastExported.verified ? 'Verified' : 'Verify Export'}</span>
+              </button>
+            )}
+          </div>
+          </div>
+        {/* COVER / AVATAR CARD HEADER */}
+        <div className="bg-void-900 border border-knight-700/40 rounded-2xl p-4 md:p-5 flex flex-col sm:flex-row items-center gap-4 shadow-sm min-w-0">
+          <div className="relative w-24 h-32 sm:w-28 sm:h-36 shrink-0 rounded-xl overflow-hidden bg-void-950 border border-knight-700/40 flex items-center justify-center group shadow-inner">
+            <CardAvatar
+              src={coverUrl}
+              name={d?.name || ''}
+              alt={d?.name || 'Character Cover'}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover"
+              fallbackClassName="text-3xl"
+              fallbackIconClassName="w-8 h-8 mb-1 opacity-60"
+              emptyLabel="No Cover"
+            />
+          </div>
+
+          <div className="flex-1 space-y-2.5 text-center sm:text-left">
+            <div>
+              <h3 className="text-sm font-semibold text-mist-100">Character Cover & Visual Card Export</h3>
+              <p className="text-xs text-knight-400 mt-0.5 leading-relaxed">
+                Upload custom artwork, generate an AI character portrait, or export a high-res visual card poster PNG
+                directly with embedded CCv3 specification metadata.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                onChange={handleCoverUpload}
+                className="hidden"
+              />
+
+              {/* AI Cover Art Style Selector & Trigger */}
+              <div className="flex items-center gap-1.5 bg-void-950/80 border border-maroon-900/60 p-1 rounded-xl">
+                <select aria-label="Cover art style"
+                  value={selectedStyle}
+                  onChange={(e) =>
+                    setSelectedStyle(
+                      e.target.value as 'anime' | 'fantasy' | 'cyberpunk' | 'gothic' | 'cinematic' | 'emblem'
+                    )
+                  }
+                  className="px-2 py-1 bg-void-900 text-mist-100 text-xs rounded-lg border border-knight-700/40 focus:outline-none"
+                >
+                  <option value="anime">Anime Portrait</option>
+                  <option value="fantasy">High Fantasy</option>
+                  <option value="cyberpunk">Cyberpunk Neon</option>
+                  <option value="gothic">Gothic Dark</option>
+                  <option value="cinematic">Cinematic Portrait</option>
+                  <option value="emblem">Classic Emblem</option>
+                </select>
+
+                <button
+                  onClick={handleGenerateAICover}
+                  disabled={isGeneratingCover}
+                  className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-b from-maroon-500 to-maroon-600 hover:from-maroon-400 hover:to-maroon-500 text-white rounded-lg text-xs font-medium shadow-sm transition-all disabled:opacity-50"
+                >
+                  <Wand2 className="w-3.5 h-3.5" />
+                  {isGeneratingCover ? 'Generating Art...' : 'Generate Cover'}
+                </button>
+              </div>
+
+              <button
+                onClick={() => coverInputRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-knight-700 text-mist-100 border border-knight-700 rounded-xl text-xs font-medium transition-all"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                Upload Image
+              </button>
+
+              {/* Direct Visual Card Export & Preview Buttons */}
+              <button
+                onClick={() => handleExport('visual_png')}
+                disabled={isExportingVisual}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-b from-maroon-600 to-maroon-800 hover:from-maroon-500 hover:to-maroon-700 text-white border border-maroon-500/60 rounded-xl text-xs font-semibold shadow-md transition-all touch-fast active:scale-95 disabled:opacity-50"
+                title="Export visual character card poster as spec-compliant PNG image"
+              >
+                <FileImage className="w-3.5 h-3.5 text-maroon-300 shrink-0" />
+                <span>{isExportingVisual ? 'Exporting Visual...' : 'Export Visual PNG'}</span>
+              </button>
+
+              <button
+                onClick={handlePreviewVisualCard}
+                disabled={isGeneratingPreview}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-knight-700 text-maroon-300 border border-knight-700/80 rounded-xl text-xs font-medium transition-all touch-fast active:scale-95 disabled:opacity-50"
+                title="Preview the rendered visual card image poster"
+              >
+                {isGeneratingPreview ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-maroon-400" />
+                ) : (
+                  <Eye className="w-3.5 h-3.5 text-maroon-400 shrink-0" />
+                )}
+                <span>Preview Card</span>
+              </button>
+
+              {coverUrl && (
+                <button
+                  onClick={removeCardCoverImage}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-void-800 hover:bg-red-950/70 text-knight-300 hover:text-red-300 border border-knight-700/80 rounded-xl text-xs font-medium transition-all"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Remove Cover
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+        </details>
       </div>
 
       <ExportVerifyModal
