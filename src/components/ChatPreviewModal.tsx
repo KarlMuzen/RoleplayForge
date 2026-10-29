@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useCardStore } from '../store/useCardStore';
 import { useDialogStore } from '../store/useDialogStore';
 import { useModalA11y } from '../hooks/useModalA11y';
+import { CardAvatar } from './CardAvatar';
 import type { StoredCard } from '../db';
 import { countTokens, countTokensAsync } from '../utils/tokenizer';
 import { scanLorebook, type LorebookScanDebugInfo } from '../utils/lorebookScan';
@@ -226,11 +227,14 @@ export const ChatPreviewModal: React.FC = () => {
             </button>
 
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-void-800 border border-knight-700 shrink-0 overflow-hidden flex items-center justify-center">
-              {d.avatar ? (
-                <img src={d.avatar} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <Bot className="w-5 h-5 text-maroon-400" />
-              )}
+              <CardAvatar
+                src={d.avatar}
+                name={d.name}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+                fallbackClassName="text-xs"
+                fallbackIconClassName="w-5 h-5"
+              />
             </div>
             <div className="min-w-0">
               <h3 className="font-bold text-sm sm:text-base text-mist-100 truncate">
@@ -452,10 +456,15 @@ export const ChatPreviewModal: React.FC = () => {
                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-void-800 border border-knight-700 shrink-0 overflow-hidden flex items-center justify-center mt-1 shadow-sm">
                   {isUser ? (
                     <User className="w-4 h-4 text-knight-300" />
-                  ) : displayAvatar ? (
-                    <img src={displayAvatar} alt="Char Avatar" className="w-full h-full object-cover" />
                   ) : (
-                    <Bot className="w-4 h-4 text-maroon-400" />
+                    <CardAvatar
+                      src={displayAvatar}
+                      name={displayName}
+                      alt="Char Avatar"
+                      className="w-full h-full object-cover"
+                      fallbackClassName="text-[10px]"
+                      fallbackIconClassName="w-4 h-4"
+                    />
                   )}
                 </div>
 
