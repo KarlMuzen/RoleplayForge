@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-29 · **`main` head when written:** `792be51`
+**Last updated:** 2026-10-29 · **`main` head when written:** `dac99a2`
 
 ## Goal
 
@@ -37,15 +37,16 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 15. Merges are automatic: required check `test-and-lint` on `main`, auto-merge with squash. Card says `Review: skip`, or Review is Approved, before the executor enables it. The executor gets 2 fix attempts after a red CI, then stops and records the failure in the card.
 16. Every place that shows a card cover uses one `CardAvatar` component with an initials fallback (Tasks 002-003).
 17. Speed first: set up no new automation or tooling (Dependabot, CodeQL, CI mobile tests, analytics) until the quick-wins cards and the Details reorder are merged. See `docs/AUTOMATION.md`. Owner phone checks are not a merge gate: merge on green CI, the owner checks production later in a batch and reports problems as a new card.
+18. Chat is a card test bench, not a chat host (`docs/PRODUCT_VISION.md`). Taken from Chub-style chat, scoped down: one header menu (name, model profile switch, Lorebook Debug, Group Preview, Reset), a multi-line message box, and regenerate/edit/delete on the last message only (Tasks 008-010, in that order; one writer on `ChatPreviewModal.tsx` at a time). Not adopted: secrets, chat memory/summary, saved-chats list, chat tree, discussion thread, slash commands, voice input. Reconsider only with evidence of user demand.
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-1. **Executor (ChatGPT):** quick-wins cards `docs/tasks/001` to `006`, all `Review: skip`. Order: 001, 002, then 003 (needs 002 merged), 004, 005, 006. 001, 002, 004, 005, 006 are independent. Where a card says the owner checks the preview, that is not a merge gate (Decision 17).
+1. **Executor (ChatGPT):** Chat cards in order, each after the previous is merged: `docs/tasks/008` (header menu, profile switch, name no longer wipes the chat), `009` (multi-line message box), `010` (regenerate, edit, delete on the last message). All `Review: skip`. They share `ChatPreviewModal.tsx`, so never run two at once.
 2. **Claude, next:** plan HANDOFF step 3 (Details reorder) as task cards. No Dependabot card for now.
 
-Owner GitHub settings reported done on 2026-10-29 (not seen by Claude except secret scanning and push protection, seen on).
+Cards 001-007 are merged (quick wins, CardAvatar, rating-filter and Assist/Chat layout). Owner phone check of 001-007 is pending and is not a merge gate (Decision 17).
 
 HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Step 3 rewrites the Details components anyway, so do it per screen after step 3, not before.
 
@@ -57,7 +58,7 @@ See open pull requests (branch `wip/NNN`). None known.
 
 ## Done
 
-See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
+See squash-merged pull requests on `main`. Merged: PR #3 (001) to #9 (007). Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
@@ -71,14 +72,15 @@ See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan 
 
 ## Known bugs and risks
 
-- Guide close band: empty ~110px band at scroll top, covers content when scrolled (`GuideView.tsx` ~line 183). Task 001.
 - Details first screen shows no writing fields; token header wraps on real cards.
-- Broken cover image has no fallback (offline PWA, blocked avatar host). Tasks 002-003.
-- `Chat` button shows on Lorebook but not Details. Task 004.
+- Chat: typing in the name box erases the conversation (the rebuild effect depends on `userName`). Fix planned in Task 008.
+- Chat: `**bold**` shows stray asterisks (`renderRoleplayText` only handles `*action*`). Not carded.
+- Auto-merge is rejected by GitHub on most pull requests (#4-#9); the executor merges by hand once checks are green. Owner to check Settings, General, Pull Requests, "Allow auto-merge".
+- Tasks 001-007 are verified by CI only; owner phone check pending. Tasks 005-006 (accessible names) are not visible by eye; the UI audit could not be run by the executor.
 - Lorebook delete: not verified whether it confirms.
 - `usePWAUpdate` may fail on an undefined registration (seen when service workers are blocked; verify before changing).
 - `selectCardForEditing` does not flush pending autosave on the Library tap path (D-13).
-- Accessibility: light theme has more contrast failures than dark. 5 unlabelled selects (Task 005; 8 selects in code, all get names), 3 unnamed buttons (Task 006).
+- Accessibility: light theme has more contrast failures than dark. 5 unlabelled selects (Task 005 merged), 3 unnamed buttons (Task 006 merged); unverified until the UI audit runs.
 - CI skips docs-only pushes, so the required check cannot report on them. Docs pushes to `main` work only through the ruleset bypass. The ChatGPT connector was not seen on the bypass list; it uses pull requests.
 - `docs/PROJECT_STATUS.md` header still names `13d4442` as the checkpoint; `main` is later. Refresh when next touched.
 - Unverified: whether Vercel posts preview links on pull requests, Vercel runtime headers/CSP in production, Android installed-PWA behavior, iOS Safari, passkey flow on phone, Ollama on `localhost:11434` from https.
