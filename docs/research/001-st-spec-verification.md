@@ -72,13 +72,13 @@ Status: findings only. No decision is made here. Decisions go to PROJECT_STATE.m
 4. `embedded://` must not be accepted: ST accepts both spellings. Write `embeded://`; read both.
 5. V3 lorebook fields `use_regex`, `priority`, `name`, top-level `case_sensitive` are ignored by ST on import.
 
-## Suggestions (not decisions)
+## Suggestions (not decisions; card numbers are in `docs/ROADMAP.md`, "Next cards")
 
-- Task 022: treat `@@depth N` to `extensions.depth=N, position=4` as our own lossy conversion. Log it in the receipt. Keep the original decorator lines for round trips.
+- Receipts card: treat `@@depth N` to `extensions.depth=N, position=4` as our own lossy conversion. Log it in the receipt. Keep the original decorator lines for round trips.
 - Reading code accepts `embeded://` and `embedded://`. Writing code uses `embeded://`.
-- Task 023: replace the `#` / `[` rule with "card text contains an instruct-preset marker such as `### Instruction:`" at low severity, or drop it until backends are checked.
+- Linter card: replace the `#` / `[` rule with "card text contains an instruct-preset marker such as `### Instruction:`" at low severity, or drop it until backends are checked.
 - CHARX to PNG receipts list every dropped asset by type.
-- Task 025: word the rank-1 warning as "low order drops first when the budget is hit; it stops at the first overflow".
+- Lorebook budget card: word the rank-1 warning as "low order drops first when the budget is hit; it stops at the first overflow".
 
 ## Open items (look up next)
 
@@ -87,3 +87,17 @@ Status: findings only. No decision is made here. Decisions go to PROJECT_STATE.m
 3. Default stop strings in KoboldCpp, text-generation-webui and other backends.
 4. How the ST budget loop and `ignoreBudget` changed across versions.
 5. RisuAI decorator support and any `embedded://` handling elsewhere in its code.
+
+## Cross-check of the AI Studio blueprint (Claude, 2026-10-30)
+
+The owner's AI Studio export ("Master Architectural Blueprint") was checked against this note and the code. It is not a source; it is not stored in the repo. Verdicts:
+
+- Mojibake from `atob()`: not present. `base64ToUtf8` (`src/utils/binaryEncoding.ts`) decodes as UTF-8 in both the Node and browser branch. No test covers it yet (added in Task 021).
+- ST standalone lorebook (dict, `key`/`keysecondary`): `normalizeLorebook` converts it, but `importCardData` never routes such a file to it. Reproduced 2026-10-30: the Lorebook screen import does nothing. Task 021.
+- `@@depth` mapping, `#`/`[` stop sequences, dual-chunk desync as an ST problem: wrong or partly wrong, see the verdict table above. Not adopted.
+- Rank-1 lorebook: verified (claim 2). Wording must follow the Suggestions above.
+- Linter list: the repo's `writingLint.ts` already has godmoding, missing `<START>`, unmatched brackets and hard-coded names. Not verified: `{{Char}}` capital letters as an error (ST macro case rule not read), "negative prompting paradox", Author's-Note position mismatch, the 2,000-token threshold. Verified and cheap: invisible characters and curly quotes in lorebook keys; `{ { char } }` and single-brace `{user}`.
+- "4 of 5 top cards leave personality empty" and "620-entry lorebook freezes the phone": not verified. The repo has no entry-list paging (`LorebookView.tsx`); measure with a 600-entry fixture before changing.
+- Brand block (Anvil & Quill, vellum/terracotta palette): conflicts with the shipped Forge logo and the status colors set on 2026-10-29 (PROJECT_STATE Decision 23). Not adopted.
+- Receipts as "cryptographic SHA-256": not needed; a receipt is a list of preserved, transformed, unsupported and dropped fields.
+- Open decision found: on duplicate PNG text chunks the repo (`pickBestDuplicateCandidate`, `src/io/png.ts`) prefers the chunk with `character_book`, else the longer JSON; ST and RisuAI read `ccv3` first (claim 5). Needs real fixtures before changing.

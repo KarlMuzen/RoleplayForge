@@ -60,7 +60,7 @@ Cards and lorebooks are stored in browser IndexedDB. The optional master passphr
 - [Roadmap](docs/ROADMAP.md): phased delivery and completion criteria.
 - [Platform and format support](docs/PLATFORM_SUPPORT.md): implemented paths versus verified compatibility.
 - [Testing strategy](docs/TESTING_STRATEGY.md): required checks, integrity tests and release smoke tests.
-- [Project status](docs/PROJECT_STATUS.md): current repository checkpoint and known verification gaps.
+- [Project state](PROJECT_STATE.md): current task, decisions and known risks (start here for any AI or human).
 
 ## Development
 
