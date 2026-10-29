@@ -1,6 +1,6 @@
 # Task 019: Chat text formatting in the SillyTavern way
 
-Status: in progress
+Status: changes needed
 Review: required
 Goal: Chat messages (card and user) show `*actions*`, `**bold**`, `~~strike~~` and `` `code` `` correctly, and broken or half-finished asterisks no longer show as stray `*` characters. Behavior follows SillyTavern's chat display, written from scratch.
 Files to touch: new `src/core/chatMarkup.ts`; `src/components/ChatPreviewModal.tsx` (only `renderRoleplayText` and its one call site); new `test/chatMarkup.test.ts`.
@@ -56,4 +56,15 @@ Preview link: n/a (Decision 19)
 Deviations from the card:
 
 ## Review (Claude, required)
-Pending
+Changes needed (reviewed head `3299effa5bbe9c916eaeb29dc086347c876e2dff`, 2026-10-29). Fix on the same branch `wip/019`, same PR #21, then report. Do not merge until Claude re-checks the fix commit.
+
+1. Crash bug in `src/core/chatMarkup.ts`, function `parseSegment`, the branch commented "A terminal unmatched closer wraps the line's preceding text". `previousTokens` is set to `tokens` (the same array), then `tokens.length = 0` empties it, then the new token is pushed with `children: previousTokens`. The token's `children` is the array that contains the token itself, a circular reference. `renderTokens` in `ChatPreviewModal.tsx` then recurses forever and the chat view crashes. Reproduced locally on the PR head: `**bold** text**` and `Hi *there* friend**` both produce a cycle. Any line with a finished span followed by a lone closing marker at the end of the line triggers it.
+   Fix: copy the array before clearing it: `const previousTokens = containsFormatting(tokens) ? [...tokens] : undefined;`. Nothing else in this branch changes.
+2. Add two tests to `test/chatMarkup.test.ts`, both on `parseDisplayText`:
+   - `**bold** text**`: assert `JSON.stringify(tokens)` does not throw, and the result is one bold token whose `children` are bold "bold" and text " text".
+   - `Hi *there* friend**`: assert `JSON.stringify(tokens)` does not throw, and the result is one bold token whose `children` are text "Hi ", italic "there", text " friend".
+   If the real output differs from these shapes but has no cycle, report the real shape in Result instead of changing the parser further.
+
+Checked and fine: no SillyTavern code copied (own recursive parser, own names and structure, no showdown or `fixMarkdown` logic); only the allowed files are touched; stored text, AI input, copy and edit still use raw text; tokens render as React elements, no `innerHTML`; the Chub greeting shape `**Use V2 Spec. (Menu > Configuration)` renders as bold with no stray `*`.
+
+Not blocking, no change now: `2 * 3 * 4` displays as `2 *3* 4` with "3" in italics, because the card's own `fixChatMarkup` rule trims spaces inside any `*` pair (SillyTavern's auto-fix behaves the same way). Claude decides later whether to restrict it.
