@@ -64,14 +64,14 @@ Done when: CI green; Claude's review is Approved (one diff read; check that noth
 Decisions: 1 (no silent data loss), 2, 7 (nothing leaves the device here).
 
 ## Progress (executor, update every commit)
-Done: PR #22 opened; malformed-input handling and duplicate-dialog stacking fixed in 65f96bd. CI identified that {{user}} template tokens were being mistaken for embedded JSON; the reader now skips double-brace tokens while scanning.
-Left: Commit the label-scanner fix and wait for green test-and-lint.
-Next action: Check CI on the final PR head; do not merge.
+Done: PR #22 opened on wip/020; fixed malformed-input containment, duplicate-dialog stacking, autofocus, and double-brace template-token extraction. CI passed on implementation commit 0b58ebd (run 40941945125).
+Left: Verify the final PR head check after recording this result, then stop for required Claude review.
+Next action: Check test-and-lint on the final PR head; do not merge.
 
 ## Result (executor, when finished)
 Pull request: #22 — https://github.com/KarlMuzen/RoleplayForge/pull/22
 Checks run by executor: Not run locally; clone was blocked because github.com DNS was unavailable. GitHub CI is authoritative.
-CI: First run found one failing labeled-text test because {{user}} was extracted as JSON; fix submitted, latest run pending.
+CI: Passed — test-and-lint, run 40941945125, commit 0b58ebd.
 Deviations from the card: None.
 
 ## Review (Claude, required)
