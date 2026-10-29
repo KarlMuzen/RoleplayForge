@@ -370,7 +370,7 @@ export const AdvancedPromptsSection: React.FC<AdvancedPromptsSectionProps> = ({
                   key={rel.targetName ? `rel-${rel.targetName}` : `rel-${idx}`}
                   className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-3 bg-void-800/50 border border-knight-700/60 rounded-xl"
                 >
-                  <select
+                  <select aria-label="Related character"
                     value={rel.targetName || ''}
                     onChange={(e) => {
                       const currentRel = [...((d.extensions?.character_relationships as CharacterRelationship[] | undefined) || [])];

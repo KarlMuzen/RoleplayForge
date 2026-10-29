@@ -1,6 +1,6 @@
 # Task 005: Give every select an accessible name
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: All 8 `<select>` elements have an accessible name, so screen readers and the audit stop reporting `select-name`.
 Files to touch: `src/components/EditorView.tsx` (3 selects, about lines 575, 625, 717), `src/components/editor/AdvancedPromptsSection.tsx` (about line 373), `src/components/crucible/ScenarioPicker.tsx` (about line 164), `src/components/crucible/TrustScoreReportPanel.tsx` (about lines 108 and 130), `src/components/settings/ConnectionProfilesSection.tsx` (about line 505)
@@ -13,9 +13,9 @@ Done when: CI green. If `scripts/ui-audit.py` can run, the `select-name` count i
 Decisions: HANDOFF step 2.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Added `aria-label` attributes to the eight selects named in the card: Export card as, Context limit, Cover art style, Related character, Turn length, Card A, Card B, and Provider. No handlers, option lists, styling, or other elements were changed.
+Left: Open PR, verify CI, and record the result.
+Next action: Open PR to main.
 
 ## Result (executor, when finished)
 Pull request: 

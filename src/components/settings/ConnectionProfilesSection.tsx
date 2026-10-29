@@ -502,7 +502,7 @@ export const ConnectionProfilesSection: React.FC<ConnectionProfilesSectionProps>
 
               <div>
                 <label className="block text-[11px] font-medium text-knight-300 mb-1">Provider</label>
-                <select
+                <select aria-label="Provider"
                   value={editingProfile.provider || 'gemini'}
                   onChange={(e) => {
                     const provider = e.target.value as ConnectionProfile['provider'];

@@ -161,7 +161,7 @@ export const ScenarioPicker: React.FC<ScenarioPickerProps> = ({
           <span className="text-xs font-semibold text-knight-300">Select Tester Persona:</span>
           <div className="flex items-center gap-2">
             <span className="text-xs text-knight-400">Turn Length:</span>
-            <select
+            <select aria-label="Turn length"
               value={scenarioTurnCount}
               onChange={(e) => setScenarioTurnCount(Number(e.target.value))}
               disabled={isSimulatingScenario}
