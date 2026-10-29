@@ -65,14 +65,14 @@ Done when: CI green; Claude's review is Approved (one diff read; check that noth
 Decisions: 1 (no silent data loss), 2, 7 (nothing leaves the device here).
 
 ## Progress (executor, update every commit)
-Done: PR #22 remains open on wip/020; the first review fixes (items 1–6) passed `test-and-lint` on 47eecac (run 40943751216). Round 2 fixes the fence-pattern string escapes and adds a fenced labeled-text regression test.
-Left: Verify `test-and-lint` on the round 2 final head, then stop for required Claude review.
-Next action: Check `test-and-lint` on the final PR head; do not merge.
+Done: PR #22 remains open on wip/020; round 2 fixes the fence-pattern string escapes and adds the fenced labeled-text regression test. `test-and-lint` passed on implementation commit 1a5ac62 (run 40944527491).
+Left: Verify `test-and-lint` on the final PR head after this status update, then stop for required Claude review.
+Next action: Confirm the final PR head check is green; do not merge.
 
 ## Result (executor, when finished)
 Pull request: #22 — https://github.com/KarlMuzen/RoleplayForge/pull/22
 Checks run by executor: Not run locally; GitHub CI is authoritative.
-CI: The prior review-fix head 47eecac passed `test-and-lint` (run 40943751216); the round 2 final-head check is pending.
+CI: Round 2 implementation commit 1a5ac62 passed `test-and-lint` (run 40944527491); verify the new final-head check after this task-card status update.
 Deviations from the card: None.
 
 ## Review (Claude, required)
