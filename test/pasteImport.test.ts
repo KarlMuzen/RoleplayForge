@@ -163,6 +163,45 @@ describe('readPastedText', () => {
     expect(({} as { x?: number }).x).toBeUndefined();
   });
 
+  it('preserves bracketed values and prose when they are not valid JSON', async () => {
+    const labeledSource = 'Name: Mira\nPersonality: [kind, shy]\nScenario: A bakery\nFirst message: Hello!';
+    const labeled = await readPastedText(labeledSource);
+    expect(labeled.kind).toBe('labeled-text');
+    expect(labeled.card?.data.personality).toContain('[kind, shy]');
+    expect(labeled.card?.data.scenario).toContain('A bakery');
+    expect(labeled.card?.data.first_mes).toContain('Hello!');
+
+    const proseSource = 'Mira is a baker [age 27] who loves bread.';
+    const prose = await readPastedText(proseSource);
+    expect(prose.kind).toBe('plain-text');
+    expect(prose.card?.data.description).toBe(proseSource);
+  });
+
+  it('preserves text surrounding a mid-text fence that is not JSON or labeled data', async () => {
+    const fence = String.fromCharCode(96).repeat(3);
+    const source = 'Intro text here.\n' + fence + 'code' + fence + '\nOutro text here.';
+    const result = await readPastedText(source);
+    expect(result.kind).toBe('plain-text');
+    expect(result.card?.data.description).toBe(source);
+    expect(result.card?.data.description).toContain('Intro text here.');
+    expect(result.card?.data.description).toContain('code');
+    expect(result.card?.data.description).toContain('Outro text here.');
+  });
+
+  it('maps capitalized JSON keys instead of treating them as card-shaped', async () => {
+    const result = await readPastedText('{"Name":"Mira","Description":"Baker","Greeting":"Hi"}');
+    expect(result.kind).toBe('unknown-json');
+    expect(result.card?.data.name).toBe('Mira');
+    expect(result.card?.data.description).toBe('Baker');
+    expect(result.card?.data.first_mes).toBe('Hi');
+  });
+
+  it('does not show defaulted-field warnings for a plain V1 card JSON', async () => {
+    const result = await readPastedText('{"name":"A","description":"B","first_mes":"C"}');
+    expect(result.kind).toBe('card-json');
+    expect(result.warnings.some((warning) => warning.includes('defaulted'))).toBe(false);
+  });
+
   it('returns a result instead of throwing for malformed input', async () => {
     await expect(readPastedText('{{{')).resolves.toMatchObject({ kind: 'plain-text' });
     await expect(readPastedText('{\"name\":')).resolves.toMatchObject({ kind: 'plain-text' });

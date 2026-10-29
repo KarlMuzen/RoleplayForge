@@ -193,23 +193,50 @@ function removeTrailingCommas(input: string): string {
   return output;
 }
 
-function cleanInput(input: string): string {
-  let cleaned = input.replace(/^\uFEFF/, '').trim();
-  const fenceMarker = String.fromCharCode(96).repeat(3);
-  const fencePattern = new RegExp(fenceMarker + '(?:[A-Za-z0-9_-]+)?[ \\t]*\\r?\\n?([\\s\\S]*?)' + fenceMarker);
-  const fence = cleaned.match(fencePattern);
-  if (fence) cleaned = fence[1].trim();
+interface CleanInput {
+  original: string;
+  candidate: string;
+  labeledFallback: string | null;
+}
 
-  if (!cleaned.startsWith('{') && !cleaned.startsWith('[')) {
-    const block = extractFirstBalancedBlock(cleaned);
-    if (block) cleaned = block.trim();
+function parseJsonCandidate(candidate: string): unknown | null {
+  try {
+    return JSON.parse(removeTrailingCommas(candidate).trim());
+  } catch {
+    return null;
   }
-  return removeTrailingCommas(cleaned).trim();
+}
+
+function cleanInput(input: string): CleanInput {
+  const original = input.replace(/^\uFEFF/, '').trim();
+  const fenceMarker = String.fromCharCode(96).repeat(3);
+  const fencePattern = new RegExp(fenceMarker + '(?:[A-Za-z0-9_-]+)?[ \t]*\r?\n?([\s\S]*?)' + fenceMarker);
+  const fence = original.match(fencePattern);
+
+  if (fence) {
+    const fencedCandidate = fence[1].trim();
+    if (parseJsonCandidate(fencedCandidate) !== null) {
+      return { original, candidate: fencedCandidate, labeledFallback: null };
+    }
+    if (readLabeledText(fencedCandidate)) {
+      return { original, candidate: original, labeledFallback: fencedCandidate };
+    }
+    return { original, candidate: original, labeledFallback: null };
+  }
+
+  if (!original.startsWith('{') && !original.startsWith('[')) {
+    const block = extractFirstBalancedBlock(original);
+    if (block && parseJsonCandidate(block) !== null) {
+      return { original, candidate: block.trim(), labeledFallback: null };
+    }
+  }
+
+  return { original, candidate: original, labeledFallback: null };
 }
 
 function cardHasKnownField(value: unknown): boolean {
   if (!isRecord(value)) return false;
-  return Object.keys(value).some((key) => CARD_SHAPE_KEYS.has(key.toLowerCase()));
+  return Object.keys(value).some((key) => CARD_SHAPE_KEYS.has(key));
 }
 
 function isCardShaped(value: unknown): boolean {
@@ -340,7 +367,7 @@ function mapFields(entries: Array<[string, unknown]>, kind: 'unknown-json' | 'la
   const normalized = normalizeRawToV3Card(flat);
   if (!Object.prototype.hasOwnProperty.call(flat, 'name')) normalized.card.data.name = '';
 
-  const warnings = [...prefixWarnings, ...normalized.warnings];
+  const warnings = [...prefixWarnings, ...normalized.warnings.filter((warning) => !warning.includes(' — defaulted to ') && !warning.includes('missing `'))];
   if (unmatched.length > 0) {
     warnings.push('Some data had no matching field and was added to Description.');
   }
@@ -403,19 +430,20 @@ async function readPastedTextImpl(text: string): Promise<PasteReadResult> {
   }
 
   const cleaned = cleanInput(text);
-  if (!cleaned) return emptyResult('empty');
+  if (!cleaned.original) return emptyResult('empty');
 
   let parsed: unknown;
   try {
-    parsed = JSON.parse(cleaned);
+    parsed = JSON.parse(removeTrailingCommas(cleaned.candidate).trim());
   } catch {
-    const labeled = readLabeledText(cleaned);
+    const labeledInput = cleaned.labeledFallback ?? cleaned.original;
+    const labeled = readLabeledText(labeledInput);
     if (labeled) return labeled;
 
-    const normalized = normalizeRawToV3Card({ name: '', description: cleaned });
+    const normalized = normalizeRawToV3Card({ name: '', description: cleaned.original });
     normalized.card.data.name = '';
     const warnings = [
-      ...normalized.warnings,
+      ...normalized.warnings.filter((warning) => !warning.includes(' — defaulted to ') && !warning.includes('missing `')),
       'Nothing recognized. The text was saved as Description. Add a name before creating.',
     ];
     if (normalized.card.data.description.length > LIMITS.LONG_TEXT) {
@@ -425,7 +453,7 @@ async function readPastedTextImpl(text: string): Promise<PasteReadResult> {
   }
 
   const prefixWarnings: string[] = [];
-  let cardJsonText = cleaned;
+  let cardJsonText = removeTrailingCommas(cleaned.candidate).trim();
   if (Array.isArray(parsed)) {
     const count = parsed.length;
     if (count === 0 || !isRecord(parsed[0])) {
@@ -455,7 +483,7 @@ async function readPastedTextImpl(text: string): Promise<PasteReadResult> {
     return resultForCard(
       'card-json',
       imported.card,
-      [...prefixWarnings, ...(imported.warnings || [])],
+      [...prefixWarnings, ...(imported.warnings || []).filter((warning) => !warning.includes(' — defaulted to ') && !warning.includes('missing `'))],
       [],
       imported.embeddedAssets
     );

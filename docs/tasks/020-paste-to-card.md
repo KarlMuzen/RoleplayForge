@@ -71,8 +71,8 @@ Next action: Check test-and-lint on the final PR head; do not merge.
 
 ## Result (executor, when finished)
 Pull request: #22 — https://github.com/KarlMuzen/RoleplayForge/pull/22
-Checks run by executor: Not run locally; clone was blocked because github.com DNS was unavailable. GitHub CI is authoritative.
-CI: Passed — test-and-lint, run 40941945125, commit 0b58ebd.
+Checks run by executor: Pending for this review-fix commit; local checks unavailable in this session.
+CI: Pending on the updated PR head.
 Deviations from the card: None.
 
 ## Review (Claude, required)
