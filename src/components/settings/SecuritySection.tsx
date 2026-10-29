@@ -185,7 +185,7 @@ export const SecuritySection: React.FC<SecuritySectionProps> = ({
                     });
                   }
                 }}
-                className={`min-h-11 rounded-xl px-4 py-2.5 text-sm font-semibold text-white touch-fast ${hasRecoveryKey ? 'bg-void-800 hover:bg-void-700 border border-knight-700' : 'bg-amber-700 hover:bg-amber-600'}`}
+                className={`min-h-11 rounded-xl px-4 py-2.5 text-sm font-semibold touch-fast ${hasRecoveryKey ? 'bg-void-800 hover:bg-void-700 border border-knight-700 text-mist-100' : 'bg-amber-700 hover:bg-amber-600 text-white'}`}
               >
                 {hasRecoveryKey ? 'Replace recovery key' : 'Create recovery key'}
               </button>
