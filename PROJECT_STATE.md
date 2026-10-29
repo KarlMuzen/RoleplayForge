@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-29 · **`main` head when written:** `0537d84`
+**Last updated:** 2026-10-29 · **`main` head when written:** `cfad9f5`
 
 ## Goal
 
@@ -12,9 +12,11 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 
 - React 19, Vite 6, TypeScript, Tailwind 4, Zustand 5, Dexie (IndexedDB), Zod, `gpt-tokenizer`, vitest. Deployed on Vercel as a PWA.
 - `src/`: `components`, `constants`, `db`, `hooks`, `io` (formats), `routing` (hash routes), `schemas`, `services` (AI providers), `store` (slices), `types`, `utils`.
-- `docs/`: `AI_WORKFLOW.md` (how the two AIs work), `tasks/` (task cards), `HANDOFF.md` (latest session notes), `ROADMAP.md` (priority plan + phases), `PROJECT_STATUS.md`, `PLATFORM_SUPPORT.md`, `TESTING_STRATEGY.md`, `UI_UX_REDESIGN_SPEC.md`, `PRODUCT_VISION.md`.
+- `docs/`: `AI_WORKFLOW.md` (how the two AIs work), `tasks/` (task cards), `HANDOFF.md` (latest session notes), `ROADMAP.md` (priority plan + phases), `AUTOMATION.md` (what is automated, what is not worth it), `PROJECT_STATUS.md`, `PLATFORM_SUPPORT.md`, `TESTING_STRATEGY.md`, `UI_UX_REDESIGN_SPEC.md`, `PRODUCT_VISION.md`.
 - Scripts: `npm run lint && npm test && npm run build`. UI audit: `scripts/ui-audit.py`.
 - CI: `.github/workflows/ci.yml`, one job `test-and-lint` (lint, tests, build). Runs on pull requests to `main` and on non-docs pushes to `main`. Not on other branches until a pull request exists.
+- GitHub ruleset `main-ci-gate` targets `main`. Bypass: repository admin and the Claude GitHub connector (seen in owner screenshot, 2026-10-29).
+- Vercel: production from `main`; preview deployments for pull-request branches; `ignoreCommand` skips docs-only commits.
 
 ## Decisions
 
@@ -38,11 +40,10 @@ Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not 
 
 ## Current task
 
-1. **Owner:** set the two GitHub settings in `docs/AI_WORKFLOW.md` (auto-merge + squash; required check `test-and-lint`, administrators not included).
-2. **Claude:** automation audit. What Vercel, GitHub Actions and the connected tools can automate, and which would improve output. Findings go to `docs/AUTOMATION.md`.
-3. **Claude:** then split HANDOFF step 2 (quick-wins batch) into small cards in `docs/tasks/`, each with `Review: required` or `skip`.
+1. **Owner:** finish the GitHub settings in `docs/AI_WORKFLOW.md` and `docs/AUTOMATION.md` (auto-merge + squash + auto-delete branches; confirm the ruleset `main-ci-gate` requires `test-and-lint`; confirm secret scanning and push protection). The ruleset exists and is active; its rules were not visible.
+2. **Claude:** split HANDOFF step 2 (quick-wins batch) into small cards in `docs/tasks/`, each with `Review: required` or `skip`. Then a Dependabot card (after owner step 1).
 
-Verify `main` head first.
+Automation audit is done: `docs/AUTOMATION.md`. Verify `main` head first.
 
 ## In progress
 
@@ -50,7 +51,7 @@ See open pull requests (branch `wip/NNN`). None known.
 
 ## Done
 
-See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate.
+See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
@@ -72,14 +73,15 @@ See squash-merged pull requests on `main`. Earlier docs commits: `7cbd503` plan 
 - `usePWAUpdate` may fail on an undefined registration (seen when service workers are blocked; verify before changing).
 - `selectCardForEditing` does not flush pending autosave on the Library tap path (D-13).
 - Accessibility: light theme has more contrast failures than dark. 5 unlabelled selects, 3 unnamed buttons.
-- Until the required check is set on `main`, direct code pushes are checked by CI only after the fact. Vercel may build a commit that CI later marks red.
-- If the AI connectors act as non-admins, the required check may reject docs pushes to `main` (CI skips docs). Fallback: docs via pull request.
-- Unverified: Vercel headers/CSP in production, whether Vercel makes preview links for pull requests, Android installed-PWA behavior, iOS Safari, passkey flow on phone, Ollama on `localhost:11434` from https.
+- CI skips docs-only pushes, so the required check cannot report on them. Docs pushes to `main` work only through the ruleset bypass. The ChatGPT connector was not seen on the bypass list; it uses pull requests.
+- `docs/PROJECT_STATUS.md` header still names `13d4442` as the checkpoint; `main` is later. Refresh when next touched.
+- Unverified: whether Vercel posts preview links on pull requests, Vercel runtime headers/CSP in production, Android installed-PWA behavior, iOS Safari, passkey flow on phone, Ollama on `localhost:11434` from https.
 - Adapters and simulators depend on SillyTavern/Chub behavior that can change; each needs a last-tested date.
 
 ## Guardrails
 
 - Verify the `main` head before every direct commit and before creating a branch.
+- Read the repo with `git clone`. github.com pages fetched through a web tool can be stale or blocked.
 - Do not change DB name `CardCrucibleDB`, settings keys, `enc.v1.` format, passkey or sync identifiers.
 - No origin or project rename. Keep MIT license and CardCrucible attribution.
 - The owner's Chub Helper card is a test fixture only; ask before committing it.
