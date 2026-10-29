@@ -23,6 +23,7 @@ import {
   FileImage,
   GitCompare,
   BarChart3,
+  ChevronDown,
   Trash2,
 } from 'lucide-react';
 import { IdentitySection } from './editor/IdentitySection';
@@ -573,96 +574,124 @@ export const EditorView: React.FC = () => {
 
       </div>
 
-      {/* Token Budget & Density Bar */}
-      <div className="bg-void-900 border border-knight-700/40 rounded-2xl p-3.5 space-y-2 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2 font-semibold text-mist-100">
-            <BarChart3 className="w-4 h-4 text-maroon-400" />
-            <span>Character Token Budget</span>
-            <span className="font-mono text-knight-400">
-              ({totalTokens} / {tokenBudgetLimit} {getTokenSchemeName(provider)})
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-knight-400">Context Limit:</span>
-            <select aria-label="Context limit"
-              value={tokenBudgetLimit}
-              onChange={(e) => setTokenBudgetLimit(Number(e.target.value))}
-              className="bg-void-800 border border-knight-700/80 rounded-lg px-2 py-1 text-xs text-mist-100 font-mono focus:outline-none"
-            >
-              <option value={2048}>2048 (Compact)</option>
-              <option value={4096}>4096 (Standard)</option>
-              <option value={8192}>8192 (Expanded)</option>
-              <option value={16384}>16384 (Massive)</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Density Progress Bar */}
-        <div className="w-full h-2 bg-void-950 rounded-full overflow-hidden border border-knight-700/40">
-          <div
-            className={`h-full transition-all duration-300 ${
+      <details className="bg-void-900 border border-knight-700/40 rounded-2xl shadow-sm">
+        <summary className="min-h-11 flex flex-nowrap items-center justify-between gap-2 px-3 cursor-pointer list-none">
+          <span
+            title="Estimated tokens"
+            className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[11px] font-mono font-semibold whitespace-nowrap ${
               tokenPercentage > 90
-                ? 'bg-red-500'
+                ? 'border-red-800 bg-red-950/50 text-red-300'
                 : tokenPercentage > 75
-                ? 'bg-amber-500'
-                : 'bg-emerald-500'
+                  ? 'border-amber-800 bg-amber-950/50 text-amber-300'
+                  : 'border-emerald-800 bg-emerald-950/40 text-emerald-300'
             }`}
-            style={{ width: `${tokenPercentage}%` }}
-          />
-        </div>
+          >
+            {totalTokens}/{tokenBudgetLimit} tok
+          </span>
+          <span className="flex shrink-0 items-center gap-2">
+            {warnings.length === 0 ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-800/60 bg-emerald-950/40 px-2.5 py-1 text-xs font-semibold text-emerald-300 whitespace-nowrap">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                OK
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-800/80 bg-amber-950/40 px-2.5 py-1 text-xs font-semibold text-amber-300 whitespace-nowrap">
+                <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
+                {warnings.length} alerts
+              </span>
+            )}
+            <ChevronDown className="h-4 w-4 shrink-0 text-knight-400" aria-hidden="true" />
+          </span>
+        </summary>
+        <div className="p-3.5 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2 font-semibold text-mist-100">
+              <BarChart3 className="w-4 h-4 text-maroon-400" />
+              <span>Character Token Budget</span>
+              <span className="font-mono text-knight-400">
+                ({totalTokens} / {tokenBudgetLimit} {getTokenSchemeName(provider)})
+              </span>
+            </div>
 
-        {/* Breakdown Chips */}
-        <div className="flex flex-wrap gap-1.5 pt-1 text-[10px] font-mono text-knight-400">
-          <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
-            Desc: {descTokens}
-          </span>
-          <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
-            Greeting: {greetingTokens}
-          </span>
-          <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
-            Personality: {personalityTokens}
-          </span>
-          <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
-            Scenario: {scenarioTokens}
-          </span>
-          {systemPromptTokens > 0 && (
-            <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
-              System: {systemPromptTokens}
-            </span>
-          )}
-          {mesExampleTokens > 0 && (
-            <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
-              Examples: {mesExampleTokens}
-            </span>
-          )}
-        </div>
-      </div>
-
-
-      {/* Quality & Health Check Banner */}
-      {warnings.length > 0 ? (
-        <div className="bg-amber-950/40 border border-amber-800/80 p-4 rounded-2xl space-y-1 text-xs text-amber-200">
-          <div className="flex items-center gap-2 font-semibold text-amber-300">
-            <AlertTriangle className="w-4 h-4 text-amber-400" />
-            Card Health Check Alerts ({warnings.length})
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-knight-400">Context Limit:</span>
+              <select aria-label="Context limit"
+                value={tokenBudgetLimit}
+                onChange={(e) => setTokenBudgetLimit(Number(e.target.value))}
+                className="bg-void-800 border border-knight-700/80 rounded-lg px-2 py-1 text-xs text-mist-100 font-mono focus:outline-none"
+              >
+                <option value={2048}>2048 (Compact)</option>
+                <option value={4096}>4096 (Standard)</option>
+                <option value={8192}>8192 (Expanded)</option>
+                <option value={16384}>16384 (Massive)</option>
+              </select>
+            </div>
           </div>
-          <ul className="list-disc list-inside space-y-1 text-amber-300/80 pl-1">
-            {warnings.map((w, idx) => (
-              <li key={idx}>{w}</li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <div className="bg-emerald-950/30 border border-emerald-800/60 p-3 rounded-2xl text-xs text-emerald-300 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            Card Health Check Passed — Spec compliant and ready for chat testing.
+
+          {/* Density Progress Bar */}
+          <div className="w-full h-2 bg-void-950 rounded-full overflow-hidden border border-knight-700/40">
+            <div
+              className={`h-full transition-all duration-300 ${
+                tokenPercentage > 90
+                  ? 'bg-red-500'
+                  : tokenPercentage > 75
+                  ? 'bg-amber-500'
+                  : 'bg-emerald-500'
+              }`}
+              style={{ width: `${tokenPercentage}%` }}
+            />
           </div>
-          <span className="text-[10px] text-emerald-400 font-mono">100% OK</span>
+
+          {/* Breakdown Chips */}
+          <div className="flex flex-wrap gap-1.5 pt-1 text-[10px] font-mono text-knight-400">
+            <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
+              Desc: {descTokens}
+            </span>
+            <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
+              Greeting: {greetingTokens}
+            </span>
+            <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
+              Personality: {personalityTokens}
+            </span>
+            <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
+              Scenario: {scenarioTokens}
+            </span>
+            {systemPromptTokens > 0 && (
+              <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
+                System: {systemPromptTokens}
+              </span>
+            )}
+            {mesExampleTokens > 0 && (
+              <span className="px-2 py-0.5 bg-void-800 rounded-md border border-knight-700/40">
+                Examples: {mesExampleTokens}
+              </span>
+            )}
+          </div>
+
+        {/* Quality & Health Check Banner */}
+        {warnings.length > 0 ? (
+          <div className="bg-amber-950/40 border border-amber-800/80 p-4 rounded-2xl space-y-1 text-xs text-amber-200">
+            <div className="flex items-center gap-2 font-semibold text-amber-300">
+              <AlertTriangle className="w-4 h-4 text-amber-400" />
+              Card Health Check Alerts ({warnings.length})
+            </div>
+            <ul className="list-disc list-inside space-y-1 text-amber-300/80 pl-1">
+              {warnings.map((w, idx) => (
+                <li key={idx}>{w}</li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <div className="bg-emerald-950/30 border border-emerald-800/60 p-3 rounded-2xl text-xs text-emerald-300 flex items-center justify-between">
+            <div className="flex items-center gap-2 font-medium">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              Card Health Check Passed — Spec compliant and ready for chat testing.
+            </div>
+            <span className="text-[10px] text-emerald-400 font-mono">100% OK</span>
+          </div>
+        )}
         </div>
-      )}
+      </details>
 
       {/* MAIN EDITOR FORM SECTIONS */}
       <div className="space-y-6 min-w-0">
