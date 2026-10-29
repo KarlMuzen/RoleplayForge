@@ -180,12 +180,12 @@ export const GuideView: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-8 pb-24 max-h-[calc(100dvh-1.5rem)] md:max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain">
-      <div className="sticky top-0 z-30 -mt-4 md:-mt-6 flex justify-end bg-void-950/95 backdrop-blur-xl py-2">
+      <div className="sticky top-0 z-30 -mt-4 md:-mt-6 h-0 flex justify-end">
         <button
           onClick={handleClose}
           aria-label="Close Guide"
           title="Close Onboarding Guide"
-          className="min-w-11 min-h-11 flex items-center justify-center bg-void-800 hover:bg-knight-700 text-knight-200 rounded-xl transition-colors border border-knight-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-maroon-400"
+          className="min-w-11 min-h-11 flex items-center justify-center bg-void-800 hover:bg-knight-700 text-knight-200 rounded-xl transition-colors border border-knight-700 shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-maroon-400"
         >
           <X className="w-5 h-5" />
         </button>

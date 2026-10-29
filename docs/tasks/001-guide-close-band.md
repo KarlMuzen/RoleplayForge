@@ -1,6 +1,6 @@
 # Task 001: Guide close band
 
-Status: planned
+Status: in progress
 Review: skip
 Goal: The Guide's close (X) button floats over the content, with no empty grey band at the top and nothing covered when scrolled.
 Files to touch: `src/components/GuideView.tsx`
@@ -13,9 +13,9 @@ Done when: CI green. Owner on the Vercel preview, phone: at the top of the Guide
 Decisions: HANDOFF finding 1.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Replaced the close-button wrapper with the specified zero-height, unstyled wrapper and added `shadow-lg` to the existing button class. The existing hero padding leaves space below the button at 360px, so no hero padding change was needed.
+Left: Open PR, verify CI, and record the final result.
+Next action: Open PR to main.
 
 ## Result (executor, when finished)
 Pull request: 
