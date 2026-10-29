@@ -9,6 +9,8 @@ import {
   Sparkles,
   MessageSquare,
   AlertTriangle,
+  Undo,
+  Redo,
   Zap,
   HelpCircle,
 } from 'lucide-react';
@@ -36,6 +38,11 @@ export const ContextBar: React.FC = () => {
     setChatPreviewOpen,
     setPreFlightAuditOpen,
     setIsOnboardingOpen,
+    undo,
+    redo,
+    undoStack,
+    redoStack,
+    saveState,
   } = useCardStore();
   const [showWarnings, setShowWarnings] = useState(false);
   const checklistRef = useRef<HTMLDivElement | null>(null);
@@ -143,6 +150,42 @@ export const ContextBar: React.FC = () => {
           </div>
 
           <div className="flex shrink-0 items-center gap-1">
+            {isWorkspaceTab && activeCard && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => undo()}
+                  disabled={undoStack.length === 0}
+                  aria-label="Undo"
+                  title="Undo"
+                  className="flex min-w-11 min-h-11 items-center justify-center rounded-lg text-knight-400 transition-colors hover:bg-void-800 hover:text-mist-100 disabled:cursor-not-allowed disabled:opacity-30 touch-fast"
+                >
+                  <Undo className="w-4 h-4" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => redo()}
+                  disabled={redoStack.length === 0}
+                  aria-label="Redo"
+                  title="Redo"
+                  className="flex min-w-11 min-h-11 items-center justify-center rounded-lg text-knight-400 transition-colors hover:bg-void-800 hover:text-mist-100 disabled:cursor-not-allowed disabled:opacity-30 touch-fast"
+                >
+                  <Redo className="w-4 h-4" aria-hidden="true" />
+                </button>
+                <span
+                  aria-live="polite"
+                  className="whitespace-nowrap px-1 text-[10px] font-medium text-knight-300"
+                >
+                  {saveState === 'saving'
+                    ? 'Saving…'
+                    : saveState === 'saved'
+                      ? 'Saved'
+                      : saveState === 'error'
+                        ? 'Save failed'
+                        : 'Unsaved'}
+                </span>
+              </>
+            )}
             {isWorkspaceTab && activeCard && (
               <button
                 type="button"

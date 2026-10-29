@@ -1,6 +1,6 @@
 # Task 018: Undo, Redo and save status in the ContextBar on every Forge tab
 
-Status: not started
+Status: in progress
 Review: skip
 Goal: Undo and Redo are reachable on Details, Lorebook, Prompt and Assist, next to a small save-status chip. They are not shown on Test tabs, which do not edit the card.
 Files to touch: `src/components/ContextBar.tsx`, `src/components/EditorView.tsx`, `test/ContextBar.test.tsx`.
@@ -15,16 +15,16 @@ Done when: CI green. Owner, phone: on Lorebook and Assist the Undo and Redo butt
 Decisions: 3, 6, 17, 19, 24.
 
 ## Progress (executor, update every commit)
-Done:
-Left:
-Next action:
+Done: Created `wip/018`; added Undo/Redo controls and live save-status chip to ContextBar for Forge tabs with an active card; removed only the duplicate Undo/Redo controls and now-unused imports/selectors from the Details toolbar; added tests for mode gating, lorebook restoration through `updateActiveCardData`, and all save states.
+Left: Open the PR and verify CI.
+Next action: Open PR #20, check `test-and-lint`, and merge after it is green (Review: skip).
 
 ## Result (executor, when finished)
 Pull request:
-Checks run by executor:
-CI:
+Checks run by executor: Not run locally; the environment could not resolve github.com for a git clone. GitHub Actions is the authoritative CI check.
+CI: Pending.
 Preview link: n/a (Decision 19)
-Deviations from the card:
+Deviations from the card: None.
 
 ## Review (Claude, if required)
 n/a (Review: skip)

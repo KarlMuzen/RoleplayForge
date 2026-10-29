@@ -12,8 +12,6 @@ import { generateCharacterLogoBytes } from '../utils/logoGenerator';
 import { exportVisualCardPng, renderVisualCardCanvasBytes } from '../utils/visualCardExporter';
 import {
   Save,
-  Undo,
-  Redo,
   Upload,
   Wand2,
   AlertTriangle,
@@ -46,10 +44,6 @@ export const EditorView: React.FC = () => {
     updateActiveCardData,
     saveActiveCard,
     saveState,
-    undo,
-    redo,
-    undoStack,
-    redoStack,
     setChatPreviewOpen,
     activeCardEmbeddedAssets,
     setCardCoverImage,
@@ -542,24 +536,6 @@ export const EditorView: React.FC = () => {
           >
             <Save className="w-4 h-4" />
             <span>{saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : 'Save Card'}</span>
-          </button>
-
-          <button
-            onClick={() => undo()}
-            disabled={undoStack.length === 0}
-            className="p-2 text-knight-400 hover:text-mist-100 hover:bg-void-800 disabled:opacity-30 rounded-xl transition-colors"
-            title="Undo"
-          >
-            <Undo className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={() => redo()}
-            disabled={redoStack.length === 0}
-            className="p-2 text-knight-400 hover:text-mist-100 hover:bg-void-800 disabled:opacity-30 rounded-xl transition-colors"
-            title="Redo"
-          >
-            <Redo className="w-4 h-4" />
           </button>
 
           <button
