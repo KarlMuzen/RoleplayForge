@@ -211,7 +211,7 @@ function parseSegment(
     ) {
       // A terminal unmatched closer wraps the line's preceding text.
       const textBeforeMarker = line.slice(0, index);
-      const previousTokens = containsFormatting(tokens) ? tokens : undefined;
+      const previousTokens = containsFormatting(tokens) ? [...tokens] : undefined;
       tokens.length = 0;
       if (marker.type === 'code') {
         tokens.push({ type: 'code', text: textBeforeMarker });
