@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md` (your role's section only), then check open pull requests and the current task card. Read `docs/DECISIONS.md` and `docs/BUGS.md` only when the task needs them. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-31 · **`main` head when written:** `90f9000` (last code commit) · **Last card number used:** 031
+**Last updated:** 2026-10-31 · **`main` head when written:** `4808e13` (last code commit: `90f9000`) · **Last card number used:** 032
 
 ## Goal
 
@@ -19,14 +19,14 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 
 ## Current task
 
-1. **Executors:** ChatGPT and Muse (trial, Decision 30); the owner names one per card. No executor task is open. Muse has not run a card yet.
-2. **Next:** the owner picks from `docs/ROADMAP.md` and `docs/BUGS.md`: the Assist header on a phone (`docs/BUGS.md`), lorebook budget order, "Unsaved" label after save (ROADMAP 6b), cover-generator disclosure, the Guide's Agnaistic claim (`small fix:` candidate), linter 022, receipts 023, lorebook budget and size 024, syntax ribbon 025, the small paste warning for two fenced blocks, and the optional AI "Smart fill" (Decision 25). Argon's strategy ideas are verified in `docs/research/002-argon-strategy-verification.md`; none is carded.
+1. **Executor (ChatGPT or Muse; the owner names one, Decision 30):** `docs/tasks/032-assist-header-phone.md` (`Review: skip`: merge by hand after green `test-and-lint`; delete the card in the last commit). If Muse runs it, it is Muse's trial card.
+2. **Next:** after 032 merges, remove the Assist title part of its entry in `docs/BUGS.md` (the clipped "Details" tab part stays). The owner then picks from `docs/ROADMAP.md` and `docs/BUGS.md`: lorebook budget order, "Unsaved" label after save (ROADMAP 6b), cover-generator disclosure, the Guide's Agnaistic claim (`small fix:` candidate), linter 022, receipts 023, lorebook budget and size 024, syntax ribbon 025, the small paste warning for two fenced blocks, and the optional AI "Smart fill" (Decision 25). Argon's strategy ideas are verified in `docs/research/002-argon-strategy-verification.md`; none is carded.
 
 Owner phone check of 031 passed (2026-10-31). Owner phone checks of 001-019, 027, 029 and 030 are pending and are not a merge gate (Decision 17). Task 021 is untested on a real SillyTavern file. Deviation from the quick-wins batch: "12px minimum text" is not in cards 001-007 (about 266 uses of `text-[9px]`, `text-[10px]`, `text-[11px]` in 36 files); do it per screen.
 
 ## In progress
 
-No open pull requests.
+No open pull requests. Card 032 is committed and not started.
 
 ## Done
 
