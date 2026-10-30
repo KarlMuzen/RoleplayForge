@@ -120,7 +120,7 @@ export const PreFlightAuditModal: React.FC<PreFlightAuditModalProps> = ({ isOpen
         </div>
 
         {/* Top Summary Banner */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4 shrink-0">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3 sm:gap-3 sm:mb-4 shrink-0">
           <div className={`p-3.5 rounded-xl border flex flex-col justify-center items-center ${getScoreColor(lintResult.score)}`}>
             <span className="text-[10px] uppercase font-mono tracking-wider font-semibold opacity-80">Writing Score</span>
             <span className="text-2xl font-black">{lintResult.score}/100</span>
@@ -142,20 +142,20 @@ export const PreFlightAuditModal: React.FC<PreFlightAuditModalProps> = ({ isOpen
             </div>
           </div>
 
-          <div className="bg-void-950/80 border border-knight-800 p-3.5 rounded-xl flex flex-col justify-center sm:col-span-2">
+          <div className="bg-void-950/80 border border-knight-800 p-3.5 rounded-xl flex flex-col justify-center col-span-2 sm:col-span-2">
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-4 h-4 text-maroon-400" />
               <span className="text-xs font-semibold text-mist-100">Zero Token Cost Advantage</span>
             </div>
             <p className="text-[11px] text-knight-400 leading-snug">
-              Audits godmoding risks, wall-of-prose, generic greetings, and dialogue mismatches completely offline. Saves an estimated ~{lintResult.tokenSavingsEstimate + 150} tokens per test run.
+              Audits godmoding risks, wall-of-prose, generic greetings, and dialogue mismatches completely offline. Uses no AI tokens.
             </p>
           </div>
         </div>
 
         {/* Filter Bar */}
         <div className="flex items-center justify-between border-b border-knight-700/40 pb-3 mb-3 shrink-0">
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             <button
               onClick={() => setSelectedFilter('all')}
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
@@ -200,7 +200,7 @@ export const PreFlightAuditModal: React.FC<PreFlightAuditModalProps> = ({ isOpen
         </div>
 
         {/* Issue Cards Scrollable List */}
-        <div className="overflow-y-auto space-y-3 pr-1 grow">
+        <div className="overflow-y-auto space-y-3 pr-1 grow min-h-0">
           {filteredIssues.length === 0 ? (
             <div className="p-8 text-center text-knight-400 space-y-2">
               <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto opacity-80" />
@@ -295,7 +295,7 @@ export const PreFlightAuditModal: React.FC<PreFlightAuditModalProps> = ({ isOpen
         {/* Footer */}
         <div className="mt-4 pt-3 border-t border-knight-700/40 flex items-center justify-between shrink-0">
           <span className="text-xs text-knight-400">
-            {lintResult.issues.length} writing heuristics checked in real time
+            {lintResult.issues.length} issues found. Checked on your device, no AI used.
           </span>
           <button
             onClick={onClose}

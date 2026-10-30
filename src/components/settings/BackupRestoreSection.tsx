@@ -122,7 +122,7 @@ export const BackupRestoreSection: React.FC<BackupRestoreSectionProps> = ({
 
         <div className="flex items-center gap-2 pt-1 pb-2">
           <p className="text-xs text-maroon-400 font-medium bg-maroon-500/10 px-3 py-1.5 rounded-lg border border-maroon-500/20">
-            Note: Backups include your saved connection credentials (API keys).
+            Note: Backups can include your saved API keys. You can leave them out when you export.
           </p>
         </div>
 
