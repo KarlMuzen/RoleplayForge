@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { ConnectionProfile } from '../../db';
 import { createFullBackupJson, createFullBackupZip, restoreFullBackup } from '../../io/backup';
 import { useToastStore } from '../../store/useToastStore';
+import { useCardStore } from '../../store/useCardStore';
 import { useDialogStore } from '../../store/useDialogStore';
 import { useModalA11y } from '../../hooks/useModalA11y';
 import {
@@ -24,27 +25,29 @@ export const BackupRestoreSection: React.FC<BackupRestoreSectionProps> = ({
   loadCardsFromDb,
   loadProfilesFromDb,
 }) => {
+  const isPasskeyOnly = useCardStore((state) => state.isPasskeyOnly);
   const [exportModalState, setExportModalState] = useState<{
     isOpen: boolean;
     format: 'json' | 'zip';
     hasPlaintext: boolean;
-  }>({ isOpen: false, format: 'json', hasPlaintext: false });
+    includeKeys: boolean;
+  }>({ isOpen: false, format: 'json', hasPlaintext: false, includeKeys: true });
 
   const closeExportModal = () => setExportModalState(prev => ({ ...prev, isOpen: false }));
   const exportModalRef = useModalA11y(exportModalState.isOpen, closeExportModal) as React.RefObject<HTMLDivElement>;
 
   const handleFullBackupExport = async (format: 'json' | 'zip' = 'json') => {
     const hasPlaintext = profiles.some(p => p.apiKey && !p.apiKey.startsWith('enc.v1.'));
-    setExportModalState({ isOpen: true, format, hasPlaintext });
+    setExportModalState({ isOpen: true, format, hasPlaintext, includeKeys: !isPasskeyOnly });
   };
 
   const confirmExport = async () => {
-    const { format } = exportModalState;
+    const { format, includeKeys } = exportModalState;
     setExportModalState(prev => ({ ...prev, isOpen: false }));
 
     try {
       if (format === 'json') {
-        const jsonStr = await createFullBackupJson(true);
+        const jsonStr = await createFullBackupJson(includeKeys);
         const blob = new Blob([jsonStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -56,11 +59,11 @@ export const BackupRestoreSection: React.FC<BackupRestoreSectionProps> = ({
 
         useToastStore.getState().showToast({
           title: 'Export Successful',
-          message: `Full database backup exported as JSON (${fileName}).`,
+          message: `Full database backup exported as JSON (${fileName}).${includeKeys ? '' : ' API keys were left out.'}`,
           type: 'success',
         });
       } else {
-        const zipBytes = await createFullBackupZip(true);
+        const zipBytes = await createFullBackupZip(includeKeys);
         const blob = new Blob([zipBytes], { type: 'application/zip' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -72,7 +75,7 @@ export const BackupRestoreSection: React.FC<BackupRestoreSectionProps> = ({
 
         useToastStore.getState().showToast({
           title: 'Export Successful',
-          message: `Full database backup exported as ZIP archive (${fileName}).`,
+          message: `Full database backup exported as ZIP archive (${fileName}).${includeKeys ? '' : ' API keys were left out.'}`,
           type: 'success',
         });
       }
@@ -187,14 +190,36 @@ export const BackupRestoreSection: React.FC<BackupRestoreSectionProps> = ({
           </div>
           
           <div className="space-y-4 text-sm text-knight-300">
-            {exportModalState.hasPlaintext ? (
-              <p>
-                This backup file will contain <strong className="text-amber-400">unencrypted API keys</strong> because some of your profiles are not encrypted. You should store and share this file with the same care as a password.
-              </p>
-            ) : (
-              <p>
-                This backup contains your <strong className="text-blue-400">encrypted API keys</strong> plus the salt and verifier needed to decrypt them offline. If your passphrase is weak, this file should still be treated as sensitive.
-              </p>
+            <div className="space-y-2">
+              <label className="flex min-h-11 items-center gap-3 text-sm font-medium text-mist-100 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={exportModalState.includeKeys}
+                  onChange={(e) => setExportModalState(prev => ({ ...prev, includeKeys: e.target.checked }))}
+                  className="w-4 h-4 accent-maroon-500"
+                />
+                <span>Include API keys in this backup</span>
+              </label>
+              {exportModalState.includeKeys && isPasskeyOnly ? (
+                <p className="text-xs leading-relaxed text-amber-300">
+                  Your keys are locked to a passkey. A device without the same passkey may not be able to open them. Leave keys out and enter them again on the new device, or keep this file only for this device.
+                </p>
+              ) : !exportModalState.includeKeys ? (
+                <p className="text-xs leading-relaxed text-knight-300">
+                  API keys and key-protection settings are left out. After restoring, enter your keys again.
+                </p>
+              ) : null}
+            </div>
+            {exportModalState.includeKeys && (
+              exportModalState.hasPlaintext ? (
+                <p>
+                  This backup file will contain <strong className="text-amber-400">unencrypted API keys</strong> because some of your profiles are not encrypted. You should store and share this file with the same care as a password.
+                </p>
+              ) : (
+                <p>
+                  This backup contains your <strong className="text-blue-400">encrypted API keys</strong> plus the salt and verifier needed to decrypt them offline. If your passphrase is weak, this file should still be treated as sensitive.
+                </p>
+              )
             )}
           </div>
           
