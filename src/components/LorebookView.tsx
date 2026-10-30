@@ -187,12 +187,26 @@ export const LorebookView: React.FC = () => {
   };
 
   const handleImportLorebook = async (file: File) => {
-    const text = await file.text();
-    const result = await importCardData(text, file.name);
-    if (result.lorebook) {
+    try {
+      const text = await file.text();
+      const result = await importCardData(text, file.name);
+      if (!result.lorebook) {
+        useDialogStore.getState().showAlert(
+          'No lorebook found in this file. A lorebook file has an "entries" list.',
+          'Nothing imported',
+          'warning'
+        );
+        return;
+      }
       updateLorebook(() => result.lorebook!);
       await saveActiveCard();
       useDialogStore.getState().showAlert('Lorebook imported cleanly into character card.', 'Lorebook Imported', 'info');
+    } catch (error) {
+      useDialogStore.getState().showAlert(
+        error instanceof Error ? error.message : String(error),
+        'Nothing imported',
+        'warning'
+      );
     }
   };
 
