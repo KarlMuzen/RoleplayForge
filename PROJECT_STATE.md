@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-30 · **`main` head when written:** `f4d4310`
+**Last updated:** 2026-10-30 · **`main` head when written:** `365a9ac`
 
 ## Goal
 
@@ -47,20 +47,25 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 25. Paste-to-card (Task 020): a paste box in the Library Import menu reads raw card JSON, unknown JSON and labeled text with fixed rules, no AI and no network, and shows what it understood before creating. Unmatched data is appended to Description, never dropped. AI reading of messy prose is a separate later card and must show "Sent to <provider>" (Decision 7).
 26. Outside research is not a source. A claim from another AI's export or a blog enters the repo only after Claude verifies it in code or in the primary source (`docs/research/`). Rejected claims are listed in `docs/research/001-st-spec-verification.md` (cross-check section) so they are not re-proposed. On 2026-10-30 `AI_CHANGELOG.md` (stale AI Studio log) and `docs/PROJECT_STATUS.md` (stale snapshot) were removed; git history keeps them. `CHANGELOG.md` is stale (describes the 2026-10-28 theme and mark) and was left; squash-merged PR titles are the changelog. Lean-repo rules are in `docs/AI_WORKFLOW.md`.
 27. The Claude/ChatGPT workflow is final and lives only in `docs/AI_WORKFLOW.md`. It changes only when the owner says "change workflow". It supersedes Decisions 12-15 and the auto-merge parts of 19 and 23: no auto-merge, the executor squash-merges by hand after green `test-and-lint` (and Approved when the card says `Review: required`); Claude may make minor direct code commits only under the limits in that file. `PROJECT_STATE.md` keeps product decisions and state; it never restates process.
+28. Order after Task 021 (2026-10-30): bugs that lose data or leak data, reported by an outside review and then verified in the code by Claude (Decision 26), go before ROADMAP cards 022-025. Order: 029 (PNG export drops the cover), then 026, 027, 028. The owner picks the next cards after that. Evidence is in each card and in the Known bugs list.
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-None carded. Card 021 is merged (PR #23, `b3d45d6`, production READY). Next, in order (`docs/ROADMAP.md`, "Next cards"): 022 linter additions (includes the three Chub Helper findings), 023 conversion receipts, 024 lorebook budget and size, 025 syntax ribbon, then the Details accuracy card. The owner says which to write next. Optional AI "Smart fill" for messy prose stays with the owner (Decision 25).
+1. **Executor (ChatGPT):** `docs/tasks/029-png-export-keeps-cover.md` (standard PNG export keeps the cover art; `Review: required`). One pull request, wait for green `test-and-lint`, stop and report so Claude reviews the diff before the merge (Decision 27). Merge on green CI only (Decision 19).
+2. **Then, one at a time, same rules:** `026-backup-validation.md`, `027-backup-export-keys-choice.md`, `028-views-use-store-not-db.md` (all `Review: required`).
+3. **Claude, next:** after 029 to 028, refresh this file and fix the "Reads directly" arrow in `docs/ARCHITECTURE.md`. The owner then picks from: lorebook budget order, "Unsaved" label after save (ROADMAP 6b), cover-generator disclosure, linter 022, receipts 023, lorebook budget and size 024, syntax ribbon 025, the small paste warning for two fenced blocks, and the optional AI "Smart fill" (Decision 25).
 
-Cards 001-021 are merged (021 = ST standalone lorebook import, PR #23; 020 = paste-to-card, PR #22). Owner phone check of 001-019 is pending and is not a merge gate. Owner reported 2026-10-30 that paste-to-card works; 021 is untested on a real SillyTavern file and on the Lorebook screen alert.
+Cards 001-021 are merged (021 = ST standalone lorebook import, PR #23, `b3d45d6`; 020 = paste-to-card, PR #22, `c0db92c`). Owner reported 2026-10-30 that paste-to-card works. 021 is untested on a real SillyTavern file and on the Lorebook screen alert. Owner phone check of 001-019 is pending and is not a merge gate (Decision 17).
 
 HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Do it per screen.
 
+Verify `main` head first.
+
 ## In progress
 
-See open pull requests (branch `wip/NNN`). None open (checked 2026-10-30, `main` head `f4d4310`).
+See open pull requests (branch `wip/NNN`). None known (checked 2026-10-30; `origin` has only `main`). Cards 026-029 are committed and not started.
 
 ## Done
 
@@ -78,6 +83,11 @@ See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11
 
 ## Known bugs and risks
 
+- **Standard PNG export drops the cover (verified 2026-10-30, carded as 029).** `exportCardData(card, 'png', ...)` in `src/io/index.ts` forwards only `options.basePng` to `writeCardToPng`, and no caller sets it (only `visualCardExporter.ts` does). So the Editor's PNG export and the Library's single and bulk PNG exports write the card into a 1x1 blank image (`createDummyPng`). JSON and CHARX exports are not affected. "Verify Export" does not check the image.
+- **Lorebook simulator budget order is the reverse of SillyTavern (verified in the code; the ST side is research 001 claim 2, not re-read).** `src/utils/lorebookScan.ts` sorts activated entries by weight, then `a.order - b.order`, then fills the token budget until the first overflow; research 001 says SillyTavern sorts `b.order - a.order` (higher `order` survives, low numbers drop first). `lorebookConflict.ts` also sorts by order ascending, for conflicts. Not carded; Task 024 covers the warning wording only.
+- **Cover generator sends card text to a third party with no notice (verified 2026-10-30, not carded).** `generateCharacterLogoBytes` (`src/utils/logoGenerator.ts`) puts the name, up to 5 tags and the first 120 characters of description plus personality into a GET URL to `image.pollinations.ai` (used from `EditorView` and `AssistantView`). No "Sent to ..." line is shown (Decision 7 covers AI assist; this is a separate image service). `docs/ARCHITECTURE.md` says only providers and Chub are contacted; that is incomplete.
+- **Saved card shows "Unsaved" two seconds after saving (ROADMAP 6b, verified in the code, not carded).** `cardSlice.ts` resets `saveState` from `saved` to `idle` after 2 s, and `ContextBar.tsx` shows `idle` as "Unsaved".
+- Backups from Settings always include API keys and the key-protection settings (`createFullBackupJson(true)`); restore and device sync write profiles and settings without a schema check; two screens read the database directly. Carded as 026, 027 and 028.
 - Lorebook import (Task 021, merged, review notes): `LorebookView.handleImportLorebook` wraps `updateLorebook` and `saveActiveCard` in the new try/catch, so a failed save shows "Nothing imported" although the lorebook is applied in memory. In `GalleryView`, a `.zip` that parses as one lorebook sets `importedAsCharx` and skips bulk unpacking. A ZIP holding only lorebooks shows two warnings. Not carded; rare.
 - PNG with several card chunks: `pickBestDuplicateCandidate` (`src/io/png.ts`) prefers the chunk with `character_book`, else the longer JSON. SillyTavern and RisuAI read `ccv3` first (research 001, claim 5). Open decision; needs real fixtures. Not carded.
 - Lorebook entry list has no paging or virtualization (`LorebookView.tsx`); a book with hundreds of entries may be slow on a phone. Unmeasured; measure with a 600-entry fixture before changing.
