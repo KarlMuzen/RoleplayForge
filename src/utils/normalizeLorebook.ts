@@ -1,6 +1,23 @@
 import { LorebookSchema, type Lorebook, type LorebookEntry } from '../schemas/cardSchema';
 
 /**
+ * Detects a standalone SillyTavern-style world-info object, without
+ * confusing character cards that also contain an entries property.
+ */
+export function looksLikeStandaloneLorebook(value: unknown): boolean {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) return false;
+  const record = value as Record<string, unknown>;
+  const entries = record.entries;
+  if (!(Array.isArray(entries) || (entries !== null && typeof entries === 'object'))) return false;
+  if (typeof record.spec === 'string' && record.spec.startsWith('chara_card')) return false;
+  if (record.data !== null && typeof record.data === 'object') return false;
+  const cardFields = ['first_mes', 'mes_example', 'personality', 'scenario', 'char_greeting', 'char_name'];
+  return !cardFields.some((key) => Object.prototype.hasOwnProperty.call(record, key));
+}
+
+/**
  * Normalizes any raw lorebook or card object containing lorebook data
  * from CCv2, CCv3, SillyTavern, Chub, Agnai, or RisuAI formats.
  */
