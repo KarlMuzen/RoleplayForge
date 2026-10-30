@@ -1,6 +1,6 @@
 # Task 021: SillyTavern standalone lorebook files import as lorebooks
 
-Status: planned
+Status: in progress
 Review: required
 Goal: A SillyTavern world-info file (`{"entries": {"0": {...}}}`, no `spec`) imports as a lorebook on the Lorebook screen instead of silently doing nothing, and never becomes a nameless junk card in the Library or the paste box.
 Files to touch: `src/utils/normalizeLorebook.ts` (one new exported helper); `src/io/index.ts` (JSON branch of `importCardData` only); `src/core/pasteImport.ts` (the one `lorebook_v3` check); `src/components/LorebookView.tsx` (the two import handlers, message only); `src/components/GalleryView.tsx` (message only); new `test/lorebookImport.test.ts`.
@@ -26,9 +26,9 @@ Decisions: 1 (no silent data loss), 25.
 Not in this card: PNG duplicate-chunk selection (open decision, see `PROJECT_STATE.md` risks), lorebook list paging, linter changes, receipts.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Created wip/021 from main d27008d and added looksLikeStandaloneLorebook in commit 2bee5a9.
+Left: Wire the detector into card and paste import, add UI warnings and regression tests, then open PR #23.
+Next action: Continue the importer and UI changes on wip/021.
 
 ## Result (executor, when finished)
 Pull request: 
