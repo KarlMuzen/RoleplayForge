@@ -73,13 +73,13 @@ describe('backup export API key inclusion', () => {
     };
 
     useCardStore.setState({ isPasskeyOnly: true });
-    const firstRender = render(<BackupRestoreSection {...props} />);
+    const firstRender = render(React.createElement(BackupRestoreSection, props));
     fireEvent.click(screen.getByRole('button', { name: /Export Backup \(JSON\)/i }));
     expect(screen.getByRole('checkbox', { name: 'Include API keys in this backup' })).not.toBeChecked();
     firstRender.unmount();
 
     useCardStore.setState({ isPasskeyOnly: false });
-    render(<BackupRestoreSection {...props} />);
+    render(React.createElement(BackupRestoreSection, props));
     fireEvent.click(screen.getByRole('button', { name: /Export Backup \(JSON\)/i }));
     expect(screen.getByRole('checkbox', { name: 'Include API keys in this backup' })).toBeChecked();
   });
