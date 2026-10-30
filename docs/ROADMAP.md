@@ -10,7 +10,7 @@ This order supersedes the phase order below where they differ. The phases keep t
 
 | # | Priority | Detail lives in |
 |---|---|---|
-| 1 | Phone usability | `docs/HANDOFF.md` steps 2-6, plus the items below |
+| 1 | Phone usability | Checklist below |
 | 2 | Data safety | Phase 1 |
 | 3 | Fixtures and conversion receipts | Phases 1-2 |
 | 4 | Free tools: token view, card linter, lorebook activation simulator | Phase 5, pulled forward |
@@ -20,15 +20,15 @@ This order supersedes the phase order below where they differ. The phases keep t
 
 ### Priority 1 - Phone usability
 
-- [x] HANDOFF step 2: quick-wins batch except the 12px minimum text, which is done per screen (Tasks 001-007).
-- [x] HANDOFF step 3: reorder Details so writing fields come first (Tasks 013-015).
-- [x] HANDOFF step 4, first part: one ContextBar replacing `WorkspaceSubNav` and `LabSubNav`, Undo/Redo and save chip on Forge tabs (Tasks 017-018). Still open: overflow menu, card switcher sheet.
+- [x] Quick-wins batch except the 12px minimum text, which is done per screen (Tasks 001-007).
+- [x] Reorder Details so writing fields come first (Tasks 013-015).
+- [x] ContextBar, first part: one ContextBar replacing `WorkspaceSubNav` and `LabSubNav`, Undo/Redo and save chip on Forge tabs (Tasks 017-018). Still open: overflow menu, card switcher sheet.
 - [ ] Phone chrome budget: one top bar (back, name, status chip, undo/redo), one tab strip, bottom nav, nothing else fixed. Save state is a small dot, not a bar.
 - [ ] Status chip shows always-on tokens and issue count. Tapping it opens one Status sheet with the token breakdown and the issues.
 - [ ] Keyboard-open mode: hide bottom nav and shrink the header so typing keeps most of the screen.
 - [ ] Full-screen editor for long fields. No scroll boxes nested inside the page scroll.
-- [ ] HANDOFF step 5: contrast pass (light theme first), 44px targets, axe + mobile Playwright smoke test in CI.
-- [ ] HANDOFF step 6 (D-13): flush pending autosave inside `selectCardForEditing`, with a store test.
+- [ ] Contrast pass (light theme first), 44px targets, axe + mobile Playwright smoke test in CI.
+- [ ] D-13: flush pending autosave inside `selectCardForEditing`, with a store test.
 - [ ] Routes: keep `#/forge`, `#/test`, `#/settings`. Add a `variants` sub-route. Any renamed section keeps its old route as an alias.
 - [ ] Wording rules: worst-case lore is "could exceed", never "over limit". Empty optional fields are info-only and are not counted in the issue badge.
 
@@ -84,10 +84,8 @@ Parked: `@@` decorator down-conversion for V2 export (ST strips leading `@@` lin
 
 ### Working rules
 
-- Verify the `main` head before every direct commit.
 - New pure logic goes in `src/core/`. Existing files are not moved.
 - Large views (`LorebookView`, `GuideView`, `EditorView`, `cardSlice`) are split only when they are being edited anyway.
-- Edit large files from a local clone; the GitHub tool resends whole files.
 - Every adapter and simulator carries a last-tested date.
 - Frozen: DB name `CardCrucibleDB`, settings keys, `enc.v1.` format, passkey and sync identifiers.
 
