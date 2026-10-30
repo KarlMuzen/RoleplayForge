@@ -19,7 +19,7 @@ Date: 2026-10-29. `main` head when written: `cfad9f5`. Sources: repo files (read
 2. **Dependabot** (`.github/dependabot.yml`): weekly, grouped, npm and github-actions, major versions ignored, small open-PR limit. Gives security patches without manual watching. Cost: some PR noise. Deferred.
 3. **Secret scanning and push protection:** already on.
 4. **CodeQL default setup:** optional toggle in Settings, Code security. Expect some noise on a client-side app. Deferred.
-5. **Mobile smoke test + axe in CI** (HANDOFF step 5): do it after the contrast and tap-target pass. Today the audit shows many failures, so a gate would be red from day one.
+5. **Mobile smoke test + axe in CI** (ROADMAP Priority 1, contrast pass): do it after the contrast and tap-target pass. Today the audit shows many failures, so a gate would be red from day one.
 
 ## Not worth it now
 
@@ -33,7 +33,7 @@ Date: 2026-10-29. `main` head when written: `cfad9f5`. Sources: repo files (read
 - CI skips docs-only pushes, so the required check never reports on them. Docs commits to `main` only work because of the bypass list.
 - The ChatGPT connector is not on the bypass list (only two actors were visible). A docs push by it would be rejected; it should use a pull request, which matches `AI_WORKFLOW.md`.
 - Docs-only pull requests do run CI (no path filter on `pull_request`). Harmless, slightly wasteful.
-- Claude's docs commits to `main` bypass the ruleset, so a bad docs commit lands unreviewed. Accepted for docs (Decision 13).
+- Claude's docs commits to `main` bypass the ruleset, so a bad docs commit lands unreviewed. Accepted for docs (`docs/AI_WORKFLOW.md`, Gate).
 - Reading github.com pages through a web fetch gave stale or blocked results (folder pages blocked; root listing missed files that exist). Use `git clone` to read. A clone has no push credentials, so writes still go through the GitHub tool, which resends whole files.
 
 ## Owner actions
