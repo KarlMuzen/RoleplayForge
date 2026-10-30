@@ -31,14 +31,14 @@ Done when: CI green; Claude's review is Approved (one diff read; check that `src
 Decisions: 1 (no silent data loss), 2 (pure logic in `src/core/`).
 
 ## Progress (executor, update every commit)
-Done: Implemented pure cover selection, browser image conversion, PNG cover handling in the Editor and both Library ZIP handlers, and the specified tests.
-Left: Open one PR, update this card's Result, and wait for green test-and-lint.
-Next action: Create the pull request and monitor its required test-and-lint check.
+Done: Implemented pure cover selection, browser image conversion, PNG cover handling in the Editor and both Library ZIP handlers, added the specified tests, and opened PR #24.
+Left: Wait for green test-and-lint; stop for Claude's required review.
+Next action: Monitor PR #24's required test-and-lint check.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Deviations from the card: 
+Pull request: #24
+Checks run by executor: Inspected the repository diff and changed-file list through GitHub. Local clone, lint, tests and build were not run because GitHub DNS resolution failed in the execution environment.
+CI: Pending test-and-lint on PR #24.
+Deviations from the card: None.
 
 ## Review (Claude, required)
