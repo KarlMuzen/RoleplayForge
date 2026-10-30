@@ -379,8 +379,8 @@ IMPORTANT DIRECTIVES:
               <Bot className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold text-mist-100 truncate shrink-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <h2 className="text-sm font-semibold text-mist-100 truncate">
                   Assistant
                 </h2>
                 <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800/80 rounded-full hidden sm:inline-flex items-center gap-1">
@@ -393,7 +393,7 @@ IMPORTANT DIRECTIVES:
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {activeCard ? (
               <button
                 aria-label="Generate cover"
@@ -421,10 +421,11 @@ IMPORTANT DIRECTIVES:
             <button
               onClick={() => setShowInspector(!showInspector)}
               className="flex items-center gap-1 px-2.5 py-1.5 bg-void-800 hover:bg-void-700 text-knight-300 rounded-lg text-xs font-medium border border-knight-700/60 transition-all touch-fast"
+              aria-label="Toggle Surface Inspector"
               title="Toggle Surface Inspector"
             >
               <Eye className="w-3.5 h-3.5 text-maroon-400" />
-              <span className="text-[11px] font-mono uppercase max-w-[7rem] truncate">
+              <span className="text-[11px] font-mono uppercase max-w-[7rem] truncate hidden sm:inline">
                 {activeCard ? activeCard.data.name || 'Active' : 'Inspector'}
               </span>
               {showInspector ? (
