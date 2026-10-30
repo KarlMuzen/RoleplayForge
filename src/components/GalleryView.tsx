@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useCardStore } from '../store/useCardStore';
 import { useToastStore } from '../store/useToastStore';
 import { importCardData, exportCardData, importChubCard } from '../io';
+import { prepareCoverForPng } from '../utils/coverToPng';
 import type { StoredCard } from '../db';
 import JSZip from 'jszip';
 import { findDuplicateCard, type DuplicateMatchKind } from '../utils/contentHash';
@@ -410,9 +411,17 @@ export const GalleryView: React.FC = () => {
   const handleBulkExportAllZip = async (format: 'png' | 'json' | 'charx' = 'png') => {
     if (cards.length === 0) return;
     const zip = new JSZip();
+    let omittedCoverCount = 0;
 
     for (const cardRecord of cards) {
+      let basePng: Uint8Array | undefined;
+      if (format === 'png') {
+        const cover = await prepareCoverForPng(cardRecord.cardData, cardRecord.embeddedAssets);
+        basePng = cover.basePng;
+        if (cover.note) omittedCoverCount++;
+      }
       const bytes = await exportCardData(cardRecord.cardData, format, {
+        ...(basePng ? { basePng } : {}),
         embeddedAssets: cardRecord.embeddedAssets,
       });
       const ext = format === 'charx' ? 'charx' : format === 'json' ? 'json' : 'png';
@@ -433,17 +442,32 @@ export const GalleryView: React.FC = () => {
       message: `Exported all ${cards.length} card${cards.length > 1 ? 's' : ''} to ZIP archive (${format.toUpperCase()}).`,
       type: 'success',
     });
+    if (omittedCoverCount > 0) {
+      useToastStore.getState().showToast({
+        title: 'Some covers were omitted',
+        message: `${omittedCoverCount} cards were exported without a picture (cover could not be converted).`,
+        type: 'warning',
+      });
+    }
   };
 
   const handleBulkExportSelectedZip = async (format: 'png' | 'json' | 'charx' = 'png') => {
     const targetUuids = selectedCardUuids.length > 0 ? selectedCardUuids : cards.map((c) => c.uuid);
     if (targetUuids.length === 0) return;
     const zip = new JSZip();
+    let omittedCoverCount = 0;
 
     for (const uuid of targetUuids) {
       const cardRecord = cards.find((c) => c.uuid === uuid);
       if (cardRecord) {
+        let basePng: Uint8Array | undefined;
+        if (format === 'png') {
+          const cover = await prepareCoverForPng(cardRecord.cardData, cardRecord.embeddedAssets);
+          basePng = cover.basePng;
+          if (cover.note) omittedCoverCount++;
+        }
         const bytes = await exportCardData(cardRecord.cardData, format, {
+          ...(basePng ? { basePng } : {}),
           embeddedAssets: cardRecord.embeddedAssets,
         });
         const ext = format === 'charx' ? 'charx' : format === 'json' ? 'json' : 'png';
@@ -465,6 +489,13 @@ export const GalleryView: React.FC = () => {
       message: `Exported ${targetUuids.length} selected card${targetUuids.length > 1 ? 's' : ''} to ZIP archive (${format.toUpperCase()}).`,
       type: 'success',
     });
+    if (omittedCoverCount > 0) {
+      useToastStore.getState().showToast({
+        title: 'Some covers were omitted',
+        message: `${omittedCoverCount} cards were exported without a picture (cover could not be converted).`,
+        type: 'warning',
+      });
+    }
   };
 
   const handleExportAllJsonBundle = () => {

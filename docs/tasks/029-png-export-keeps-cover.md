@@ -1,6 +1,6 @@
 # Task 029: Standard PNG export keeps the card's cover picture
 
-Status: planned
+Status: in progress
 Review: required
 Goal: Exporting a card as PNG (Editor export, Library "Export all" ZIP, Library "Export selected" ZIP) writes the card's real cover picture into the file, not a 1x1 blank image. A cover that is JPEG or WebP is converted to PNG first. If a cover cannot be used, the export still works and the app says so.
 Files to touch: new `src/core/coverAsset.ts` (pure); new `src/utils/coverToPng.ts` (browser image conversion); `src/io/index.ts` (the `format === 'png'` branch of `exportCardData` only); `src/components/EditorView.tsx` (the PNG export call only); `src/components/GalleryView.tsx` (the PNG case of `handleBulkExportAllZip` and `handleBulkExportSelectedZip` only); new `test/coverExport.test.ts`.
@@ -31,14 +31,14 @@ Done when: CI green; Claude's review is Approved (one diff read; check that `src
 Decisions: 1 (no silent data loss), 2 (pure logic in `src/core/`).
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Implemented pure cover selection, browser image conversion, PNG cover handling in the Editor and both Library ZIP handlers, added the specified tests, and opened PR #24.
+Left: Wait for green test-and-lint; stop for Claude's required review.
+Next action: Monitor PR #24's required test-and-lint check.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Deviations from the card: 
+Pull request: #24
+Checks run by executor: Inspected the repository diff and changed-file list through GitHub. Local clone, lint, tests and build were not run because GitHub DNS resolution failed in the execution environment.
+CI: Pending test-and-lint on PR #24.
+Deviations from the card: None.
 
 ## Review (Claude, required)
