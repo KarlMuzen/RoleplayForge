@@ -4,11 +4,11 @@ Final since 2026-10-30. Only the owner changes this file, by saying "change work
 
 ## Jobs
 
-| | Owner | Claude | ChatGPT |
-|---|---|---|---|
-| Is | Decides goals. Non-technical. | Architect, designer, reviewer, researcher | Executor |
-| Writes | Nothing technical. Says the trigger phrases. | Docs only: `PROJECT_STATE.md` (sole writer), task cards, `docs/research/`, `docs/*`. Never bulk code. | Code, tests, branches, pull requests, its own card's Progress and Result |
-| Never | Is asked to paste code or summaries | Edits app code (except "Minor direct commits") | Redesigns, changes scope, decides, edits `PROJECT_STATE.md`, this file, other cards or research |
+| | Owner | Claude | ChatGPT | Argon 4 (advisor) |
+|---|---|---|---|---|
+| Is | Decides goals. Non-technical. | Architect, designer, reviewer, researcher | Executor | Outside researcher and second opinion. Read-only. |
+| Writes | Nothing technical. Says the trigger phrases. | Docs only: `PROJECT_STATE.md` (sole writer), task cards, `docs/research/`, `docs/*`. Never bulk code. | Code, tests, branches, pull requests, its own card's Progress and Result | Nothing in the repo. Gives the owner written findings. |
+| Never | Is asked to paste code or summaries | Edits app code (except "Minor direct commits") | Redesigns, changes scope, decides, edits `PROJECT_STATE.md`, this file, other cards or research | Commits, branches, cards, merges, edits any file, decides, or has a claim treated as fact before Claude verifies it |
 
 ## Truth
 
@@ -16,6 +16,21 @@ Final since 2026-10-30. Only the owner changes this file, by saying "change work
 2. Authority, highest first: the owner's latest explicit instruction, this file (process), `PROJECT_STATE.md` (state and product decisions), the task card (the task), everything else. On a conflict the AI stops and flags it. It does not guess.
 3. Before any write (commit, branch, card number) fetch `origin`, confirm the `main` head, list open pull requests. If the repo holds work you did not expect (a card another chat wrote, an open PR), stop and report. Never duplicate it.
 4. A feature is unimplemented until code and evidence exist.
+
+## Advisor (Argon 4)
+
+Added 2026-10-30 on the owner's instruction. Argon 4 is an outside researcher and second opinion. It is not a third executor and not a gate.
+
+1. It is read-only. Its findings reach the repo only through Claude. Pasted advisor text is an idea or a problem like any other (see Owner phrases); no new phrase is needed.
+2. Claude checks each claim that names a file, line, number or behavior against the repo or the primary source before using it (Decision 26). Each claim is marked verified, wrong or unverified. Only verified findings enter the repo: a task card, the Known bugs list, or `docs/research/`. Wrong claims that are likely to come back are listed in the research cross-check so they are not re-proposed.
+3. The advisor must state the `main` SHA it read and read every file at that same SHA. A finding is checked again against current `main` before it counts. (Its first review compared `PROJECT_STATE.md` at `f4d4310` with `docs/tasks/` from a later commit.)
+4. Order of checking, to save cost: data loss, privacy and security claims first; claims with a file and line next; style and taste last, answered in one line. Claude does not rewrite its plan because an advisor disagrees; it records the disagreement and the evidence, and the owner decides.
+5. The advisor never replaces `Review: required`. Claude's diff review stays the gate (the section Gate below). The owner may ask the advisor for an audit of merged `main` now and then.
+6. The advisor does not see secrets and is never asked to paste code into the repo. Its suggested code is a hint for Claude, not a patch.
+
+Standing prompt for the advisor (the owner pastes it once into that chat):
+
+> You are a read-only reviewer for KarlMuzen/RoleplayForge. State the `main` SHA you read. For each finding give: file path and line, what you saw, whether you verified it by reading or inferred it, and the impact (data loss, privacy, security, UX). No code patches, no new features, no rewrites. Do not invent files or APIs; if unsure, say "I don't know". Output: Answer, Evidence, Risks and unknowns, one suggested next step. Respect the frozen identifiers and decisions in `PROJECT_STATE.md`; if you disagree with a decision, ask it as a question.
 
 ## Owner phrases (the whole vocabulary)
 
