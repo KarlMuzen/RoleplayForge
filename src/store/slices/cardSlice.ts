@@ -1,5 +1,5 @@
 import type { StateCreator } from 'zustand';
-import { db, type StoredCard, type CrucibleVector, type CrucibleScenario, DEFAULT_CRUCIBLE_VECTORS } from '../../db';
+import { db, type StoredCard, type StoredLorebook, type CrucibleVector, type CrucibleScenario, DEFAULT_CRUCIBLE_VECTORS } from '../../db';
 import type { CharacterCardV3 } from '../../schemas/cardSchema';
 import { createNewDefaultCard } from '../../utils/cardDefaults';
 import { useToastStore } from '../useToastStore';
@@ -8,10 +8,12 @@ import type { CardStore, CardSlice, UndoState } from './types';
 const MAX_UNDO_STACK_SIZE = 50;
 let lastUndoPushTime = 0;
 let loadCardsRequestId = 0;
+let loadLorebooksRequestId = 0;
 
 export const createCardSlice: StateCreator<CardStore, [], [], CardSlice> = (set, get) => ({
   cards: [],
   isLoadingCards: false,
+  lorebooks: [],
 
   activeCardUuid: null,
   activeCard: null,
@@ -73,6 +75,18 @@ export const createCardSlice: StateCreator<CardStore, [], [], CardSlice> = (set,
       if (currentReq !== loadCardsRequestId) return;
       console.error('Failed to load cards from IndexedDB:', error);
       set({ isLoadingCards: false });
+    }
+  },
+
+  loadLorebooksFromDb: async () => {
+    const currentReq = ++loadLorebooksRequestId;
+    try {
+      const allLorebooks = await db.lorebooks.toArray();
+      if (currentReq !== loadLorebooksRequestId) return;
+      set({ lorebooks: allLorebooks });
+    } catch (error) {
+      if (currentReq !== loadLorebooksRequestId) return;
+      console.error('Failed to load lorebooks from IndexedDB:', error);
     }
   },
 

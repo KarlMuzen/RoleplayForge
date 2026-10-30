@@ -1,4 +1,4 @@
-import type { StoredCard, ConnectionProfile, CrucibleVector, CrucibleScenario } from '../../db';
+import type { StoredCard, StoredLorebook, ConnectionProfile, CrucibleVector, CrucibleScenario } from '../../db';
 import type { CharacterCardV3 } from '../../schemas/cardSchema';
 import type { LLMMessage } from '../../services/llmAdapter';
 
@@ -41,6 +41,7 @@ export interface CardSlice {
   // Gallery & Storage State
   cards: StoredCard[];
   isLoadingCards: boolean;
+  lorebooks: StoredLorebook[];
 
   // Active Selected Card for Editing / View
   activeCardUuid: string | null;
@@ -60,6 +61,7 @@ export interface CardSlice {
 
   // Database Actions
   loadCardsFromDb: () => Promise<void>;
+  loadLorebooksFromDb: () => Promise<void>;
   selectCardForEditing: (uuid: string) => Promise<void>;
   createNewCard: (name?: string) => Promise<string>;
   createVariant: (sourceUuid: string, label?: string) => Promise<string>;
