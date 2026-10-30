@@ -3,6 +3,7 @@ import { db, type StoredCard, type StoredLorebook, type ConnectionProfile, type 
 import { decryptText } from '../utils/crypto';
 import { useCardStore } from '../store/useCardStore';
 import { buf2b64, b642buf } from '../utils/binaryEncoding';
+import { validateBackupData } from '../schemas/backupSchema';
 
 const DEVICE_SECURITY_SETTING_KEYS = new Set([
   'crypto_salt',
@@ -137,7 +138,7 @@ export async function parseBackupPayload(input: string | Uint8Array): Promise<Fu
   }
 
   if (typeof input === 'string') {
-    return JSON.parse(input);
+    return validateBackupData(JSON.parse(input)).data;
   }
 
   if (input.length >= 4 && input[0] === 0x50 && input[1] === 0x4b && input[2] === 0x03 && input[3] === 0x04) {
@@ -145,13 +146,13 @@ export async function parseBackupPayload(input: string | Uint8Array): Promise<Fu
     const backupFile = zip.file('backup.json');
     if (backupFile) {
       const text = await backupFile.async('text');
-      return JSON.parse(text);
+      return validateBackupData(JSON.parse(text)).data;
     }
     throw new Error('Invalid backup ZIP: backup.json not found inside archive.');
   }
 
   const text = new TextDecoder('utf-8').decode(input);
-  return JSON.parse(text);
+  return validateBackupData(JSON.parse(text)).data;
 }
 
 export async function restoreFullBackup(
@@ -168,6 +169,12 @@ export async function restoreFullBackup(
   const zipAssetsMap: Record<string, Record<string, Uint8Array>> = {}; // cardUuid -> { uri -> Uint8Array }
   const errors: string[] = [];
 
+  const validateParsedBackup = (raw: unknown): FullBackupData => {
+    const validation = validateBackupData(raw);
+    errors.push(...validation.warnings);
+    return validation.data;
+  };
+
   // Check input payload length
   const inputByteLength = typeof input === 'string' ? new TextEncoder().encode(input).byteLength : input.byteLength;
   if (inputByteLength > MAX_BACKUP_PAYLOAD_SIZE) {
@@ -175,14 +182,14 @@ export async function restoreFullBackup(
   }
 
   if (typeof input === 'string') {
-    backupData = JSON.parse(input);
+    backupData = validateParsedBackup(JSON.parse(input));
   } else {
     if (input.length >= 4 && input[0] === 0x50 && input[1] === 0x4b && input[2] === 0x03 && input[3] === 0x04) {
       const zip = await JSZip.loadAsync(input);
       const backupFile = zip.file('backup.json');
       if (backupFile) {
         const text = await backupFile.async('text');
-        backupData = JSON.parse(text);
+        backupData = validateParsedBackup(JSON.parse(text));
       } else {
         throw new Error('Invalid backup ZIP: backup.json not found inside archive.');
       }
@@ -211,13 +218,11 @@ export async function restoreFullBackup(
       }
     } else {
       const text = new TextDecoder('utf-8').decode(input);
-      backupData = JSON.parse(text);
+      backupData = validateParsedBackup(JSON.parse(text));
     }
   }
 
-  if (!backupData || !Array.isArray(backupData.cards)) {
-    throw new Error('Invalid backup file: Missing cards list.');
-  }
+
 
   const incomingSettings = backupData.settings || [];
   const incomingSettingValue = (key: string) => incomingSettings.find((setting) => setting.key === key)?.value;
