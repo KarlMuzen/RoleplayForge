@@ -31,9 +31,9 @@ Done when: CI green; Claude's review is Approved (one diff read; check that `src
 Decisions: 1 (no silent data loss), 2 (pure logic in `src/core/`).
 
 ## Progress (executor, update every commit)
-Done: Confirmed main at c62c265; reread PROJECT_STATE.md, docs/AI_WORKFLOW.md and the corrected Task 029; checked open PRs and verified the scoped export call sites.
-Left: Implement cover selection/conversion, wire the three PNG export paths, add the specified tests, open one PR and wait for green test-and-lint.
-Next action: Add the pure cover helper and browser PNG conversion helper, then wire the export paths.
+Done: Implemented pure cover selection, browser image conversion, PNG cover handling in the Editor and both Library ZIP handlers, and the specified tests.
+Left: Open one PR, update this card's Result, and wait for green test-and-lint.
+Next action: Create the pull request and monitor its required test-and-lint check.
 
 ## Result (executor, when finished)
 Pull request: 

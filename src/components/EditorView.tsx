@@ -5,6 +5,7 @@ import { useDialogStore } from '../store/useDialogStore';
 import { useToastStore } from '../store/useToastStore';
 import { countTokens, countTokensAsync, getTokenSchemeName } from '../utils/tokenizer';
 import { exportCardData, importCardData } from '../io';
+import { prepareCoverForPng } from '../utils/coverToPng';
 import { getCardCoverUrl } from './GalleryView';
 import { CardAvatar } from './CardAvatar';
 import type { StoredCard, CardSnapshot } from '../db';
@@ -267,7 +268,20 @@ export const EditorView: React.FC = () => {
           embeddedAssets: activeCardEmbeddedAssets,
         });
       } else {
+        let basePng: Uint8Array | undefined;
+        if (format === 'png') {
+          const cover = await prepareCoverForPng(activeCard, activeCardEmbeddedAssets);
+          basePng = cover.basePng;
+          if (cover.note) {
+            useToastStore.getState().showToast({
+              title: 'Cover not included',
+              message: cover.note,
+              type: 'warning',
+            });
+          }
+        }
         bytes = await exportCardData(activeCard, format, {
+          ...(basePng ? { basePng } : {}),
           embeddedAssets: activeCardEmbeddedAssets,
           backfillV2: true,
         });

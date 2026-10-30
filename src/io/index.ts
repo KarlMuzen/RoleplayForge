@@ -7,6 +7,7 @@ import {
 import { normalizeRawToV3Card } from './converter';
 import { normalizeLorebook, looksLikeStandaloneLorebook } from '../utils/normalizeLorebook';
 import { readCardFromPng, writeCardToPng } from './png';
+import { isPng, pickCoverBytes } from '../core/coverAsset';
 import { readCardFromCharx, writeCardToCharx } from './charx';
 export { importChubCard, parseChubInput } from './chub';
 
@@ -305,8 +306,10 @@ export async function exportCardData(
   }
 
   if (format === 'png') {
+    const cover = pickCoverBytes(validatedCard, options.embeddedAssets);
+    const basePng = options.basePng ?? (cover && isPng(cover) ? cover : undefined);
     return writeCardToPng(validatedCard, {
-      basePng: options.basePng,
+      basePng,
       backfillV2: options.backfillV2,
     });
   }
