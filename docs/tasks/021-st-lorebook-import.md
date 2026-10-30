@@ -26,14 +26,14 @@ Decisions: 1 (no silent data loss), 25.
 Not in this card: PNG duplicate-chunk selection (open decision, see `PROJECT_STATE.md` risks), lorebook list paging, linter changes, receipts.
 
 ## Progress (executor, update every commit)
-Done: Added standalone world-info detection, card and paste import routing, Lorebook screen error alerts, Library warnings for single files and ZIP entries, and focused import/encoding tests. Detector checks only own fields and excludes character-card shapes.
-Left: Review the final diff, open the PR and wait for green test-and-lint.
-Next action: Verify the seven changed paths and open the PR for required Claude review.
+Done: Implemented Task 021 and opened PR #23 on wip/021. `test-and-lint` passed on implementation head b1bf013 (run 41011212952).
+Left: Verify `test-and-lint` on the final PR head after this result update, then stop for Claude's required review.
+Next action: Confirm the final PR head check is green; do not merge.
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Deviations from the card: 
+Pull request: #23 — https://github.com/KarlMuzen/RoleplayForge/pull/23
+Checks run by executor: Not run locally; a clean clone could not resolve github.com in this environment.
+CI: `test-and-lint` passed on implementation head `b1bf013d8f0c9c148a5ae640baea78de5a39f4c3` (run 41011212952): lint, tests and production build.
+Deviations from the card: Component-level LorebookView alert tests were skipped; the card permits skipping them when costly. The importer, detector, paste and UTF-8 round-trip have automated tests.
 
 ## Review (Claude, required)
 Approved | Changes needed: <list>
