@@ -25,7 +25,7 @@ Done when: CI green. Owner, phone: open a card, Lorebook tab, import a SillyTave
 Decisions: 1 (no silent data loss), 25.
 Not in this card: PNG duplicate-chunk selection (open decision, see `PROJECT_STATE.md` risks), lorebook list paging, linter changes, receipts.
 
-## Prog## Progress (executor, update every commit)
+## Progress (executor, update every commit)
 Done: PR #23 was squash-merged to main on 2026-10-30 as `b3d45d6bca305986444bb888d83b0a3ff29aaa36`. `test-and-lint` passed on approved PR head `952f25066890f2dcb39acf190bbd34f078e9ad33` (run 41012058557) and merge commit (run 41012302615). Vercel production deployment `dpl_2J4tLH1zQfRBkBThgFxkCBkThA25` is READY for the merge commit; `roleplayforge.vercel.app` points to it. No recovery deployment was needed.
 Left: Owner's phone check of importing a real SillyTavern world-info file remains optional and is not a merge gate.
 Next action: Owner can verify the Lorebook tab import on phone; report any issue as a new task.
