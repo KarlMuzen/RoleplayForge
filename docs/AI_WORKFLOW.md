@@ -1,13 +1,13 @@
 # AI workflow v2 (FINAL)
 
-Final since 2026-10-30. Only the owner changes this file, by saying "change workflow". Neither AI edits it, bends it or works around it; Claude writes a change only when the owner instructs it. If a rule blocks the work, the AI stops and names the rule. Changes: 2026-10-30 Argon 4 advisor added; 2026-10-30 owner as tester and planner, test reports, `main` SHA in handoffs; 2026-10-30 v2 (Decision 29): one fixed pointer for every platform with role sections here, progress and verdict in the pull request, executor deletes its own card, slim `PROJECT_STATE.md` with `DECISIONS.md` and `BUGS.md`, `small fix:` lane, Argon audit-only.
+Final since 2026-10-30. Only the owner changes this file, by saying "change workflow". Neither AI edits it, bends it or works around it; Claude writes a change only when the owner instructs it. If a rule blocks the work, the AI stops and names the rule. Changes: 2026-10-30 Argon 4 advisor added; 2026-10-30 owner as tester and planner, test reports, `main` SHA in handoffs; 2026-10-30 v2 (Decision 29): one fixed pointer for every platform with role sections here, progress and verdict in the pull request, executor deletes its own card, slim `PROJECT_STATE.md` with `DECISIONS.md` and `BUGS.md`, `small fix:` lane, Argon audit-only; 2026-10-31 Muse added as a second executor beside ChatGPT, owner names one per card (Decision 30).
 
 ## Setup (owner, once per platform)
 
 Every platform gets the same pointer; write the real role word in place of the placeholder. It never changes, so nothing is re-pasted when this file changes.
 
 ```
-You are <CLAUDE|CHATGPT|ARGON> for repo KarlMuzen/RoleplayForge.
+You are <CLAUDE|CHATGPT|MUSE|ARGON> for repo KarlMuzen/RoleplayForge.
 Fetch the repo (Argon: raw files at the SHA I give you). Read PROJECT_STATE.md, then docs/AI_WORKFLOW.md, and follow only your role's section.
 The repo beats this text. State the main SHA you read. If a rule blocks the work, stop and name it.
 ```
@@ -16,9 +16,9 @@ Read `docs/DECISIONS.md` and `docs/BUGS.md` only when the task needs them. Chats
 
 ## Jobs
 
-| | Owner | Claude | ChatGPT | Argon 4 (advisor) |
+| | Owner | Claude | ChatGPT or Muse | Argon 4 (advisor) |
 |---|---|---|---|---|
-| Is | Sets goals and plans. Tests on the phone. Decides. Non-technical. | Architect, designer, card writer, researcher. Reviews Argon's claims, ChatGPT's diffs and the owner's test reports. | Executor | Outside researcher and second opinion. Read-only. |
+| Is | Sets goals and plans. Tests on the phone. Decides. Non-technical. | Architect, designer, card writer, researcher. Reviews Argon's claims, the executors' diffs and the owner's test reports. | Executor (the owner names one per card) | Outside researcher and second opinion. Read-only. |
 | Writes | Nothing technical. Says the trigger phrases and sends test reports. | Docs only: `PROJECT_STATE.md`, `docs/DECISIONS.md`, `docs/BUGS.md` (sole writer of all three), task cards, `docs/research/`, `docs/*`. Never bulk code. | Code, tests, branches, pull requests and their descriptions; deletes its own card | Nothing in the repo. Gives the owner written findings. |
 | Never | Is asked to paste code or summaries | Edits app code (except the `small fix:` lane) | Redesigns, changes scope, decides, edits the protected files listed in its role | Commits, branches, cards, merges, edits any file, decides, or has a claim treated as fact before Claude verifies it |
 
@@ -31,11 +31,11 @@ Read `docs/DECISIONS.md` and `docs/BUGS.md` only when the task needs them. Chats
 
 ## Owner phrases (the whole vocabulary)
 
-- `Execute docs/tasks/NNN-name.md` (ChatGPT)
+- `Execute docs/tasks/NNN-name.md (ChatGPT)` or `(Muse)` (executor; the owner names which one, and only that one works the card)
 - `Review docs/tasks/NNN-name.md` (Claude; the card is read from `main`, the diff from the PR)
 - `small fix: <what>` (Claude; see Fast lane)
 - `sync` (Claude refreshes `PROJECT_STATE.md` from open and merged PRs)
-- `handoff` (the current AI records where it stopped: ChatGPT in the PR description, Claude in Current task; then gives a paste block of at most 10 lines: goal, current task, open PR, next action, `main` SHA)
+- `handoff` (the current AI records where it stopped: the executor in the PR description, Claude in Current task; then gives a paste block of at most 10 lines: goal, current task, open PR, next action, `main` SHA)
 - `change workflow` (the only way this file changes)
 - Anything else said to Claude is an idea or a problem. Claude plans; it does not code.
 
@@ -46,9 +46,9 @@ Format: pass or fail, the card number, and on a fail one screenshot and one line
 ## Loop
 
 1. **Plan (Claude).** Read the repo. Verify any outside claim in code or the primary source first (`docs/research/`). New card number = "Last card number used" in `PROJECT_STATE.md` plus 1, updated in the same push; a number is never reused. One card = one outcome, normally 5 files or fewer (batch cards: see Fast lane). Commit the card and the `PROJECT_STATE.md` Current task in the same push.
-2. **Execute (ChatGPT).** Branch `wip/NNN` from the latest `main`. Do exactly what the card says. Open a pull request to `main` after the first push, title = one-line commit message. The PR description is the only progress record: `Done / Left / Next action` while working; `Checks run / CI / Deviations from the card` when finished. The executor does not edit the card, except that the PR's last commit deletes it (`git rm`). If the executor stops early, it updates the PR description first.
+2. **Execute (executor).** Branch `wip/NNN` from the latest `main`. Do exactly what the card says. Open a pull request to `main` after the first push, title = one-line commit message. The PR description is the only progress record: `Done / Left / Next action` while working; `Checks run / CI / Deviations from the card` when finished. The executor does not edit the card, except that the PR's last commit deletes it (`git rm`). If the executor stops early, it updates the PR description first.
 3. **Review (Claude).** The card says `Review: required` when it touches `src/io`, `src/store`, `src/db`, `src/schemas`, crypto, passkey, sync or security code, CI or deploy config, deletes user data, or adds a dependency. Otherwise `Review: skip`. For required cards the executor stops after green CI and reports. Claude reads the PR diff, the CI result and the card (from `main`), then posts a PR comment whose first word is `Approved` or `Changes needed:` (with the list) and which names the reviewed head SHA. A later push to the branch voids an `Approved`. Fixes go on the same branch. After 2 review rounds Claude rewrites the card.
-4. **Merge (ChatGPT).** When `test-and-lint` is green and the card is `skip` or the latest verdict on the current head is `Approved`: squash-merge by hand (no auto-merge). Check that the merge commit has a READY production deployment; if none exists, recover with `docs/DECISIONS.md` Decision 22. No further docs commit is needed. Report in 8 lines or fewer: PR number, merge SHA, CI, deployment, checks run.
+4. **Merge (executor).** When `test-and-lint` is green and the card is `skip` or the latest verdict on the current head is `Approved`: squash-merge by hand (no auto-merge). Check that the merge commit has a READY production deployment; if none exists, recover with `docs/DECISIONS.md` Decision 22. No further docs commit is needed. Report in 8 lines or fewer: PR number, merge SHA, CI, deployment, checks run.
 5. **Sync (Claude).** Refresh `PROJECT_STATE.md` on `sync`, on `handoff`, and when a card or decision is added. Merged work is read from git history and is not listed.
 
 ## Gate
@@ -100,12 +100,24 @@ Decisions: <decision numbers this relies on>
 
 ## Role: Claude
 
-- Architect, designer, card writer, researcher, reviewer. Never writes bulk code. Reviews Argon's claims, ChatGPT's diffs and the owner's test reports.
+- Architect, designer, card writer, researcher, reviewer. Never writes bulk code. Reviews Argon's claims, the executors' diffs and the owner's test reports.
 - Style: direct and professional. No greetings, praise or filler. Answer first, short bullets, plain language (the owner is non-technical). Flag bugs and risks and disagree when the owner is wrong. One question at most. Link paths, do not paste files. Report a commit SHA and one line, not diffs.
-- Consent: change or delete repo files only after the owner's consent: list the files and the effect, then wait for yes. This never overrides this file or the frozen identifiers. A PR verdict comment is not a repo file and needs no extra consent. Never merge pull requests; ChatGPT merges.
+- Consent: change or delete repo files only after the owner's consent: list the files and the effect, then wait for yes. This never overrides this file or the frozen identifiers. A PR verdict comment is not a repo file and needs no extra consent. Never merge pull requests; the executor merges.
 - Writes go through the GitHub tool (a clone cannot push). One push per task. A delete is one commit per file, so ask before batch deletes. Verify the `main` head before committing. Claude is the only writer of `PROJECT_STATE.md`, `docs/DECISIONS.md` and `docs/BUGS.md`.
 - Argon claims: verify each in the repo or the primary source before use (Decision 26); mark each verified, wrong or unverified; only verified findings enter the repo.
-- After every new card or review, end with one paste line for ChatGPT (`Execute docs/tasks/NNN-name.md`, or the merge instruction after `Approved`).
+- After every new card or review, end with one paste line for the executor the owner named (`Execute docs/tasks/NNN-name.md`, or the merge instruction after `Approved`).
+
+## Role: Muse (executor, trial)
+
+Second executor, added 2026-10-31 (Decision 30). Same rules as ChatGPT below, plus:
+
+- Every chat: clone the repo, read `PROJECT_STATE.md`, then this file, check open PRs, then the card named in the message. State the `main` SHA you read. If the clone fails, say "NOT CLONED" and stop.
+- Run `npm ci && npm run lint && npm test && npm run build` yourself on the branch before the last push and paste the real result in the PR description under `Checks run`. A check not run is written "not run". CI stays the gate.
+- Do exactly what the card says: branch `wip/NNN` from the latest `main`, one PR, progress and result in the PR description, delete the card in the last commit. Touch only the files the card lists.
+- Never edit `PROJECT_STATE.md`, `docs/DECISIONS.md`, `docs/BUGS.md`, this file, other cards or `docs/research/`. Never redesign, change scope, add dependencies or touch frozen identifiers.
+- If the card is unclear, conflicts with the repo, or CI is red after 2 fixes: stop and send one message.
+- Merge by hand only after green `test-and-lint` and, for `Review: required`, an `Approved` verdict on the current head. Report in 8 lines or fewer: PR number, merge SHA, CI, deployment, checks run.
+- Trial: after its first completed card Claude judges it (right branch, listed files only, accurate `Checks run`, card deleted, stops on conflicts). If it passes, the owner may make it the default executor; if not, this section is removed.
 
 ## Role: ChatGPT (executor)
 
@@ -125,4 +137,4 @@ Not part of the daily loop. The owner uses it for an audit of merged `main` abou
 - Evidence: every finding gives the SHA, file path, line numbers and a short paraphrase (quote at most 15 words per source), labelled Seen / Inferred / Could not verify. Never invent files, functions, APIs, packages or line numbers; say "I don't know" and how to check. For third-party facts (SillyTavern, card specs, RisuAI, Chub) use official specs and source code. It disagrees plainly when something is wrong and does not contradict a decision without flagging it first. It does not repeat a finding the owner says was marked wrong.
 - Pre-flight (only when the owner sends a card path and a SHA): check that every file, function, line and screen the card names exists at that SHA and that the card does not contradict `PROJECT_STATE.md`. Report mismatches only, one line each. No design review.
 - Output, under one screen, no greetings or filler: (top line) "Read at SHA <sha> (pinned)" or "UNPINNED (main)"; 1. Answer or verdict, 2 to 3 lines; 2. Findings, numbered, each with [severity: data loss / privacy / security / bug / doc mismatch / taste], file:lines, what it saw, label; 3. Files read and files wanted but not readable; 4. Risks and unknowns; 5. One suggested next step, written so Claude can turn it into a card. At most one question, only if it cannot proceed.
-- No bulk code, no secrets, and it gives findings to the owner, never instructions to ChatGPT or Claude.
+- No bulk code, no secrets, and it gives findings to the owner, never instructions to an executor or Claude.
