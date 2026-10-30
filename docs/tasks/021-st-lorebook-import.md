@@ -1,6 +1,6 @@
 # Task 021: SillyTavern standalone lorebook files import as lorebooks
 
-Status: in progress
+Status: done
 Review: required
 Goal: A SillyTavern world-info file (`{"entries": {"0": {...}}}`, no `spec`) imports as a lorebook on the Lorebook screen instead of silently doing nothing, and never becomes a nameless junk card in the Library or the paste box.
 Files to touch: `src/utils/normalizeLorebook.ts` (one new exported helper); `src/io/index.ts` (JSON branch of `importCardData` only); `src/core/pasteImport.ts` (the one `lorebook_v3` check); `src/components/LorebookView.tsx` (the two import handlers, message only); `src/components/GalleryView.tsx` (message only); new `test/lorebookImport.test.ts`.
@@ -25,16 +25,18 @@ Done when: CI green. Owner, phone: open a card, Lorebook tab, import a SillyTave
 Decisions: 1 (no silent data loss), 25.
 Not in this card: PNG duplicate-chunk selection (open decision, see `PROJECT_STATE.md` risks), lorebook list paging, linter changes, receipts.
 
-## Progress (executor, update every commit)
-Done: Implemented Task 021 and opened PR #23. `test-and-lint` passed on final PR head `d4ea904a0e261c89f6723610a4889567779b3272` (run 41011339304): lint, tests and production build.
-Left: Stop for Claude's required review.
-Next action: Claude reviews PR #23; do not merge before approval.
+## Prog## Progress (executor, update every commit)
+Done: PR #23 was squash-merged to main on 2026-10-30 as `b3d45d6bca305986444bb888d83b0a3ff29aaa36`. `test-and-lint` passed on approved PR head `952f25066890f2dcb39acf190bbd34f078e9ad33` (run 41012058557) and merge commit (run 41012302615). Vercel production deployment `dpl_2J4tLH1zQfRBkBThgFxkCBkThA25` is READY for the merge commit; `roleplayforge.vercel.app` points to it. No recovery deployment was needed.
+Left: Owner's phone check of importing a real SillyTavern world-info file remains optional and is not a merge gate.
+Next action: Owner can verify the Lorebook tab import on phone; report any issue as a new task.
 
 ## Result (executor, when finished)
 Pull request: #23 — https://github.com/KarlMuzen/RoleplayForge/pull/23
-Checks run by executor: Not run locally; a clean clone could not resolve github.com in this environment.
-CI: `test-and-lint` passed on final PR head `d4ea904a0e261c89f6723610a4889567779b3272` (run 41011339304): lint, tests and production build.
-Deviations from the card: Component-level LorebookView alert tests were skipped; the card permits skipping them when costly. The importer, detector, paste and UTF-8 round-trip have automated tests.
+Merge commit: `b3d45d6bca305986444bb888d83b0a3ff29aaa36` (squash).
+Checks run by executor: Not run locally; GitHub CI is authoritative. Claude ran `npm run lint` and `npm test` on the PR head; CI ran the production build.
+CI: `test-and-lint` passed on approved PR head `952f25066890f2dcb39acf190bbd34f078e9ad33` (run 41012058557) and merge commit `b3d45d6bca305986444bb888d83b0a3ff29aaa36` (run 41012302615).
+Production: READY deployment `dpl_2J4tLH1zQfRBkBThgFxkCBkThA25` serves merge commit `b3d45d6bca305986444bb888d83b0a3ff29aaa36`; alias `roleplayforge.vercel.app` points to that deployment. No recovery was needed.
+Deviations from the card: Component-level LorebookView alert tests were skipped as permitted by the card. Real-file and installed-phone checks remain unverified and are not merge gates.
 
 ## Review (Claude, required)
 Approved (2026-10-30, reviewed at `1d5bae1`; the commits after `62278f1` change only this card).
