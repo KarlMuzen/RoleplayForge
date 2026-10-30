@@ -1,6 +1,7 @@
 import type { CharacterCardV3 } from '../schemas/cardSchema';
 import { LIMITS } from '../schemas/limits';
 import { importCardData } from '../io';
+import { looksLikeStandaloneLorebook } from '../utils/normalizeLorebook';
 import { normalizeRawToV3Card } from '../io/converter';
 
 export type PasteReadKind =
@@ -468,7 +469,7 @@ async function readPastedTextImpl(text: string): Promise<PasteReadResult> {
     return errorResult('The pasted JSON must contain a character object.');
   }
 
-  if (parsed.spec === 'lorebook_v3') {
+  if (parsed.spec === 'lorebook_v3' || looksLikeStandaloneLorebook(parsed)) {
     return { ...emptyResult('lorebook-json'), warnings: [...prefixWarnings, 'This is a lorebook, not a character. Import it from the Lorebook screen.'] };
   }
 

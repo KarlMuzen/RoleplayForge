@@ -241,6 +241,10 @@ export const GalleryView: React.FC = () => {
       let importedCount = 0;
       let skippedCount = 0;
 
+      const warnLorebookFile = (fileName: string) => {
+        collectedWarnings.push(`${fileName}: This file is a lorebook, not a character card. Open a card and import it in the Lorebook tab.`);
+      };
+
       // Track cards already present + cards added earlier in this same batch
       const sessionCards: StoredCard[] = [...cards];
       applyDuplicateChoiceToAllRef.current = null;
@@ -314,6 +318,9 @@ export const GalleryView: React.FC = () => {
               if (result.warnings && result.warnings.length > 0) {
                 collectedWarnings.push(...result.warnings.map((w) => `${file.name}: ${w}`));
               }
+            } else if (result.lorebook) {
+              warnLorebookFile(file.name);
+              importedAsCharx = true;
             }
           } catch {
             // Not a single CHARX file, proceed to bulk zip extraction
@@ -341,6 +348,8 @@ export const GalleryView: React.FC = () => {
                       if (result.warnings && result.warnings.length > 0) {
                         collectedWarnings.push(...result.warnings.map((w) => `${relativePath}: ${w}`));
                       }
+                    } else if (result.lorebook) {
+                      warnLorebookFile(relativePath);
                     }
                   } catch (err) {
                     console.warn(`Error reading card in zip entry ${relativePath}:`, err);
@@ -368,6 +377,8 @@ export const GalleryView: React.FC = () => {
 
           if (result.card) {
             await importOne(result.card, result.embeddedAssets, file.name);
+          } else if (result.lorebook) {
+            warnLorebookFile(file.name);
           }
         }
       }

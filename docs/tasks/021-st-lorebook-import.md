@@ -1,6 +1,6 @@
 # Task 021: SillyTavern standalone lorebook files import as lorebooks
 
-Status: planned
+Status: in progress
 Review: required
 Goal: A SillyTavern world-info file (`{"entries": {"0": {...}}}`, no `spec`) imports as a lorebook on the Lorebook screen instead of silently doing nothing, and never becomes a nameless junk card in the Library or the paste box.
 Files to touch: `src/utils/normalizeLorebook.ts` (one new exported helper); `src/io/index.ts` (JSON branch of `importCardData` only); `src/core/pasteImport.ts` (the one `lorebook_v3` check); `src/components/LorebookView.tsx` (the two import handlers, message only); `src/components/GalleryView.tsx` (message only); new `test/lorebookImport.test.ts`.
@@ -26,15 +26,22 @@ Decisions: 1 (no silent data loss), 25.
 Not in this card: PNG duplicate-chunk selection (open decision, see `PROJECT_STATE.md` risks), lorebook list paging, linter changes, receipts.
 
 ## Progress (executor, update every commit)
-Done: 
-Left: 
-Next action: 
+Done: Implemented Task 021 and opened PR #23. `test-and-lint` passed on final PR head `d4ea904a0e261c89f6723610a4889567779b3272` (run 41011339304): lint, tests and production build.
+Left: Stop for Claude's required review.
+Next action: Claude reviews PR #23; do not merge before approval.
 
 ## Result (executor, when finished)
-Pull request: 
-Checks run by executor: 
-CI: 
-Deviations from the card: 
+Pull request: #23 — https://github.com/KarlMuzen/RoleplayForge/pull/23
+Checks run by executor: Not run locally; a clean clone could not resolve github.com in this environment.
+CI: `test-and-lint` passed on final PR head `d4ea904a0e261c89f6723610a4889567779b3272` (run 41011339304): lint, tests and production build.
+Deviations from the card: Component-level LorebookView alert tests were skipped; the card permits skipping them when costly. The importer, detector, paste and UTF-8 round-trip have automated tests.
 
 ## Review (Claude, required)
-Approved | Changes needed: <list>
+Approved (2026-10-30, reviewed at `1d5bae1`; the commits after `62278f1` change only this card).
+Read the full source diff against the card: the detector, the `importCardData` branch, the paste check, the two Lorebook handlers and every Gallery branch match the design. Claude ran `npm run lint` (0 errors), `npm test` (42 files, 266 tests, all pass) on the PR head in a fresh clone. Build not run by Claude; CI ran it.
+Non-blocking notes (no change needed in this card):
+1. In `LorebookView.handleImportLorebook` the new try/catch also wraps `updateLorebook` and `saveActiveCard`. If saving fails, the alert says "Nothing imported" although the lorebook is already applied in memory. Rare; leave for a later card.
+2. In `GalleryView`, a `.zip` file whose top-level import returns a lorebook sets `importedAsCharx = true`, so the bulk ZIP extraction is skipped. A ZIP of several files that happens to parse as one lorebook would not be unpacked. Unlikely; not changed.
+3. A ZIP that holds only lorebooks shows two warnings (one per lorebook file, plus "No valid character cards found"). Acceptable.
+4. Not tested by anyone: the Lorebook screen alert in a browser (component test skipped, allowed by the card) and a real SillyTavern file. Owner phone check stays open and is not a merge gate (Decision 17).
+Next: ChatGPT squash-merges by hand, checks that the merge commit has a READY production deployment (Decision 22 if not), then marks this card done.

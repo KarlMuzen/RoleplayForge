@@ -5,6 +5,7 @@ import {
   type Lorebook,
 } from '../schemas/cardSchema';
 import { normalizeRawToV3Card } from './converter';
+import { normalizeLorebook, looksLikeStandaloneLorebook } from '../utils/normalizeLorebook';
 import { readCardFromPng, writeCardToPng } from './png';
 import { readCardFromCharx, writeCardToCharx } from './charx';
 export { importChubCard, parseChubInput } from './chub';
@@ -187,6 +188,19 @@ export async function importCardData(
           format: 'lorebook',
           lorebook: validatedLorebook.data,
         };
+      }
+
+      // SillyTavern standalone world-info uses an entries map and has no spec.
+      if (looksLikeStandaloneLorebook(parsed)) {
+        const lorebook = normalizeLorebook(parsed);
+        if (lorebook) {
+          if (typeof parsed.name === 'string' && parsed.name.trim()) {
+            lorebook.name = parsed.name;
+          } else if (fileName) {
+            lorebook.name = fileName.replace(/\.[^/.]+$/, '');
+          }
+          return { format: 'lorebook', lorebook, warnings: [] };
+        }
       }
 
       // Extract embedded avatar Data-URI or bare base64 if available
