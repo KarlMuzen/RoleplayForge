@@ -1,12 +1,12 @@
 # Architecture
 
-Three diagrams of how RoleplayForge is built. GitHub draws the Mermaid blocks; any AI can read them as text. Edges in diagrams 1 and 2 come from the `import` lines and function calls in `src/` read at `main` `48c6eae` (2026-10-30). They are not a full call trace. If a diagram and the code disagree, the code wins; fix the diagram.
+Three diagrams of how RoleplayForge is built. GitHub draws the Mermaid blocks; any AI can read them as text. Edges in diagrams 1 and 2 come from the `import` lines and function calls in `src/` read at `main` `48c6eae` (2026-10-30), except where a note below says otherwise. They are not a full call trace. If a diagram and the code disagree, the code wins; fix the diagram.
 
 An editable FigJam copy exists on the owner's Figma board. It is a picture only; this file is the source.
 
 ## 1. App layers
 
-No backend. Everything runs in the browser; the only network calls are to the model providers and to Chub (card import by URL). Several views read IndexedDB directly instead of going through the store (Library, Lorebook, Assist, Test Lab, Chat all import `db`).
+No backend. Everything runs in the browser; the only network calls are to the model providers and to Chub (card import by URL). Since Task 028 no file under `src/components` imports the `db` object (a lint rule fails the build if one does), so screens read through the store; services, routing and `src/io` may use the database. Not re-checked since: how Chat and Test Lab save their data.
 
 ```mermaid
 flowchart LR
@@ -45,7 +45,7 @@ flowchart LR
     router -->|"Opens Settings"| settings
     editor -->|"Opens Chat"| chat
     library -->|"Imports cards"| io
-    library -->|"Reads directly"| dexie
+    library -->|"Reads"| store
     editor -->|"Reads and edits"| store
     editor -->|"Counts and lints"| tools
     assist -->|"Requests edits"| llm
@@ -90,7 +90,7 @@ flowchart LR
     end
     subgraph outputs ["Ways data leaves"]
         exp["Export card (PNG, JSON, CHARX)"]
-        backupOut["Backup file from Settings (includes API keys)"]
+        backupOut["Backup file from Settings (API keys optional since Task 027)"]
         syncOut["Send to other device (WebRTC, no API keys)"]
     end
 
@@ -124,16 +124,16 @@ flowchart LR
     owner(["Owner: idea or problem"])
     plan["Claude plans and writes the task card"]
     card[/"Task card in docs/tasks"/]
-    exec["ChatGPT codes on wip/NNN and opens PR"]
+    exec["Executor (ChatGPT or Muse, owner names one) codes on wip/NNN and opens PR"]
     ci{"CI test-and-lint green?"}
     stop["Executor stops and reports"]
     rev{"Card says Review required?"}
     review["Claude reviews PR diff"]
-    merge["ChatGPT squash-merges by hand"]
+    merge["Executor squash-merges by hand"]
     deploy["Vercel deploys main (code commits only)"]
     ready{"Production deployment READY?"}
     recover["Manual deploy (Decision 22)"]
-    done["Card marked done"]
+    done["Merged (executor deleted the card in the PR)"]
     sync["Claude syncs PROJECT_STATE"]
     check[/"Owner checks production on phone"/]
 
