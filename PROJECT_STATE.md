@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md`, then check open pull requests and the current task card, then `docs/HANDOFF.md` and `docs/ROADMAP.md` if needed. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-30 · **`main` head when written:** `b9830df`
+**Last updated:** 2026-10-30 · **`main` head when written:** `f4d4310`
 
 ## Goal
 
@@ -12,7 +12,7 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 
 - React 19, Vite 6, TypeScript, Tailwind 4, Zustand 5, Dexie (IndexedDB), Zod, `gpt-tokenizer`, vitest. Deployed on Vercel as a PWA.
 - `src/`: `components`, `constants`, `db`, `hooks`, `io` (formats), `routing` (hash routes), `schemas`, `services` (AI providers), `store` (slices), `types`, `utils`.
-- `docs/`: `AI_WORKFLOW.md` (how the two AIs work), `tasks/` (task cards), `HANDOFF.md` (latest session notes), `ROADMAP.md` (priority plan + phases), `AUTOMATION.md` (what is automated; extras on hold), `research/` (verified findings from source, no decisions), `PLATFORM_SUPPORT.md`, `TESTING_STRATEGY.md`, `UI_UX_REDESIGN_SPEC.md`, `PRODUCT_VISION.md`.
+- `docs/`: `AI_WORKFLOW.md` (how the two AIs work), `tasks/` (task cards), `HANDOFF.md` (latest session notes), `ROADMAP.md` (priority plan + phases), `ARCHITECTURE.md` (app layers, data safety and delivery diagrams), `AUTOMATION.md` (what is automated; extras on hold), `research/` (verified findings from source, no decisions), `PLATFORM_SUPPORT.md`, `TESTING_STRATEGY.md`, `UI_UX_REDESIGN_SPEC.md`, `PRODUCT_VISION.md`.
 - Scripts: `npm run lint && npm test && npm run build`. UI audit: `scripts/ui-audit.py`.
 - CI: `.github/workflows/ci.yml`, one job `test-and-lint` (lint, tests, build). Runs on pull requests to `main` and on non-docs pushes to `main`. Not on other branches until a pull request exists.
 - GitHub ruleset `main-ci-gate` targets `main`. Bypass: repository admin and the Claude GitHub connector (seen in owner screenshot, 2026-10-29).
@@ -45,29 +45,26 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 23. Small owner-requested fixes (PWA install toast, logo and icon masking, theme contrast) were committed by Claude directly to `main` on 2026-10-29 (`7e22276`, `768c784`, `e7aefc4`, `f93096d`), before cards 012-015. This is an exception to Decision 13 on the owner's instruction; the executor still uses `wip/NNN` pull requests. Any further direct code commit by Claude needs the owner's instruction and a line here. Superseded by Decision 27: the standing minor-commit rule in `docs/AI_WORKFLOW.md`.
 24. ContextBar (HANDOFF step 4, spec 4.4): one component for Forge and Test, two rows, replaces `WorkspaceSubNav` and `LabSubNav` (Task 017). Undo, Redo and a save-status chip live in it on Forge tabs only (Task 018). The Save Card and Variant buttons stay on the Details toolbar until the overflow-menu card. Card switcher sheet and overflow menu are later cards.
 25. Paste-to-card (Task 020): a paste box in the Library Import menu reads raw card JSON, unknown JSON and labeled text with fixed rules, no AI and no network, and shows what it understood before creating. Unmatched data is appended to Description, never dropped. AI reading of messy prose is a separate later card and must show "Sent to <provider>" (Decision 7).
-26. Outside research is not a source. A claim from another AI's export or a blog enters the repo only after Claude verifies it in code or in the primary source (`docs/research/`). Rejected claims are listed in `docs/research/001-st-spec-verification.md` (cross-check section) so they are not re-proposed. Keep the repo lean: one card per outcome, a card is written only when it is next to run (later items live in `docs/ROADMAP.md`), research notes hold findings only, and a doc that duplicates `PROJECT_STATE.md` or git history is deleted. On 2026-10-30 `AI_CHANGELOG.md` (stale AI Studio log, last entry 2026-08-18) and `docs/PROJECT_STATUS.md` (stale snapshot of `c19deac`) were removed; git history keeps them. `CHANGELOG.md` is stale (describes the 2026-10-28 theme and mark) and was left; the squash-merged PR titles are the real changelog.
+26. Outside research is not a source. A claim from another AI's export or a blog enters the repo only after Claude verifies it in code or in the primary source (`docs/research/`). Rejected claims are listed in `docs/research/001-st-spec-verification.md` (cross-check section) so they are not re-proposed. On 2026-10-30 `AI_CHANGELOG.md` (stale AI Studio log) and `docs/PROJECT_STATUS.md` (stale snapshot) were removed; git history keeps them. `CHANGELOG.md` is stale (describes the 2026-10-28 theme and mark) and was left; squash-merged PR titles are the changelog. Lean-repo rules are in `docs/AI_WORKFLOW.md`.
 27. The Claude/ChatGPT workflow is final and lives only in `docs/AI_WORKFLOW.md`. It changes only when the owner says "change workflow". It supersedes Decisions 12-15 and the auto-merge parts of 19 and 23: no auto-merge, the executor squash-merges by hand after green `test-and-lint` (and Approved when the card says `Review: required`); Claude may make minor direct code commits only under the limits in that file. `PROJECT_STATE.md` keeps product decisions and state; it never restates process.
 
 Mockups (phone Studio, Review sheet, desktop 3-pane) are reference only and not in the repo.
 
 ## Current task
 
-1. **Executor (ChatGPT):** `docs/tasks/021-st-lorebook-import.md` (SillyTavern standalone lorebook files import as lorebooks, not as junk cards or nothing; `Review: required`). One pull request, wait for green `test-and-lint`, stop and report so Claude reviews the diff before the merge (Decision 15). Merge on green CI only (Decision 19).
-2. **Claude, next:** review 021 when reported; confirm the merge commit produced a READY production deployment. Then write the next card from the ordered list in `docs/ROADMAP.md` ("Next cards"): 022 linter additions, 023 conversion receipts, 024 lorebook budget warning and entry paging, 025 syntax ribbon with keyboard-open mode. Optional AI "Smart fill" card for messy prose stays with the owner (Decision 25).
+None carded. Card 021 is merged (PR #23, `b3d45d6`, production READY). Next, in order (`docs/ROADMAP.md`, "Next cards"): 022 linter additions (includes the three Chub Helper findings), 023 conversion receipts, 024 lorebook budget and size, 025 syntax ribbon, then the Details accuracy card. The owner says which to write next. Optional AI "Smart fill" for messy prose stays with the owner (Decision 25).
 
-Cards 001-020 are merged (020 = paste-to-card, PR #22, `c0db92c`; 019 = chat text formatting, PR #21). Owner phone check of 001-019 is pending and is not a merge gate (Decision 17); the owner reported on 2026-10-30 that paste-to-card works.
+Cards 001-021 are merged (021 = ST standalone lorebook import, PR #23; 020 = paste-to-card, PR #22). Owner phone check of 001-019 is pending and is not a merge gate. Owner reported 2026-10-30 that paste-to-card works; 021 is untested on a real SillyTavern file and on the Lorebook screen alert.
 
 HANDOFF step 2 deviation: "12px minimum text" is not in these cards. There are about 266 uses of `text-[9px]`, `text-[10px]` and `text-[11px]` in 36 files, too big for one card. Do it per screen.
 
-Verify `main` head first.
-
 ## In progress
 
-See open pull requests (branch `wip/NNN`). None open (checked 2026-10-30). Card 021 is committed and not started.
+See open pull requests (branch `wip/NNN`). None open (checked 2026-10-30, `main` head `f4d4310`).
 
 ## Done
 
-See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11 (011), #12 (009), #13 (010), #14 (012), #15 (013), #16 (014), #17 (015), then 016-020 (019 is PR #21, 020 is PR #22 `c0db92c`). Direct commits by Claude (Decision 23): `7e22276`, `768c784`, `e7aefc4`, `f93096d` (PWA install toast and welcome, new Forge logo with real maskable icon source and splash color, themed emerald/red/cyan/purple in `src/status-colors.css`, invisible Replace-recovery-key button, PwaSection branding; CI green on a clean checkout: lint, 165 tests, build). Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
+See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11 (011), #12 (009), #13 (010), #14 (012), #15 (013), #16 (014), #17 (015), then 016-021 (019 is PR #21, 020 is PR #22 `c0db92c`, 021 is PR #23 `b3d45d6`). Direct commits by Claude (Decision 23): `7e22276`, `768c784`, `e7aefc4`, `f93096d` (PWA install toast and welcome, new Forge logo with real maskable icon source and splash color, themed emerald/red/cyan/purple in `src/status-colors.css`, invisible Replace-recovery-key button, PwaSection branding; CI green on a clean checkout: lint, 165 tests, build). Earlier docs commits: `7cbd503` plan and this file, `484e6b4` AI workflow, `0537d84` pull-request gate, `cfad9f5` single writer + auto-merge gate, `9f33f96` automation audit, `792be51` cards 001-006.
 
 ## Next steps (see `docs/ROADMAP.md` for the full checklists)
 
@@ -81,7 +78,7 @@ See squash-merged pull requests on `main`. Merged: PR #3 (001) to #10 (008), #11
 
 ## Known bugs and risks
 
-- Lorebook import (reproduced 2026-10-30): a SillyTavern standalone world-info file is not recognized by `importCardData`, so the Lorebook screen import does nothing and the Library would create a nameless card. Task 021.
+- Lorebook import (Task 021, merged, review notes): `LorebookView.handleImportLorebook` wraps `updateLorebook` and `saveActiveCard` in the new try/catch, so a failed save shows "Nothing imported" although the lorebook is applied in memory. In `GalleryView`, a `.zip` that parses as one lorebook sets `importedAsCharx` and skips bulk unpacking. A ZIP holding only lorebooks shows two warnings. Not carded; rare.
 - PNG with several card chunks: `pickBestDuplicateCandidate` (`src/io/png.ts`) prefers the chunk with `character_book`, else the longer JSON. SillyTavern and RisuAI read `ccv3` first (research 001, claim 5). Open decision; needs real fixtures. Not carded.
 - Lorebook entry list has no paging or virtualization (`LorebookView.tsx`); a book with hundreds of entries may be slow on a phone. Unmeasured; measure with a 600-entry fixture before changing.
 - `validateCardCompleteness` (`src/utils/validation.ts`) warns "Personality is missing" for non-Chub cards; Decision 8 says empty optional fields are info-only. Folded into the linter card (022).
