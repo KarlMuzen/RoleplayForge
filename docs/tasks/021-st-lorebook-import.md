@@ -26,10 +26,9 @@ Decisions: 1 (no silent data loss), 25.
 Not in this card: PNG duplicate-chunk selection (open decision, see `PROJECT_STATE.md` risks), lorebook list paging, linter changes, receipts.
 
 ## Progress (executor, update every commit)
-Done: Created wip/021 from main d27008d and added looksLikeStandaloneLorebook in commit 2bee5a9.
-Left: Wire the detector into card and paste import, add UI warnings and regression tests, then open PR #23.
-Next action: Continue the importer and UI changes on wip/021.
-
+Done: Added the standalone lorebook detector and connected importCardData to the existing lorebook normalizer.
+Left: Paste recognition, import warnings, regression tests and PR/CI verification.
+Next action: Continue implementation on wip/021.
 ## Result (executor, when finished)
 Pull request: 
 Checks run by executor: 
