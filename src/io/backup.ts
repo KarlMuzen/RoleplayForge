@@ -169,6 +169,12 @@ export async function restoreFullBackup(
   const zipAssetsMap: Record<string, Record<string, Uint8Array>> = {}; // cardUuid -> { uri -> Uint8Array }
   const errors: string[] = [];
 
+  const validateParsedBackup = (raw: unknown): FullBackupData => {
+    const validation = validateBackupData(raw);
+    errors.push(...validation.warnings);
+    return validation.data;
+  };
+
   // Check input payload length
   const inputByteLength = typeof input === 'string' ? new TextEncoder().encode(input).byteLength : input.byteLength;
   if (inputByteLength > MAX_BACKUP_PAYLOAD_SIZE) {
@@ -176,14 +182,14 @@ export async function restoreFullBackup(
   }
 
   if (typeof input === 'string') {
-    backupData = JSON.parse(input);
+    backupData = validateParsedBackup(JSON.parse(input));
   } else {
     if (input.length >= 4 && input[0] === 0x50 && input[1] === 0x4b && input[2] === 0x03 && input[3] === 0x04) {
       const zip = await JSZip.loadAsync(input);
       const backupFile = zip.file('backup.json');
       if (backupFile) {
         const text = await backupFile.async('text');
-        backupData = JSON.parse(text);
+        backupData = validateParsedBackup(JSON.parse(text));
       } else {
         throw new Error('Invalid backup ZIP: backup.json not found inside archive.');
       }
@@ -212,13 +218,11 @@ export async function restoreFullBackup(
       }
     } else {
       const text = new TextDecoder('utf-8').decode(input);
-      backupData = JSON.parse(text);
+      backupData = validateParsedBackup(JSON.parse(text));
     }
   }
 
-  const validation = validateBackupData(backupData);
-  backupData = validation.data;
-  errors.push(...validation.warnings);
+
 
   const incomingSettings = backupData.settings || [];
   const incomingSettingValue = (key: string) => incomingSettings.find((setting) => setting.key === key)?.value;
