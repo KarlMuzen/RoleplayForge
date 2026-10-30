@@ -26,9 +26,9 @@ Decisions: 1 (no silent data loss), 25.
 Not in this card: PNG duplicate-chunk selection (open decision, see `PROJECT_STATE.md` risks), lorebook list paging, linter changes, receipts.
 
 ## Progress (executor, update every commit)
-Done: Added the standalone lorebook detector and connected importCardData to the existing lorebook normalizer.
-Left: Review the regression tests, open the pull request and verify CI.
-Next action: Verify the six-file change and open the PR.
+Done: Added standalone world-info detection, card and paste import routing, Lorebook screen error alerts, Library warnings for single files and ZIP entries, and focused import/encoding tests. Detector checks only own fields and excludes character-card shapes.
+Left: Review the final diff, open the PR and wait for green test-and-lint.
+Next action: Verify the seven changed paths and open the PR for required Claude review.
 ## Result (executor, when finished)
 Pull request: 
 Checks run by executor: 
