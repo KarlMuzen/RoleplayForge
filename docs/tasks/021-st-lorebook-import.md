@@ -27,8 +27,8 @@ Not in this card: PNG duplicate-chunk selection (open decision, see `PROJECT_STA
 
 ## Progress (executor, update every commit)
 Done: Added the standalone lorebook detector and connected importCardData to the existing lorebook normalizer.
-Left: Paste recognition, import warnings, regression tests and PR/CI verification.
-Next action: Continue implementation on wip/021.
+Left: Review the regression tests, open the pull request and verify CI.
+Next action: Verify the six-file change and open the PR.
 ## Result (executor, when finished)
 Pull request: 
 Checks run by executor: 
