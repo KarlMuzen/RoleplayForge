@@ -18,7 +18,7 @@ import {
   Wand2,
   Info,
 } from 'lucide-react';
-import { db, type StoredCard } from '../db';
+import type { StoredCard } from '../db';
 import { useDialogStore } from '../store/useDialogStore';
 import { useToastStore } from '../store/useToastStore';
 import { generateCharacterLogoBytes } from '../utils/logoGenerator';
@@ -35,6 +35,8 @@ export const AssistantView: React.FC = () => {
     createNewCard,
     setCardCoverImage,
     activeCardEmbeddedAssets,
+    cards,
+    loadCardsFromDb,
     assistantChats,
     saveAssistantMessages,
     clearAssistantChat,
@@ -43,22 +45,17 @@ export const AssistantView: React.FC = () => {
   const [inputPrompt, setInputPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingLogo, setIsGeneratingLogo] = useState(false);
-  const [galleryCount, setGalleryCount] = useState<number>(0);
-  const [galleryCardNames, setGalleryCardNames] = useState<string[]>([]);
   const [showInspector, setShowInspector] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Fetch gallery metadata for app surface sync
+  // Ensure gallery metadata is available from the shared store.
   useEffect(() => {
-    db.cards
-      .toArray()
-      .then((cards) => {
-        setGalleryCount(cards.length);
-        setGalleryCardNames(cards.map((c) => c.cardData.data.name || 'Untitled').slice(0, 5));
-      })
-      .catch(console.error);
-  }, [activeCard]);
+    loadCardsFromDb();
+  }, [loadCardsFromDb]);
+
+  const galleryCount = cards.length;
+  const galleryCardNames = cards.map((card) => card.cardData.data.name || 'Untitled').slice(0, 5);
 
   const activeProfile = profiles.find((p) => p.uuid === activeProfileUuid) || profiles[0];
 

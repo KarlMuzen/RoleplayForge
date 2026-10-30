@@ -5,7 +5,7 @@ import { useToastStore } from '../store/useToastStore';
 import { extractDecorators, resolveMacros } from '../utils/macroParser';
 import { countTokens, countTokensAsync } from '../utils/tokenizer';
 import type { LorebookEntry, Lorebook } from '../schemas/cardSchema';
-import { db, type StoredLorebook } from '../db';
+import type { StoredLorebook } from '../db';
 import {
   analyzeLorebookConflicts,
   mergeLorebookLayers,
@@ -38,7 +38,15 @@ function generateLayerId(prefix: string): string {
 }
 
 export const LorebookView: React.FC = () => {
-  const { activeCard, updateActiveCardData, saveActiveCard, profiles, activeProfileUuid } = useCardStore();
+  const {
+    activeCard,
+    updateActiveCardData,
+    saveActiveCard,
+    profiles,
+    activeProfileUuid,
+    lorebooks: dbLorebooks,
+    loadLorebooksFromDb,
+  } = useCardStore();
   const activeProfile = profiles.find((p) => p.uuid === activeProfileUuid);
   const provider = activeProfile?.provider;
 
@@ -49,7 +57,6 @@ export const LorebookView: React.FC = () => {
   const [entryExactTokens, setEntryExactTokens] = useState<number | null>(null);
 
   // Multi-Lorebook Composer state
-  const [dbLorebooks, setDbLorebooks] = useState<StoredLorebook[]>([]);
   const [sampleTestText, setSampleTestText] = useState('When the Traveler visited Eldoria and wielded Excalibur...');
   const [composerSubTab, setComposerSubTab] = useState<'collisions' | 'shadowed' | 'simulation'>('collisions');
 
@@ -92,10 +99,10 @@ export const LorebookView: React.FC = () => {
     });
   }
 
-  // Load saved lorebooks from DB
+  // Load saved lorebooks through the shared store.
   useEffect(() => {
-    db.lorebooks.toArray().then(setDbLorebooks).catch(console.error);
-  }, []);
+    loadLorebooksFromDb();
+  }, [loadLorebooksFromDb]);
 
   const entries = primaryLorebook.entries || [];
   const selectedEntry = selectedEntryIndex !== null ? entries[selectedEntryIndex] : null;

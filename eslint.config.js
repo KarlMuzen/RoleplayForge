@@ -8,6 +8,23 @@ export default [
   },
   ...tsEslint.configs.recommended,
   {
+    files: ['src/components/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/db', '**/db/index'],
+              importNames: ['db'],
+              message: 'Screens must not import the database. Use the store (src/store) instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     plugins: {
       'react-hooks': reactHooks,
