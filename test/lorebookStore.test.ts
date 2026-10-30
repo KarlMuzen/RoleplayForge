@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import '../test/setup';
+import Dexie from 'dexie';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db, type StoredLorebook } from '../src/db';
 import { useCardStore } from '../src/store/useCardStore';
@@ -52,7 +53,7 @@ describe('lorebook store', () => {
     });
     const readFromDb = db.lorebooks.toArray.bind(db.lorebooks);
     vi.spyOn(db.lorebooks, 'toArray')
-      .mockImplementationOnce(() => firstRequestResult)
+      .mockImplementationOnce(() => Dexie.Promise.resolve(firstRequestResult))
       .mockImplementationOnce(() => readFromDb());
 
     const firstRequest = useCardStore.getState().loadLorebooksFromDb();
