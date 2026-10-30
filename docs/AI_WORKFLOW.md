@@ -1,13 +1,13 @@
 # AI workflow (FINAL)
 
-Final since 2026-10-30. Only the owner changes this file, by saying "change workflow". Neither AI edits it, bends it or works around it. If a rule blocks the work, the AI stops and names the rule.
+Final since 2026-10-30. Only the owner changes this file, by saying "change workflow". Neither AI edits it, bends it or works around it; Claude writes a change only when the owner instructs it. If a rule blocks the work, the AI stops and names the rule. Changes: 2026-10-30 Argon 4 advisor added; 2026-10-30 owner as tester and planner, test reports, advisor pre-flight, `main` SHA in handoffs.
 
 ## Jobs
 
 | | Owner | Claude | ChatGPT | Argon 4 (advisor) |
 |---|---|---|---|---|
-| Is | Decides goals. Non-technical. | Architect, designer, reviewer, researcher | Executor | Outside researcher and second opinion. Read-only. |
-| Writes | Nothing technical. Says the trigger phrases. | Docs only: `PROJECT_STATE.md` (sole writer), task cards, `docs/research/`, `docs/*`. Never bulk code. | Code, tests, branches, pull requests, its own card's Progress and Result | Nothing in the repo. Gives the owner written findings. |
+| Is | Sets goals and plans. Tests on the phone. Decides. Non-technical. | Architect, designer, card writer, researcher. Reviews Argon's claims, ChatGPT's diffs and the owner's test reports. | Executor | Outside researcher and second opinion. Read-only. Browses raw files only. |
+| Writes | Nothing technical. Says the trigger phrases and sends test reports. | Docs only: `PROJECT_STATE.md` (sole writer), task cards, `docs/research/`, `docs/*`. Never bulk code. | Code, tests, branches, pull requests, its own card's Progress and Result | Nothing in the repo. Gives the owner written findings. |
 | Never | Is asked to paste code or summaries | Edits app code (except "Minor direct commits") | Redesigns, changes scope, decides, edits `PROJECT_STATE.md`, this file, other cards or research | Commits, branches, cards, merges, edits any file, decides, or has a claim treated as fact before Claude verifies it |
 
 ## Truth
@@ -25,21 +25,27 @@ Added 2026-10-30 on the owner's instruction. Argon 4 is an outside researcher an
 2. Claude checks each claim that names a file, line, number or behavior against the repo or the primary source before using it (Decision 26). Each claim is marked verified, wrong or unverified. Only verified findings enter the repo: a task card, the Known bugs list, or `docs/research/`. Wrong claims that are likely to come back are listed in the research cross-check so they are not re-proposed.
 3. The advisor must state the `main` SHA it read and read every file at that same SHA. A finding is checked again against current `main` before it counts. (Its first review compared `PROJECT_STATE.md` at `f4d4310` with `docs/tasks/` from a later commit.)
 4. Order of checking, to save cost: data loss, privacy and security claims first; claims with a file and line next; style and taste last, answered in one line. Claude does not rewrite its plan because an advisor disagrees; it records the disagreement and the evidence, and the owner decides.
-5. The advisor never replaces `Review: required`. Claude's diff review stays the gate (the section Gate below). The owner may ask the advisor for an audit of merged `main` now and then.
+5. The advisor never replaces `Review: required`. Claude's diff review stays the gate (the section Gate below). The owner may ask the advisor for an audit of merged `main` now and then, about every 4 to 5 merged cards.
 6. The advisor does not see secrets and is never asked to paste code into the repo. Its suggested code is a hint for Claude, not a patch.
+7. Browse-only limits. The advisor has no terminal. It can only open raw files at `https://raw.githubusercontent.com/KarlMuzen/RoleplayForge/<SHA>/<path>`. The owner gives it the `main` SHA and exact paths each session; the handoff block carries the SHA. It cannot search or list folders, so it never claims that something is unused or missing; it writes "not seen in the files I read" and lists those files. Claude's checks (item 2) do the searching.
+8. Pre-flight (optional, for `Review: required` cards). Before `Execute`, the owner may send the card path and the SHA to the advisor. It checks that every file, function and line the card names exists at that SHA and reports mismatches. Claude fixes the card. This is a check on the card, not a gate; the executor's stop rule (below) stays.
 
 Standing prompt for the advisor (the owner pastes it once into that chat):
 
-> You are a read-only reviewer for KarlMuzen/RoleplayForge. State the `main` SHA you read. For each finding give: file path and line, what you saw, whether you verified it by reading or inferred it, and the impact (data loss, privacy, security, UX). No code patches, no new features, no rewrites. Do not invent files or APIs; if unsure, say "I don't know". Output: Answer, Evidence, Risks and unknowns, one suggested next step. Respect the frozen identifiers and decisions in `PROJECT_STATE.md`; if you disagree with a decision, ask it as a question.
+> You are a read-only reviewer for KarlMuzen/RoleplayForge. State the `main` SHA you read. For each finding give: file path and line, what you saw, whether you verified it by reading or inferred it, and the impact (data loss, privacy, security, UX). No code patches, no new features, no rewrites. Do not invent files or APIs; if unsure, say "I don't know". Output: Answer, Evidence, Risks and unknowns, one suggested next step. Respect the frozen identifiers and decisions in `PROJECT_STATE.md`; if you disagree with a decision, ask it as a question. You can only open raw files at the SHA the owner gives you and cannot search: never claim something is unused or missing; say "not seen in the files I read".
 
 ## Owner phrases (the whole vocabulary)
 
 - `Execute docs/tasks/NNN-name.md` (ChatGPT)
 - `Review docs/tasks/NNN-name.md` (Claude)
 - `sync` (Claude refreshes `PROJECT_STATE.md` from merged and open PRs)
-- `handoff` (the current AI updates Progress, or for Claude the Current task, then gives a paste block of at most 10 lines: goal, current task, open PR, next action)
+- `handoff` (the current AI updates Progress, or for Claude the Current task, then gives a paste block of at most 10 lines: goal, current task, open PR, next action, `main` SHA)
 - `change workflow` (the only way this file changes)
 - Anything else said to Claude is an idea or a problem. Claude plans; it does not code.
+
+## Owner test reports
+
+Format: pass or fail, the card number, and on a fail one screenshot and one line on what was expected. Claude turns each fail into a card or a Known bugs entry. Chat history is not the record. A test report never blocks a merge (see Gate).
 
 ## Loop
 
@@ -57,7 +63,7 @@ Standing prompt for the advisor (the owner pastes it once into that chat):
 
 ## Executor stops and sends one message
 
-The card is unclear or conflicts with the repo; the change needs a file under "Do not touch"; it touches a frozen identifier; it needs a new dependency; CI is red after 2 fixes; the change grows 2 or more files past the card's list. It never improvises.
+The card is unclear or conflicts with the repo; the change needs a file under "Do not touch"; it touches a frozen identifier; it needs a new dependency; CI is red after 2 fixes; the change grows 2 or more files past the card's list. A card that names a file, function, line or screen the code does not have is a conflict with the repo (Task 029 named a Library single export that did not exist). It never improvises.
 
 ## Minor direct commits by Claude (standing owner instruction)
 
