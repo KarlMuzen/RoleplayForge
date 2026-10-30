@@ -212,9 +212,17 @@ export const LorebookView: React.FC = () => {
 
   // Composer Layer Actions
   const handleAddImportedLayer = async (file: File) => {
-    const text = await file.text();
-    const result = await importCardData(text, file.name);
-    if (result.lorebook) {
+    try {
+      const text = await file.text();
+      const result = await importCardData(text, file.name);
+      if (!result.lorebook) {
+        useDialogStore.getState().showAlert(
+          'No lorebook found in this file. A lorebook file has an "entries" list.',
+          'Nothing imported',
+          'warning'
+        );
+        return;
+      }
       const newLayer: LorebookLayer = {
         id: generateLayerId('layer'),
         name: result.lorebook.name || file.name,
@@ -224,9 +232,14 @@ export const LorebookView: React.FC = () => {
         lorebook: result.lorebook,
       };
       setLayers((prev) => [...prev, newLayer]);
+    } catch (error) {
+      useDialogStore.getState().showAlert(
+        error instanceof Error ? error.message : String(error),
+        'Nothing imported',
+        'warning'
+      );
     }
   };
-
   const handleAddDbLayer = (storedLb: StoredLorebook) => {
     const newLayer: LorebookLayer = {
       id: generateLayerId(`db_layer_${storedLb.id}`),
