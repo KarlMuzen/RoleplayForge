@@ -22,6 +22,8 @@ describe('ContextBar', () => {
       redoStack: [],
       saveState: 'idle',
       saveTimeoutId: null,
+      isPreFlightAuditOpen: false,
+      isOnboardingOpen: false,
     });
   });
 
@@ -208,4 +210,63 @@ describe('ContextBar', () => {
     }
   });
 
+  it('opens More actions with both phone actions and returns focus after Escape', () => {
+    render(<ContextBar />);
+
+    const trigger = screen.getByRole('button', { name: 'More actions' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger.className).toContain('min-h-11');
+    fireEvent.click(trigger);
+
+    const panel = screen.getByRole('group', { name: 'More actions' });
+    expect(within(panel).getByRole('button', { name: /Pre-Flight Audit/ })).toBeInTheDocument();
+    expect(within(panel).getByRole('button', { name: 'Help and documentation' })).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('group', { name: 'More actions' })).not.toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger).toHaveFocus();
+  });
+
+  it('closes More actions when the user taps outside the panel', () => {
+    render(<ContextBar />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+    expect(screen.getByRole('group', { name: 'More actions' })).toBeInTheDocument();
+
+    fireEvent.pointerDown(document.body);
+    expect(screen.queryByRole('group', { name: 'More actions' })).not.toBeInTheDocument();
+  });
+
+  it('opens the pre-flight audit from More actions and closes the panel', () => {
+    render(<ContextBar />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+    const panel = screen.getByRole('group', { name: 'More actions' });
+    fireEvent.click(within(panel).getByRole('button', { name: /Pre-Flight Audit/ }));
+
+    expect(useCardStore.getState().isPreFlightAuditOpen).toBe(true);
+    expect(screen.queryByRole('group', { name: 'More actions' })).not.toBeInTheDocument();
+  });
+
+  it('opens onboarding from More actions and closes the panel', () => {
+    render(<ContextBar />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+    const panel = screen.getByRole('group', { name: 'More actions' });
+    fireEvent.click(within(panel).getByRole('button', { name: 'Help and documentation' }));
+
+    expect(useCardStore.getState().isOnboardingOpen).toBe(true);
+    expect(screen.queryByRole('group', { name: 'More actions' })).not.toBeInTheDocument();
+  });
+
+  it('does not offer Pre-Flight Audit in More actions without an active card', () => {
+    act(() => useCardStore.setState({ activeCard: null, activeCardUuid: null }));
+    render(<ContextBar />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+    const panel = screen.getByRole('group', { name: 'More actions' });
+    expect(within(panel).queryByRole('button', { name: /Pre-Flight Audit/ })).not.toBeInTheDocument();
+    expect(within(panel).getByRole('button', { name: 'Help and documentation' })).toBeInTheDocument();
+  });
 });

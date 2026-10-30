@@ -17,6 +17,7 @@ import {
 import { validateCardCompleteness } from '../utils/validation';
 import { WORKSPACE_TABS, LAB_TABS } from '../constants/navigation';
 import { CardAvatar } from './CardAvatar';
+import { ContextMoreMenu } from './ContextMoreMenu';
 
 const WORKSPACE_SUB_TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
   { id: 'editor', label: 'Details', icon: <Edit3 className="w-3.5 h-3.5 shrink-0" /> },
@@ -97,11 +98,11 @@ export const ContextBar: React.FC = () => {
                 <span className="text-[9px] font-bold text-maroon-400">RF</span>
               )}
             </div>
-            <div className="min-w-0 flex items-center gap-1.5">
-              <span className="text-[10px] uppercase font-mono font-bold text-maroon-400/90 tracking-wider shrink-0">
+            <div className="min-w-0 overflow-hidden flex items-center gap-1.5">
+              <span className="hidden sm:inline text-[10px] uppercase font-mono font-bold text-maroon-400/90 tracking-wider shrink-0">
                 {mode}
               </span>
-              <span className="text-knight-600 text-xs shrink-0" aria-hidden="true">•</span>
+              <span className="hidden sm:inline text-knight-600 text-xs shrink-0" aria-hidden="true">•</span>
               <p className="text-xs font-semibold text-mist-100 truncate">
                 {activeCard ? activeCard.data.name || 'Untitled' : 'No character selected'}
               </p>
@@ -158,7 +159,7 @@ export const ContextBar: React.FC = () => {
                   disabled={undoStack.length === 0}
                   aria-label="Undo"
                   title="Undo"
-                  className="flex min-w-11 min-h-11 items-center justify-center rounded-lg text-knight-400 transition-colors hover:bg-void-800 hover:text-mist-100 disabled:cursor-not-allowed disabled:opacity-30 touch-fast"
+                  className="flex min-w-11 min-h-11 items-center justify-center rounded-lg border border-knight-700/50 bg-void-900/60 text-knight-400 transition-colors hover:bg-void-800 hover:text-mist-100 disabled:cursor-not-allowed disabled:opacity-40 touch-fast"
                 >
                   <Undo className="w-4 h-4" aria-hidden="true" />
                 </button>
@@ -168,13 +169,13 @@ export const ContextBar: React.FC = () => {
                   disabled={redoStack.length === 0}
                   aria-label="Redo"
                   title="Redo"
-                  className="flex min-w-11 min-h-11 items-center justify-center rounded-lg text-knight-400 transition-colors hover:bg-void-800 hover:text-mist-100 disabled:cursor-not-allowed disabled:opacity-30 touch-fast"
+                  className="flex min-w-11 min-h-11 items-center justify-center rounded-lg border border-knight-700/50 bg-void-900/60 text-knight-400 transition-colors hover:bg-void-800 hover:text-mist-100 disabled:cursor-not-allowed disabled:opacity-40 touch-fast"
                 >
                   <Redo className="w-4 h-4" aria-hidden="true" />
                 </button>
                 <span
                   aria-live="polite"
-                  className="whitespace-nowrap px-1 text-[10px] font-medium text-knight-300"
+                  className="sr-only sm:not-sr-only whitespace-nowrap px-1 text-[10px] font-medium text-knight-300"
                 >
                   {saveState === 'saving'
                     ? 'Saving…'
@@ -184,13 +185,25 @@ export const ContextBar: React.FC = () => {
                         ? 'Save failed'
                         : 'Unsaved'}
                 </span>
+                <span
+                  aria-hidden="true"
+                  className={`sm:hidden h-2 w-2 shrink-0 rounded-full ${
+                    saveState === 'saving'
+                      ? 'bg-cyan-400'
+                      : saveState === 'saved'
+                        ? 'bg-emerald-400'
+                        : saveState === 'error'
+                          ? 'bg-red-400'
+                          : 'bg-amber-400'
+                  }`}
+                />
               </>
             )}
             {isWorkspaceTab && activeCard && (
               <button
                 type="button"
                 onClick={() => setPreFlightAuditOpen(true)}
-                className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-maroon-800/60 bg-void-950/90 px-2.5 py-1 text-[11px] font-semibold text-maroon-300 shadow-sm transition-all hover:bg-void-950 hover:text-mist-100 touch-fast active:scale-95"
+                className="hidden sm:flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-maroon-800/60 bg-void-950/90 px-2.5 py-1 text-[11px] font-semibold text-maroon-300 shadow-sm transition-all hover:bg-void-950 hover:text-mist-100 touch-fast active:scale-95"
                 title="Run Zero-Cost Pre-Flight Writing Audit"
               >
                 <Zap className="w-3 h-3 text-maroon-400" />
@@ -214,10 +227,15 @@ export const ContextBar: React.FC = () => {
               onClick={() => setIsOnboardingOpen(true)}
               aria-label="Help and documentation"
               title="Help and documentation"
-              className="flex min-w-11 min-h-11 items-center justify-center rounded-lg text-knight-400 transition-colors hover:bg-void-800 hover:text-mist-100 touch-fast"
+              className="hidden sm:flex min-w-11 min-h-11 items-center justify-center rounded-lg text-knight-400 transition-colors hover:bg-void-800 hover:text-mist-100 touch-fast"
             >
               <HelpCircle className="w-4 h-4" aria-hidden="true" />
             </button>
+            <ContextMoreMenu
+              showPreFlight={isWorkspaceTab && Boolean(activeCard)}
+              onPreFlightAudit={() => setPreFlightAuditOpen(true)}
+              onHelp={() => setIsOnboardingOpen(true)}
+            />
           </div>
         </div>
 
