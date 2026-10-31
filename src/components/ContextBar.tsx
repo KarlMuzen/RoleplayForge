@@ -179,22 +179,22 @@ export const ContextBar: React.FC = () => {
                 >
                   {saveState === 'saving'
                     ? 'Saving…'
-                    : saveState === 'saved'
+                    : saveState === 'saved' || saveState === 'idle'
                       ? 'Saved'
                       : saveState === 'error'
                         ? 'Save failed'
-                        : 'Unsaved'}
+                        : 'Saved'}
                 </span>
                 <span
                   aria-hidden="true"
                   className={`sm:hidden h-2 w-2 shrink-0 rounded-full ${
                     saveState === 'saving'
                       ? 'bg-cyan-400'
-                      : saveState === 'saved'
+                      : saveState === 'saved' || saveState === 'idle'
                         ? 'bg-emerald-400'
                         : saveState === 'error'
                           ? 'bg-red-400'
-                          : 'bg-amber-400'
+                          : 'bg-emerald-400'
                   }`}
                 />
               </>

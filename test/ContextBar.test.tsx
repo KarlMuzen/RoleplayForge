@@ -196,7 +196,7 @@ describe('ContextBar', () => {
     render(<ContextBar />);
 
     const states = [
-      ['idle', 'Unsaved'],
+      ['idle', 'Saved'],
       ['saving', 'Saving…'],
       ['saved', 'Saved'],
       ['error', 'Save failed'],
@@ -208,6 +208,20 @@ describe('ContextBar', () => {
       expect(screen.getByText(label).getAttribute('aria-live')).toBe('polite');
       expect(screen.getByText(label).className).toContain('whitespace-nowrap');
     }
+  });
+
+  it('reads Saved, never Unsaved, when idle, and keeps Saving… and Save failed', () => {
+    render(<ContextBar />);
+
+    act(() => useCardStore.setState({ saveState: 'idle' }));
+    expect(screen.getByText('Saved')).toBeInTheDocument();
+    expect(screen.queryByText('Unsaved')).not.toBeInTheDocument();
+
+    act(() => useCardStore.setState({ saveState: 'saving' }));
+    expect(screen.getByText('Saving…')).toBeInTheDocument();
+
+    act(() => useCardStore.setState({ saveState: 'error' }));
+    expect(screen.getByText('Save failed')).toBeInTheDocument();
   });
 
   it('opens More actions with both phone actions and returns focus after Escape', () => {
