@@ -1,6 +1,6 @@
 # Architecture
 
-Three diagrams of how RoleplayForge is built. GitHub draws the Mermaid blocks; any AI can read them as text. Edges in diagrams 1 and 2 come from the `import` lines and function calls in `src/` read at `main` `48c6eae` (2026-10-30), except where a note below says otherwise. They are not a full call trace. Device sync was removed by card 034 (PR #32, merge `b2f1afe`), so its boxes and arrows were taken out of diagrams 1 and 2 on 2026-10-31 from `PROJECT_STATE.md`; the rest was not re-read in `src/` since `48c6eae`. If a diagram and the code disagree, the code wins; fix the diagram.
+Three diagrams of how RoleplayForge is built. GitHub draws the Mermaid blocks; any AI can read them as text. Edges in diagrams 1 and 2 come from the `import` lines and function calls in `src/` read at `main` `48c6eae` (2026-10-30), except where a note below says otherwise. They are not a full call trace. Device sync was removed by card 034 (PR #32, merge `b2f1afe`), so its boxes and arrows were taken out of diagrams 1 and 2 on 2026-10-31 from `PROJECT_STATE.md`; the restore path was re-read in `src/io/backup.ts` and `src/db/index.ts` on 2026-10-31 (see the open item under diagram 2); the rest was not re-read in `src/` since `48c6eae`. If a diagram and the code disagree, the code wins; fix the diagram.
 
 An editable FigJam copy exists on the owner's Figma board. It is a picture only; this file is the source.
 
@@ -79,7 +79,7 @@ flowchart LR
     end
     subgraph guard ["Checks on the way in"]
         cardImport["importCardData and converter (defaults, warnings)"]
-        backupParse["parseBackupPayload (zip or JSON, 200 MB cap)"]
+        backupParse["validateBackupData (src/schemas/backupSchema) in parseBackupPayload and restoreFullBackup (zip or JSON, 200 MB cap)"]
         hooks["Dexie write hooks (Zod storage schema on cards and lorebooks)"]
     end
     dexie[("IndexedDB CardCrucibleDB: cards, lorebooks, connectionProfiles, settings")]
@@ -96,7 +96,8 @@ flowchart LR
     imp --> cardImport
     cardImport -->|"Saves card"| hooks
     restore --> backupParse
-    backupParse -.->|"Merge writes (hook use unverified)"| hooks
+    backupParse -->|"Cards and lorebooks: add or update"| hooks
+    backupParse -.->|"Profiles and settings: no hooks"| dexie
     hooks --> dexie
     vault -->|"Stored in"| dexie
     vaultKeys -->|"Stored in"| dexie
@@ -109,7 +110,7 @@ flowchart LR
     style outputs fill:#FFECBD,stroke:#FFC943
 ```
 
-Open item (unverified): `src/io/backup.ts` has no schema check of its own (no Zod import found). Whether restore writes go through the Dexie hooks on cards and lorebooks has not been checked in code. Hooks exist only on the `cards` and `lorebooks` tables; `connectionProfiles` and `settings` have none.
+Checked 2026-10-31 at `main` `12864aa`: `restoreFullBackup` (`src/io/backup.ts`) calls `validateBackupData` first (the schema file itself was not read), then writes cards and lorebooks with `db.cards` and `db.lorebooks` `add` and `update` inside one transaction, so the Dexie hooks (`src/db/index.ts`) run on them. A card the hook rejects is skipped and reported. Hooks exist only on the `cards` and `lorebooks` tables; `connectionProfiles` and `settings` have none. Open (unverified): whether a hook error caught inside the transaction leaves it intact, and whether the restore screen shows the `errors` list. Skipped-without-notice cases are in `docs/BUGS.md`.
 
 ## 3. Delivery pipeline
 
