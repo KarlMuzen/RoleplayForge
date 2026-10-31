@@ -13,7 +13,6 @@ import {
   ChevronDown,
   RotateCcw,
   Eye,
-  ImageIcon,
   Plus,
   Wand2,
   Info,
@@ -21,7 +20,6 @@ import {
 import type { StoredCard } from '../db';
 import { useDialogStore } from '../store/useDialogStore';
 import { useToastStore } from '../store/useToastStore';
-import { generateCharacterLogoBytes } from '../utils/logoGenerator';
 import { getCardCoverUrl } from './GalleryView';
 
 // AssistantView.tsx
@@ -33,7 +31,6 @@ export const AssistantView: React.FC = () => {
     profiles,
     activeProfileUuid,
     createNewCard,
-    setCardCoverImage,
     activeCardEmbeddedAssets,
     cards,
     loadCardsFromDb,
@@ -44,7 +41,6 @@ export const AssistantView: React.FC = () => {
 
   const [inputPrompt, setInputPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isGeneratingLogo, setIsGeneratingLogo] = useState(false);
   const [showInspector, setShowInspector] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -83,7 +79,7 @@ export const AssistantView: React.FC = () => {
       {
         role: 'assistant',
         content: activeCard
-          ? `Hello! I am your AI Assistant with full visibility into your active card "${activeCard.data.name || 'Untitled'}". Ask me to refine character traits, expand lorebook entries, analyze consistency, or generate a custom logo!`
+          ? `Hello! I am your AI Assistant with full visibility into your active card "${activeCard.data.name || 'Untitled'}". Ask me to refine character traits, expand lorebook entries, or analyze consistency!`
           : 'Hello! I am your AI Assistant. Create or select a card in the gallery, or ask me to draft a complete new character concept!',
       },
     ],
@@ -299,35 +295,6 @@ IMPORTANT DIRECTIVES:
     );
   };
 
-  const handleGenerateLogoAction = async () => {
-    if (!activeCard) {
-      await useDialogStore.getState().showAlert('Please select or create a card before generating a logo.', 'No Active Card', 'warning');
-      return;
-    }
-    setIsGeneratingLogo(true);
-    try {
-      const bytes = await generateCharacterLogoBytes({
-        name: activeCard.data.name || 'Character',
-        tags: activeCard.data.tags || [],
-      });
-      if (bytes && bytes.length > 0) {
-        await setCardCoverImage(bytes, 'image/png');
-        updateMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            content: `🎨 Generated and embedded a customized character logo cover image for "${activeCard.data.name}". You can preview it in the Editor, Gallery, or Chat header!`,
-          },
-        ]);
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      await useDialogStore.getState().showAlert(`Logo generation failed: ${message}`, 'Generation Error', 'danger');
-    } finally {
-      setIsGeneratingLogo(false);
-    }
-  };
-
   const handleResetChat = async () => {
     const confirmed = await useDialogStore.getState().showConfirm(
       'Are you sure you want to clear the assistant chat history for this card?',
@@ -394,19 +361,7 @@ IMPORTANT DIRECTIVES:
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {activeCard ? (
-              <button
-                aria-label="Generate cover"
-                onClick={handleGenerateLogoAction}
-                disabled={isGeneratingLogo}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-maroon-600/80 hover:bg-maroon-500 text-white rounded-lg text-xs font-medium transition-all shadow-sm disabled:opacity-50 touch-fast active:scale-95"
-              >
-                <ImageIcon className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">
-                  {isGeneratingLogo ? 'Crafting...' : 'Generate Cover'}
-                </span>
-              </button>
-            ) : (
+            {!activeCard && (
               <button
                 onClick={async () => {
                   await createNewCard('AI Concept Character');

@@ -9,12 +9,10 @@ import { prepareCoverForPng } from '../utils/coverToPng';
 import { getCardCoverUrl } from './GalleryView';
 import { CardAvatar } from './CardAvatar';
 import type { StoredCard, CardSnapshot } from '../db';
-import { generateCharacterLogoBytes } from '../utils/logoGenerator';
 import { exportVisualCardPng, renderVisualCardCanvasBytes } from '../utils/visualCardExporter';
 import {
   Save,
   Upload,
-  Wand2,
   AlertTriangle,
   CheckCircle2,
   Loader2,
@@ -57,10 +55,6 @@ export const EditorView: React.FC = () => {
   const provider = activeProfile?.provider;
 
   const coverInputRef = React.useRef<HTMLInputElement>(null);
-  const [selectedStyle, setSelectedStyle] = React.useState<
-    'anime' | 'fantasy' | 'cyberpunk' | 'gothic' | 'cinematic' | 'emblem'
-  >('anime');
-  const [isGeneratingCover, setIsGeneratingCover] = React.useState(false);
   const [isExportingVisual, setIsExportingVisual] = React.useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = React.useState(false);
   const [previewDataUrl, setPreviewDataUrl] = React.useState<string | null>(null);
@@ -211,36 +205,6 @@ export const EditorView: React.FC = () => {
     await setCardCoverImage(bytes, file.type || 'image/png');
 
     if (coverInputRef.current) coverInputRef.current.value = '';
-  };
-
-  const handleGenerateAICover = async () => {
-    if (!activeCard) return;
-    setIsGeneratingCover(true);
-
-    try {
-      const bytes = await generateCharacterLogoBytes({
-        name: d.name || 'Character',
-        description: d.description || '',
-        personality: d.personality || '',
-        tags: d.tags || [],
-        style: selectedStyle,
-      });
-
-      if (bytes && bytes.length > 0) {
-        await setCardCoverImage(bytes, 'image/png');
-      } else {
-        await useDialogStore
-          .getState()
-          .showAlert('Could not generate cover image.', 'Cover Generation Failed', 'danger');
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      await useDialogStore
-        .getState()
-        .showAlert(`Cover generation error: ${message}`, 'Cover Generation Error', 'danger');
-    } finally {
-      setIsGeneratingCover(false);
-    }
   };
 
   const completenessWarnings = validateCardCompleteness(activeCard);
@@ -790,7 +754,7 @@ export const EditorView: React.FC = () => {
             <div>
               <h3 className="text-sm font-semibold text-mist-100">Character Cover & Visual Card Export</h3>
               <p className="text-xs text-knight-400 mt-0.5 leading-relaxed">
-                Upload custom artwork, generate an AI character portrait, or export a high-res visual card poster PNG
+                Upload custom artwork, or export a high-res visual card poster PNG
                 directly with embedded CCv3 specification metadata.
               </p>
             </div>
@@ -803,35 +767,6 @@ export const EditorView: React.FC = () => {
                 onChange={handleCoverUpload}
                 className="hidden"
               />
-
-              {/* AI Cover Art Style Selector & Trigger */}
-              <div className="flex items-center gap-1.5 bg-void-950/80 border border-maroon-900/60 p-1 rounded-xl">
-                <select aria-label="Cover art style"
-                  value={selectedStyle}
-                  onChange={(e) =>
-                    setSelectedStyle(
-                      e.target.value as 'anime' | 'fantasy' | 'cyberpunk' | 'gothic' | 'cinematic' | 'emblem'
-                    )
-                  }
-                  className="px-2 py-1 bg-void-900 text-mist-100 text-xs rounded-lg border border-knight-700/40 focus:outline-none"
-                >
-                  <option value="anime">Anime Portrait</option>
-                  <option value="fantasy">High Fantasy</option>
-                  <option value="cyberpunk">Cyberpunk Neon</option>
-                  <option value="gothic">Gothic Dark</option>
-                  <option value="cinematic">Cinematic Portrait</option>
-                  <option value="emblem">Classic Emblem</option>
-                </select>
-
-                <button
-                  onClick={handleGenerateAICover}
-                  disabled={isGeneratingCover}
-                  className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-b from-maroon-500 to-maroon-600 hover:from-maroon-400 hover:to-maroon-500 text-white rounded-lg text-xs font-medium shadow-sm transition-all disabled:opacity-50"
-                >
-                  <Wand2 className="w-3.5 h-3.5" />
-                  {isGeneratingCover ? 'Generating Art...' : 'Generate Cover'}
-                </button>
-              </div>
 
               <button
                 onClick={() => coverInputRef.current?.click()}
