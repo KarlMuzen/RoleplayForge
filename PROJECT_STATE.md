@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md` (your role's section only), then check open pull requests and the current task card. Read `docs/DECISIONS.md` and `docs/BUGS.md` only when the task needs them. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-31 · **`main` head when written:** `b2f1afe` (last code commit: `b2f1afe`) · **Last card number used:** 034
+**Last updated:** 2026-10-31 · **`main` head when written:** `ef168b8` (last code commit: `b2f1afe`) · **Last card number used:** 035
 
 ## Goal
 
@@ -19,17 +19,17 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 
 ## Current task
 
-No card is open. Small UI changes now go through the `tweak:` lane (Decision 32, `docs/AI_WORKFLOW.md` Fast lane): the owner tells Muse or ChatGPT directly, no card and no Claude review.
+Card 035 is open: `docs/tasks/035-camera-permission-header.md` (`Review: required`, deploy config). It changes `camera=(self)` to `camera=()` in `vercel.json` and `public/_headers`, 2 files, 2 lines, because card 034 removed the only camera user (the sync QR scanner). Not started. After green CI the executor stops and reports; Claude reviews the PR diff. Small UI changes still go through the `tweak:` lane (Decision 32, `docs/AI_WORKFLOW.md` Fast lane): the owner tells Muse or ChatGPT directly, no card and no Claude review.
 
-1. **Owner, next:** first `tweak:` candidates: rename "Preview Card" to "Preview poster"; remove the doubled heading in Details "Cover art and export" ("Cover art and export" followed by "Character Cover & Visual Card Export"). Muse passed its trial on card 033; making it the default executor is the owner's call.
-2. **Claude, next (needs the owner's yes before any file change):** update `README.md` (the "device-to-device sync" line) and `docs/ARCHITECTURE.md` (the sync part, the "Reads directly" arrow, which is stale after 028 and 026, and the workflow picture, stale after v2, Decision 29), because card 034 has merged. Open question for the owner: `public/_headers` still allows `camera=(self)`, which only the sync QR scanner used.
+1. **Owner, next:** name the executor for card 035 (`Execute docs/tasks/035-camera-permission-header.md (Muse)` or `(ChatGPT)`). Then first `tweak:` candidates: rename "Preview Card" to "Preview poster"; remove the doubled heading in Details "Cover art and export" ("Cover art and export" followed by "Character Cover & Visual Card Export"). Muse passed its trial on card 033; making it the default executor is the owner's call.
+2. **Claude, next (needs the owner's yes before any file change):** update `README.md` (the "device-to-device sync" line) and `docs/ARCHITECTURE.md` (the sync part, the "Reads directly" arrow, which is stale after 028 and 026, and the workflow picture, stale after v2, Decision 29), because card 034 has merged.
 3. The owner then picks from `docs/ROADMAP.md` and `docs/BUGS.md`: lorebook budget order, "Unsaved" label after save (ROADMAP 6b), the Guide's Agnaistic claim (`small fix:` candidate), the export dialog title wording (`small fix:` candidate), linter 022, receipts 023 (an export preview of what is kept, converted or dropped is the idea with the most value for card builders), lorebook budget and size 024, syntax ribbon 025, the small paste warning for two fenced blocks, and the optional AI "Smart fill" (Decision 25). Argon's strategy ideas are verified in `docs/research/002-argon-strategy-verification.md`; none is carded.
 
 Owner phone checks passed (2026-10-31): 028, 031, 032 and 033 (Details "Cover art and export" without a style picker, Assist without a cover button, uploaded cover still shows in Library). Pending, and not a merge gate (Decision 17): 001-019, 027, 029, 030 and 034 (Settings has no "Device Clone & P2P Sync" section, Backup & Restore export and import still work, no camera prompt). Task 021 is untested on a real SillyTavern file. Deviation from the quick-wins batch: "12px minimum text" is not in cards 001-007 (about 266 uses of `text-[9px]`, `text-[10px]`, `text-[11px]` in 36 files); do it per screen.
 
 ## In progress
 
-No open pull requests and no open card.
+No open pull requests. Card 035 is written and not started.
 
 ## Done
 
