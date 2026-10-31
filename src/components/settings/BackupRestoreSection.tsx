@@ -184,7 +184,9 @@ export const BackupRestoreSection: React.FC<BackupRestoreSectionProps> = ({
             </div>
             <div>
               <h2 className="text-lg font-semibold text-mist-100">
-                {exportModalState.hasPlaintext ? 'Export Plaintext Keys' : 'Export Encrypted Backup'}
+                {!exportModalState.includeKeys
+                  ? 'Export Backup (no API keys)'
+                  : exportModalState.hasPlaintext ? 'Export Plaintext Keys' : 'Export Encrypted Backup'}
               </h2>
             </div>
           </div>
