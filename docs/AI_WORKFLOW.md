@@ -1,6 +1,6 @@
 # AI workflow v2 (FINAL)
 
-Final since 2026-10-30. Only the owner changes this file, by saying "change workflow". Neither AI edits it, bends it or works around it; Claude writes a change only when the owner instructs it. If a rule blocks the work, the AI stops and names the rule. Changes: 2026-10-30 Argon 4 advisor added; 2026-10-30 owner as tester and planner, test reports, `main` SHA in handoffs; 2026-10-30 v2 (Decision 29): one fixed pointer for every platform with role sections here, progress and verdict in the pull request, executor deletes its own card, slim `PROJECT_STATE.md` with `DECISIONS.md` and `BUGS.md`, `small fix:` lane, Argon audit-only; 2026-10-31 Muse added as a second executor beside ChatGPT, owner names one per card (Decision 30).
+Final since 2026-10-30. Only the owner changes this file, by saying "change workflow". Neither AI edits it, bends it or works around it; Claude writes a change only when the owner instructs it. If a rule blocks the work, the AI stops and names the rule. Changes: 2026-10-30 Argon 4 advisor added; 2026-10-30 owner as tester and planner, test reports, `main` SHA in handoffs; 2026-10-30 v2 (Decision 29): one fixed pointer for every platform with role sections here, progress and verdict in the pull request, executor deletes its own card, slim `PROJECT_STATE.md` with `DECISIONS.md` and `BUGS.md`, `small fix:` lane, Argon audit-only; 2026-10-31 Muse added as a second executor beside ChatGPT, owner names one per card (Decision 30); 2026-10-31 `tweak:` lane for small UI text and layout changes, no card and no review (Decision 32).
 
 ## Setup (owner, once per platform)
 
@@ -34,6 +34,7 @@ Read `docs/DECISIONS.md` and `docs/BUGS.md` only when the task needs them. Chats
 - `Execute docs/tasks/NNN-name.md (ChatGPT)` or `(Muse)` (executor; the owner names which one, and only that one works the card)
 - `Review docs/tasks/NNN-name.md` (Claude; the card is read from `main`, the diff from the PR)
 - `small fix: <what>` (Claude; see Fast lane)
+- `tweak: <what> (Muse)` or `(ChatGPT)` (executor; the owner names which one; see Fast lane)
 - `sync` (Claude refreshes `PROJECT_STATE.md` from open and merged PRs)
 - `handoff` (the current AI records where it stopped: the executor in the PR description, Claude in Current task; then gives a paste block of at most 10 lines: goal, current task, open PR, next action, `main` SHA)
 - `change workflow` (the only way this file changes)
@@ -47,14 +48,14 @@ Format: pass or fail, the card number, and on a fail one screenshot and one line
 
 1. **Plan (Claude).** Read the repo. Verify any outside claim in code or the primary source first (`docs/research/`). New card number = "Last card number used" in `PROJECT_STATE.md` plus 1, updated in the same push; a number is never reused. One card = one outcome, normally 5 files or fewer (batch cards: see Fast lane). Commit the card and the `PROJECT_STATE.md` Current task in the same push.
 2. **Execute (executor).** Branch `wip/NNN` from the latest `main`. Do exactly what the card says. Open a pull request to `main` after the first push, title = one-line commit message. The PR description is the only progress record: `Done / Left / Next action` while working; `Checks run / CI / Deviations from the card` when finished. The executor does not edit the card, except that the PR's last commit deletes it (`git rm`). If the executor stops early, it updates the PR description first.
-3. **Review (Claude).** The card says `Review: required` when it touches `src/io`, `src/store`, `src/db`, `src/schemas`, crypto, passkey, sync or security code, CI or deploy config, deletes user data, or adds a dependency. Otherwise `Review: skip`. For required cards the executor stops after green CI and reports. Claude reads the PR diff, the CI result and the card (from `main`), then posts a PR comment whose first word is `Approved` or `Changes needed:` (with the list) and which names the reviewed head SHA. A later push to the branch voids an `Approved`. Fixes go on the same branch. After 2 review rounds Claude rewrites the card.
+3. **Review (Claude).** The card says `Review: required` when it touches `src/io`, `src/store`, `src/db`, `src/schemas`, crypto, passkey, sync, CI or deploy config, deletes user data, or adds a dependency. Otherwise `Review: skip`. For required cards the executor stops after green CI and reports. Claude reads the PR diff, the CI result and the card (from `main`), then posts a PR comment whose first word is `Approved` or `Changes needed:` (with the list) and which names the reviewed head SHA. A later push to the branch voids an `Approved`. Fixes go on the same branch. After 2 review rounds Claude rewrites the card.
 4. **Merge (executor).** When `test-and-lint` is green and the card is `skip` or the latest verdict on the current head is `Approved`: squash-merge by hand (no auto-merge). Check that the merge commit has a READY production deployment; if none exists, recover with `docs/DECISIONS.md` Decision 22. No further docs commit is needed. Report in 8 lines or fewer: PR number, merge SHA, CI, deployment, checks run.
 5. **Sync (Claude).** Refresh `PROJECT_STATE.md` on `sync`, on `handoff`, and when a card or decision is added. Merged work is read from git history and is not listed.
 
 ## Gate
 
 - The only gate is `test-and-lint`. Vercel status is informational. Owner phone checks never block a merge; problems become new cards.
-- Code reaches `main` only through a pull request from `wip/NNN`. Docs-only changes may go straight to `main`.
+- Code reaches `main` only through a pull request from `wip/NNN` (or `wip/tweak-<short-name>` for a tweak). Docs-only changes may go straight to `main`.
 - After a red CI the executor gets 2 fix attempts, then stops and writes the failure in the PR description.
 
 ## Executor stops and sends one message
@@ -65,6 +66,14 @@ The card is unclear or conflicts with the repo; the change needs a file under "D
 
 - **`small fix:`** Claude commits directly, with no card and no pull request, only when all hold: 3 files or fewer; 50 changed lines or fewer; none in `src/io`, `src/store`, `src/db`, `src/schemas`, crypto, passkey, sync, CI or deploy config; Claude ran `npm run lint && npm test && npm run build` on a fresh clone and reports the results. The commit SHA goes in the `PROJECT_STATE.md` Done list. This is also a standing owner instruction for any change that meets these limits. Anything else is a card.
 - **Batch card.** A `Review: skip` card may hold up to 3 independent small changes and 8 files or fewer, each change with its own "Done when". A `Review: required` card stays one outcome.
+- **`tweak:` (Decision 32).** The owner tells the executor a small UI change, naming Muse or ChatGPT. There is no card and no Claude review. It is a tweak only when all hold:
+  - It changes text, labels, headings, spacing, classes, icons or the order of existing elements, only in `src/components/` (plus the one test that asserts the changed text, if any).
+  - 3 files or fewer, and 50 changed lines or fewer (added plus removed).
+  - No change to state, handlers, effects or data flow. Nothing that changes what is stored, exported or sent to an AI provider. No feature removed.
+  - Not the security screens (`SecuritySection`, `DecryptionModal`, `PassphraseSetupModal`), and no wording that makes a privacy, security or "Sent to" claim.
+  - Nothing in `package.json`, the lock file, CI or deploy config, `public/_headers`, `vercel.json` or `docs/`. No new dependency. No frozen identifier.
+  
+  The executor follows Truth rule 3 and stops if an open PR touches the same file. Branch `wip/tweak-<short-name>` from the latest `main`; one PR titled `tweak: <what>`; the description says what changed and `Checks run` (`npm ci && npm run lint && npm test && npm run build`, real results, "not run" if not). Merge by hand after green `test-and-lint`, then check the production deployment as in the Loop. There is no card to delete. Report in 5 lines or fewer: PR number, merge SHA, CI, deployment, checks run. If a limit would be exceeded or the request is unclear, the executor stops and sends one message; Claude turns it into a card or a `small fix:`. At the next `sync` Claude lists merged tweaks in Done and flags any that broke a limit; the owner may then suspend the lane. Owner phone checks never gate a tweak.
 
 ## Both AIs
 
@@ -106,6 +115,7 @@ Decisions: <decision numbers this relies on>
 - Writes go through the GitHub tool (a clone cannot push). One push per task. A delete is one commit per file, so ask before batch deletes. Verify the `main` head before committing. Claude is the only writer of `PROJECT_STATE.md`, `docs/DECISIONS.md` and `docs/BUGS.md`.
 - Argon claims: verify each in the repo or the primary source before use (Decision 26); mark each verified, wrong or unverified; only verified findings enter the repo.
 - After every new card or review, end with one paste line for the executor the owner named (`Execute docs/tasks/NNN-name.md`, or the merge instruction after `Approved`).
+- On `sync`, list merged `tweak:` PRs in Done and flag any that broke a limit of the Tweak lane.
 
 ## Role: Muse (executor, trial)
 
@@ -114,15 +124,17 @@ Second executor, added 2026-10-31 (Decision 30). Same rules as ChatGPT below, pl
 - Every chat: clone the repo, read `PROJECT_STATE.md`, then this file, check open PRs, then the card named in the message. State the `main` SHA you read. If the clone fails, say "NOT CLONED" and stop.
 - Run `npm ci && npm run lint && npm test && npm run build` yourself on the branch before the last push and paste the real result in the PR description under `Checks run`. A check not run is written "not run". CI stays the gate.
 - Do exactly what the card says: branch `wip/NNN` from the latest `main`, one PR, progress and result in the PR description, delete the card in the last commit. Touch only the files the card lists.
+- A `tweak:` message from the owner follows the Tweak lane in Fast lane instead of a card; the lane's limits replace a card's file list. Check the same checks and report in 5 lines or fewer.
 - Never edit `PROJECT_STATE.md`, `docs/DECISIONS.md`, `docs/BUGS.md`, this file, other cards or `docs/research/`. Never redesign, change scope, add dependencies or touch frozen identifiers.
 - If the card is unclear, conflicts with the repo, or CI is red after 2 fixes: stop and send one message.
 - Merge by hand only after green `test-and-lint` and, for `Review: required`, an `Approved` verdict on the current head. Report in 8 lines or fewer: PR number, merge SHA, CI, deployment, checks run.
-- Trial: after its first completed card Claude judges it (right branch, listed files only, accurate `Checks run`, card deleted, stops on conflicts). If it passes, the owner may make it the default executor; if not, this section is removed.
+- Trial: after its first completed card Claude judges it (right branch, listed files only, accurate `Checks run`, card deleted, stops on conflicts). If it passes, the owner may make it the default executor; if not, this section is removed. Result: passed on card 033 (PR #31), judged by Claude 2026-10-31. Muse is not yet the default; that is the owner's call.
 
 ## Role: ChatGPT (executor)
 
 - Every chat: clone or fetch the repo, read `PROJECT_STATE.md`, then this file, check open PRs, then the card named in the message. State the `main` SHA you read. If the clone fails, say "NOT CLONED" and confirm the head with `git ls-remote` or the GitHub API, never from github.com pages.
 - Do exactly what the card says: branch `wip/NNN`, one PR, progress and result in the PR description, delete the card in the last commit.
+- A `tweak:` message from the owner follows the Tweak lane in Fast lane instead of a card; the lane's limits replace a card's file list.
 - Never edit `PROJECT_STATE.md`, `docs/DECISIONS.md`, `docs/BUGS.md`, this file, other cards or `docs/research/`. Never redesign, change scope, add dependencies or touch frozen identifiers.
 - If the card is unclear, conflicts with the repo (including naming a file, function, line or screen the code does not have), or CI is red after 2 fixes: stop and send one message.
 - Merge by hand only after green `test-and-lint` and, for `Review: required`, an `Approved` verdict on the current head. Report in 8 lines or fewer: PR number, merge SHA, CI, deployment, checks run. Never claim a check you did not run.
