@@ -1,6 +1,6 @@
 # AI workflow v2 (FINAL)
 
-Final since 2026-10-30. Only the owner changes this file, by saying "change workflow". Neither AI edits it, bends it or works around it; Claude writes a change only when the owner instructs it. If a rule blocks the work, the AI stops and names the rule. Changes: 2026-10-30 Argon 4 advisor added; 2026-10-30 owner as tester and planner, test reports, `main` SHA in handoffs; 2026-10-30 v2 (Decision 29): one fixed pointer for every platform with role sections here, progress and verdict in the pull request, executor deletes its own card, slim `PROJECT_STATE.md` with `DECISIONS.md` and `BUGS.md`, `small fix:` lane, Argon audit-only; 2026-10-31 Muse added as a second executor beside ChatGPT, owner names one per card (Decision 30); 2026-10-31 `tweak:` lane for small UI text and layout changes, no card and no review (Decision 32).
+Final since 2026-10-30. Only the owner changes this file, by saying "change workflow". Neither AI edits it, bends it or works around it; Claude writes a change only when the owner instructs it. If a rule blocks the work, the AI stops and names the rule. Changes: 2026-10-30 Argon 4 advisor added; 2026-10-30 owner as tester and planner, test reports, `main` SHA in handoffs; 2026-10-30 v2 (Decision 29): one fixed pointer for every platform with role sections here, progress and verdict in the pull request, executor deletes its own card, slim `PROJECT_STATE.md` with `DECISIONS.md` and `BUGS.md`, `small fix:` lane, Argon audit-only; 2026-10-31 Muse added as a second executor beside ChatGPT, owner names one per card (Decision 30); 2026-10-31 `tweak:` lane for small UI text and layout changes, no card and no review (Decision 32); 2026-10-31 Muse is the default executor, ChatGPT stays as the named fallback (Decision 33).
 
 ## Setup (owner, once per platform)
 
@@ -16,9 +16,9 @@ Read `docs/DECISIONS.md` and `docs/BUGS.md` only when the task needs them. Chats
 
 ## Jobs
 
-| | Owner | Claude | ChatGPT or Muse | Argon 4 (advisor) |
+| | Owner | Claude | Muse (default) or ChatGPT | Argon 4 (advisor) |
 |---|---|---|---|---|
-| Is | Sets goals and plans. Tests on the phone. Decides. Non-technical. | Architect, designer, card writer, researcher. Reviews Argon's claims, the executors' diffs and the owner's test reports. | Executor (the owner names one per card) | Outside researcher and second opinion. Read-only. |
+| Is | Sets goals and plans. Tests on the phone. Decides. Non-technical. | Architect, designer, card writer, researcher. Reviews Argon's claims, the executors' diffs and the owner's test reports. | Executor (Muse unless the owner names ChatGPT; one executor per card) | Outside researcher and second opinion. Read-only. |
 | Writes | Nothing technical. Says the trigger phrases and sends test reports. | Docs only: `PROJECT_STATE.md`, `docs/DECISIONS.md`, `docs/BUGS.md` (sole writer of all three), task cards, `docs/research/`, `docs/*`. Never bulk code. | Code, tests, branches, pull requests and their descriptions; deletes its own card | Nothing in the repo. Gives the owner written findings. |
 | Never | Is asked to paste code or summaries | Edits app code (except the `small fix:` lane) | Redesigns, changes scope, decides, edits the protected files listed in its role | Commits, branches, cards, merges, edits any file, decides, or has a claim treated as fact before Claude verifies it |
 
@@ -31,10 +31,10 @@ Read `docs/DECISIONS.md` and `docs/BUGS.md` only when the task needs them. Chats
 
 ## Owner phrases (the whole vocabulary)
 
-- `Execute docs/tasks/NNN-name.md (ChatGPT)` or `(Muse)` (executor; the owner names which one, and only that one works the card)
+- `Execute docs/tasks/NNN-name.md` (Muse, the default) or `Execute docs/tasks/NNN-name.md (ChatGPT)` (the fallback, only when the owner names it). Only one executor works a card. An executor works a card only when the message names it, or names nobody and the executor is Muse.
 - `Review docs/tasks/NNN-name.md` (Claude; the card is read from `main`, the diff from the PR)
 - `small fix: <what>` (Claude; see Fast lane)
-- `tweak: <what> (Muse)` or `(ChatGPT)` (executor; the owner names which one; see Fast lane)
+- `tweak: <what>` (Muse, the default) or `tweak: <what> (ChatGPT)` (the fallback, only when the owner names it; see Fast lane)
 - `sync` (Claude refreshes `PROJECT_STATE.md` from open and merged PRs)
 - `handoff` (the current AI records where it stopped: the executor in the PR description, Claude in Current task; then gives a paste block of at most 10 lines: goal, current task, open PR, next action, `main` SHA)
 - `change workflow` (the only way this file changes)
@@ -66,7 +66,7 @@ The card is unclear or conflicts with the repo; the change needs a file under "D
 
 - **`small fix:`** Claude commits directly, with no card and no pull request, only when all hold: 3 files or fewer; 50 changed lines or fewer; none in `src/io`, `src/store`, `src/db`, `src/schemas`, crypto, passkey, sync, CI or deploy config; Claude ran `npm run lint && npm test && npm run build` on a fresh clone and reports the results. The commit SHA goes in the `PROJECT_STATE.md` Done list. This is also a standing owner instruction for any change that meets these limits. Anything else is a card.
 - **Batch card.** A `Review: skip` card may hold up to 3 independent small changes and 8 files or fewer, each change with its own "Done when". A `Review: required` card stays one outcome.
-- **`tweak:` (Decision 32).** The owner tells the executor a small UI change, naming Muse or ChatGPT. There is no card and no Claude review. It is a tweak only when all hold:
+- **`tweak:` (Decision 32).** The owner tells the executor a small UI change (Muse unless the owner names ChatGPT). There is no card and no Claude review. It is a tweak only when all hold:
   - It changes text, labels, headings, spacing, classes, icons or the order of existing elements, only in `src/components/` (plus the one test that asserts the changed text, if any).
   - 3 files or fewer, and 50 changed lines or fewer (added plus removed).
   - No change to state, handlers, effects or data flow. Nothing that changes what is stored, exported or sent to an AI provider. No feature removed.
@@ -114,12 +114,12 @@ Decisions: <decision numbers this relies on>
 - Consent: change or delete repo files only after the owner's consent: list the files and the effect, then wait for yes. This never overrides this file or the frozen identifiers. A PR verdict comment is not a repo file and needs no extra consent. Never merge pull requests; the executor merges.
 - Writes go through the GitHub tool (a clone cannot push). One push per task. A delete is one commit per file, so ask before batch deletes. Verify the `main` head before committing. Claude is the only writer of `PROJECT_STATE.md`, `docs/DECISIONS.md` and `docs/BUGS.md`.
 - Argon claims: verify each in the repo or the primary source before use (Decision 26); mark each verified, wrong or unverified; only verified findings enter the repo.
-- After every new card or review, end with one paste line for the executor the owner named (`Execute docs/tasks/NNN-name.md`, or the merge instruction after `Approved`).
+- After every new card or review, end with one paste line for the executor: Muse, unless the owner named ChatGPT (`Execute docs/tasks/NNN-name.md`, or the merge instruction after `Approved`).
 - On `sync`, list merged `tweak:` PRs in Done and flag any that broke a limit of the Tweak lane.
 
-## Role: Muse (executor, trial)
+## Role: Muse (default executor)
 
-Second executor, added 2026-10-31 (Decision 30). Same rules as ChatGPT below, plus:
+Second executor added 2026-10-31 (Decision 30); default executor since 2026-10-31 (Decision 33), after it passed its trial on cards 033, 034 and 035 and tweak #33. Same rules as ChatGPT below, plus:
 
 - Every chat: clone the repo, read `PROJECT_STATE.md`, then this file, check open PRs, then the card named in the message. State the `main` SHA you read. If the clone fails, say "NOT CLONED" and stop.
 - Run `npm ci && npm run lint && npm test && npm run build` yourself on the branch before the last push and paste the real result in the PR description under `Checks run`. A check not run is written "not run". CI stays the gate.
@@ -128,9 +128,12 @@ Second executor, added 2026-10-31 (Decision 30). Same rules as ChatGPT below, pl
 - Never edit `PROJECT_STATE.md`, `docs/DECISIONS.md`, `docs/BUGS.md`, this file, other cards or `docs/research/`. Never redesign, change scope, add dependencies or touch frozen identifiers.
 - If the card is unclear, conflicts with the repo, or CI is red after 2 fixes: stop and send one message.
 - Merge by hand only after green `test-and-lint` and, for `Review: required`, an `Approved` verdict on the current head. Report in 8 lines or fewer: PR number, merge SHA, CI, deployment, checks run.
-- Trial: after its first completed card Claude judges it (right branch, listed files only, accurate `Checks run`, card deleted, stops on conflicts). If it passes, the owner may make it the default executor; if not, this section is removed. Result: passed on card 033 (PR #31), judged by Claude 2026-10-31. Muse is not yet the default; that is the owner's call.
+- A message that names no executor is for Muse. If the message names ChatGPT, Muse does nothing and says so.
+- Claude keeps judging Muse's diffs by this section (right branch, listed files only, accurate `Checks run`, card deleted, stops on conflicts). Two flagged deviations in a row and the owner may demote Muse to fallback.
 
-## Role: ChatGPT (executor)
+## Role: ChatGPT (fallback executor)
+
+Kept as the fallback (Decision 33). It works a card or tweak only when the owner names it in the message (`(ChatGPT)`); with no name in the message it does nothing and says so.
 
 - Every chat: clone or fetch the repo, read `PROJECT_STATE.md`, then this file, check open PRs, then the card named in the message. State the `main` SHA you read. If the clone fails, say "NOT CLONED" and confirm the head with `git ls-remote` or the GitHub API, never from github.com pages.
 - Do exactly what the card says: branch `wip/NNN`, one PR, progress and result in the PR description, delete the card in the last commit.
