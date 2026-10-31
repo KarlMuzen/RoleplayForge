@@ -2,7 +2,7 @@
 
 Roleplay Forge is the planned evolution of this CardCrucible-derived, local-first browser application into one workbench for authoring, organizing, converting and testing AI roleplay assets. The aim is to give creators a reliable place to manage character cards, lorebooks, generation presets and repeatable model evaluations without overstating cross-platform compatibility.
 
-> **Repository state (2026-10-28):** The first Roleplay Forge UI pass is on `main`: the app title, navigation, guide/security copy, theme palette, package identity and PWA manifest have been updated. The implementation remains CardCrucible-derived, and deeper Library/editor redesign plus device validation are still in progress. CI verifies lint/type checking, tests and a production PWA build; Android installed-PWA behavior still needs a manual smoke test.
+> **Repository state (2026-10-31):** Production deploys from `main` to roleplayforge.vercel.app as an installable PWA, still built on the CardCrucible codebase. Since the first UI pass it has gained a phone-first Library and Details layout, a context bar (undo, redo, save status), paste-to-card import, a chat test bench for cards, backup export that can leave API keys out, and an install prompt. The AI cover generator and device-to-device sync were removed on purpose; move data between devices with a backup file. CI verifies lint/type checking, tests and a production PWA build. Many owner phone checks and Android installed-PWA behavior still need a manual pass (see [Project state](PROJECT_STATE.md) and [known bugs](docs/BUGS.md)).
 
 ## Current foundation
 
@@ -74,7 +74,7 @@ npm test
 npm run build
 ```
 
-The Vite development server normally uses port 3000. The current CI workflow runs dependency installation, lint/type checking, automated tests and `npm run build` (which regenerates PWA icons from `public/forge-mark.svg`). A green CI run verifies the production bundle for that commit, but it does not replace the installed-PWA smoke test on Android.
+The Vite development server normally uses port 3000. The current CI workflow runs dependency installation, lint/type checking, automated tests and `npm run build` (which regenerates PWA icons from `public/forge-mark.svg`). A green CI run verifies the production bundle for that commit, but it does not replace the installed-PWA smoke test on Android. `scripts/smoke.py` (Python Playwright, run by hand against `vite preview`; usage is in its docstring) is a manual browser smoke test and is not part of CI.
 
 ## Contribution and release rules
 
@@ -84,7 +84,7 @@ The Vite development server normally uses port 3000. The current CI workflow run
 - Date platform compatibility claims and cite the tested version/schema.
 - Label model pricing as estimated and potentially stale unless it is fetched and verified.
 - Keep provider credentials out of card exports, logs and test fixtures.
-- Update the changelog and relevant docs when behavior or support boundaries change.
+- Update the relevant docs when behavior or support boundaries change. There is no changelog file: squash-merged pull request titles are the changelog.
 
 ## License
 
