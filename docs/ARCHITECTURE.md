@@ -1,6 +1,6 @@
 # Architecture
 
-Three diagrams of how RoleplayForge is built. GitHub draws the Mermaid blocks; any AI can read them as text. Edges in diagrams 1 and 2 come from the `import` lines and function calls in `src/` read at `main` `48c6eae` (2026-10-30), except where a note below says otherwise. They are not a full call trace. If a diagram and the code disagree, the code wins; fix the diagram.
+Three diagrams of how RoleplayForge is built. GitHub draws the Mermaid blocks; any AI can read them as text. Edges in diagrams 1 and 2 come from the `import` lines and function calls in `src/` read at `main` `48c6eae` (2026-10-30), except where a note below says otherwise. They are not a full call trace. Device sync was removed by card 034 (PR #32, merge `b2f1afe`), so its boxes and arrows were taken out of diagrams 1 and 2 on 2026-10-31 from `PROJECT_STATE.md`; the rest was not re-read in `src/` since `48c6eae`. If a diagram and the code disagree, the code wins; fix the diagram.
 
 An editable FigJam copy exists on the owner's Figma board. It is a picture only; this file is the source.
 
@@ -22,7 +22,7 @@ flowchart LR
         assist["Assist and Enhancer (AI patches)"]
         chat["Chat preview (ChatPreviewModal)"]
         testlab["Test Lab (CrucibleView)"]
-        settings["Settings (profiles, backup, sync, security)"]
+        settings["Settings (profiles, backup, security)"]
         store["Zustand store (card, ui, profile, session, assistant slices)"]
         io["Import and export (png, charx, json, chub, converter)"]
         tools["Free tools (tokenizer, writingLint, lorebookScan, chatMarkup, pasteImport)"]
@@ -68,7 +68,7 @@ Notes:
 
 ## 2. Data safety
 
-Frozen identifiers (do not rename): DB name `CardCrucibleDB`, settings keys, the `enc.v1.` format, passkey and sync identifiers (`PROJECT_STATE.md` Guardrails).
+Frozen identifiers (do not rename): DB name `CardCrucibleDB`, settings keys, the `enc.v1.` format and passkey identifiers (`PROJECT_STATE.md` Guardrails). The sync data-channel label went with the code in card 034; no sync identifier remains.
 
 ```mermaid
 flowchart LR
@@ -76,7 +76,6 @@ flowchart LR
         edit[/"Editing in the app"/]
         imp[/"Import card file or paste"/]
         restore[/"Restore backup file"/]
-        syncIn[/"Receive from another device"/]
     end
     subgraph guard ["Checks on the way in"]
         cardImport["importCardData and converter (defaults, warnings)"]
@@ -91,21 +90,18 @@ flowchart LR
     subgraph outputs ["Ways data leaves"]
         exp["Export card (PNG, JSON, CHARX)"]
         backupOut["Backup file from Settings (API keys optional since Task 027)"]
-        syncOut["Send to other device (WebRTC, no API keys)"]
     end
 
     edit -->|"Saves card"| hooks
     imp --> cardImport
     cardImport -->|"Saves card"| hooks
     restore --> backupParse
-    syncIn -->|"Preview first"| backupParse
     backupParse -.->|"Merge writes (hook use unverified)"| hooks
     hooks --> dexie
     vault -->|"Stored in"| dexie
     vaultKeys -->|"Stored in"| dexie
     dexie --> exp
     dexie --> backupOut
-    dexie --> syncOut
 
     style inputs fill:#C2E5FF,stroke:#3DADFF
     style guard fill:#CDF4D3,stroke:#66D575
@@ -113,11 +109,11 @@ flowchart LR
     style outputs fill:#FFECBD,stroke:#FFC943
 ```
 
-Open item (unverified): `src/io/backup.ts` has no schema check of its own (no Zod import found). Whether restore and device-sync writes go through the Dexie hooks on cards and lorebooks has not been checked in code. Hooks exist only on the `cards` and `lorebooks` tables; `connectionProfiles` and `settings` have none.
+Open item (unverified): `src/io/backup.ts` has no schema check of its own (no Zod import found). Whether restore writes go through the Dexie hooks on cards and lorebooks has not been checked in code. Hooks exist only on the `cards` and `lorebooks` tables; `connectionProfiles` and `settings` have none.
 
 ## 3. Delivery pipeline
 
-A picture of `docs/AI_WORKFLOW.md`. That file is final and wins on any difference.
+A picture of `docs/AI_WORKFLOW.md`. That file is final and wins on any difference. The dashed `tweak:` arrow is the Decision 32 lane: small UI text or layout changes go from the owner straight to the executor with no card, and with no Claude review they continue like a `Review: skip` card.
 
 ```mermaid
 flowchart LR
@@ -138,6 +134,7 @@ flowchart LR
     check[/"Owner checks production on phone"/]
 
     owner --> plan
+    owner -.->|"tweak: (no card)"| exec
     plan --> card
     card -->|"Execute NNN"| exec
     exec --> ci

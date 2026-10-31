@@ -14,7 +14,7 @@ The current codebase includes:
 - Schema-validated AI-proposed card patches with review, selective application and undo support.
 - Card variants, comparison tools, scenario runs, transcript review and diagnostic metrics.
 - Connections to configured model providers, including Gemini, OpenAI, Anthropic, OpenRouter and local Ollama endpoints where the provider/endpoint supports them.
-- Local browser storage, backup/restore, optional passphrase encryption for saved API keys, and device-to-device sync features.
+- Local browser storage, backup/restore, and optional passphrase encryption for saved API keys. Device-to-device sync was removed (card 034); move data between devices with a backup file.
 - Progressive Web App configuration for installable browser use.
 
 Feature presence does not, by itself, prove complete compatibility with every receiving platform. See the [platform support matrix](docs/PLATFORM_SUPPORT.md) for the limits of current claims.
