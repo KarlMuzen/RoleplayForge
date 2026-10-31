@@ -2,7 +2,7 @@
 
 Entry point for any AI or human picking up work. The repo is the source of truth, not chat history. Read this, then `docs/AI_WORKFLOW.md` (your role's section only), then check open pull requests and the current task card. Read `docs/DECISIONS.md` and `docs/BUGS.md` only when the task needs them. Claude is the only writer of this file.
 
-**Last updated:** 2026-10-31 · **`main` head when written:** `bfef563` (last app-code commit: `b7c3cc0`) · **Last card number used:** 036
+**Last updated:** 2026-10-31 · **`main` head when written:** `e1884ba` (last app-code commit: `b7c3cc0`) · **Last card number used:** 038
 
 ## Goal
 
@@ -19,16 +19,19 @@ One local-first roleplay workbench for authoring, organizing, validating and tes
 
 ## Current task
 
-No card is open. Muse is the default executor; ChatGPT is the fallback and works only when the owner names it (Decision 33). Small UI changes go through the `tweak:` lane (Decision 32, `docs/AI_WORKFLOW.md` Fast lane): the owner tells Muse directly, no card and no Claude review.
+Two cards are written, both `Review: skip`, independent (different files), so Muse can run them in either order. Muse is the default executor; ChatGPT is the fallback and works only when the owner names it (Decision 33). Small UI changes go through the `tweak:` lane (Decision 32, `docs/AI_WORKFLOW.md` Fast lane).
 
-1. **Owner, next:** pick from `docs/ROADMAP.md` and `docs/BUGS.md` (item 2), or one of the smoke test follow-ups: extend `scripts/smoke.py` with a Backup and Restore round trip (data safety, a `Review: skip` card, one file), or wire the smoke test into CI (its own `Review: required` card, adds time to the gate; not decided). Muse's two runs of the smoke test on the final build passed all 16 checks with no app findings (Muse's report; Claude has not run it).
-2. The owner picks from `docs/ROADMAP.md` and `docs/BUGS.md`: lorebook budget order, "Unsaved" label after save (ROADMAP 6b), the Guide's Agnaistic claim (`small fix:` candidate), the export dialog title wording (`small fix:` candidate), the export picker in Details "Cover art and export", whose placeholder "Export Card As..." shows as a selectable first row on the owner's phone (seen in one screenshot 2026-10-31, code not read; `tweak:` or `small fix:` candidate), restore skipping lorebooks and profiles without a `uuid` silently (BUGS, rare), linter 022, receipts 023 (an export preview of what is kept, converted or dropped is the idea with the most value for card builders), lorebook budget and size 024, syntax ribbon 025, the small paste warning for two fenced blocks, and the optional AI "Smart fill" (Decision 25). Argon's strategy ideas are verified in `docs/research/002-argon-strategy-verification.md`; none is carded.
+1. **Owner, next:** tell Muse `Execute docs/tasks/037-saved-indicator.md` and `Execute docs/tasks/038-wording-fixes.md`.
+   - Card 037: the ContextBar save indicator reads "Saved" (green dot) when nothing is pending, instead of "Unsaved" two seconds after a save (ROADMAP 6b). Two files: `src/components/ContextBar.tsx` and its test. Muse first checks that no code changes the active card without saving; if one exists it stops.
+   - Card 038 (batch of two): the Guide drops the unproven "Agnaistic" claim; the backup export dialog title reads "Export Backup (no API keys)" when "Include API keys" is unticked.
+   - When they merge, Claude removes the matching entries from `docs/BUGS.md` at `sync`.
+2. After that, the owner picks from `docs/ROADMAP.md` and `docs/BUGS.md`: lorebook budget order, the export picker in Details "Cover art and export", whose placeholder "Export Card As..." shows as a selectable first row on the owner's phone (seen in one screenshot 2026-10-31, code not read; `tweak:` or `small fix:` candidate), restore skipping lorebooks and profiles without a `uuid` silently (BUGS, rare), linter 022, receipts 023 (an export preview of what is kept, converted or dropped is the idea with the most value for card builders), lorebook budget and size 024, syntax ribbon 025, the small paste warning for two fenced blocks, the optional AI "Smart fill" (Decision 25), a Backup and Restore round trip in `scripts/smoke.py` (`Review: skip`, one file; do it before anyone touches restore code), and wiring the smoke test into CI (its own `Review: required` card, slows every PR; not decided). Argon's strategy ideas are verified in `docs/research/002-argon-strategy-verification.md`; none is carded. Muse's two runs of the smoke test passed all 16 checks with no app findings (Muse's report; Claude has not run it).
 
 Owner phone checks passed (2026-10-31): 028, 031, 032, 033, tweak #33 (Details "Cover art and export" shows "Preview poster" and one heading, poster preview opens; no style picker, Assist without a cover button, uploaded cover still shows in Library), 034 and 035 (Settings has no "Device Clone & P2P Sync" section, Backup & Restore works, no camera prompt anywhere; the Import chooser with a "Camera" shortcut is Android's own file picker, not a page permission). Pending, and not a merge gate (Decision 17): 001-019, 027 and 029, 030. Task 021 is untested on a real SillyTavern file. Deviation from the quick-wins batch: "12px minimum text" is not in cards 001-007 (about 266 uses of `text-[9px]`, `text-[10px]`, `text-[11px]` in 36 files); do it per screen.
 
 ## In progress
 
-No open pull requests and no open card.
+No open pull requests. Cards 037 and 038 are written and not started.
 
 ## Done
 
