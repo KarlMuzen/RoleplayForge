@@ -752,7 +752,6 @@ export const EditorView: React.FC = () => {
 
           <div className="flex-1 space-y-2.5 text-center sm:text-left">
             <div>
-              <h3 className="text-sm font-semibold text-mist-100">Character Cover & Visual Card Export</h3>
               <p className="text-xs text-knight-400 mt-0.5 leading-relaxed">
                 Upload custom artwork, or export a high-res visual card poster PNG
                 directly with embedded CCv3 specification metadata.
@@ -798,7 +797,7 @@ export const EditorView: React.FC = () => {
                 ) : (
                   <Eye className="w-3.5 h-3.5 text-maroon-400 shrink-0" />
                 )}
-                <span>Preview Card</span>
+                <span>Preview poster</span>
               </button>
 
               {coverUrl && (
