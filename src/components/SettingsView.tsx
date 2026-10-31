@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useCardStore } from '../store/useCardStore';
 import { useTokenTracker } from '../store/useTokenTracker';
 import { usePWAInstall } from '../hooks/usePWAInstall';
-import { DeviceSyncPanel } from './DeviceSyncPanel';
 import { SecuritySection } from './settings/SecuritySection';
 import { ConnectionProfilesSection } from './settings/ConnectionProfilesSection';
 import { CostTrackerSection } from './settings/CostTrackerSection';
@@ -109,11 +108,6 @@ export const SettingsView: React.FC = () => {
         loadCardsFromDb={loadCardsFromDb}
         loadProfilesFromDb={loadProfilesFromDb}
       />
-
-      {/* P2P Device Clone & Sync */}
-      <div className="mt-8">
-        <DeviceSyncPanel />
-      </div>
 
       {/* Build info footer - include this in bug reports so we know which build you're on */}
       <p className="text-center text-[10px] font-mono text-knight-600 pt-2 select-text">

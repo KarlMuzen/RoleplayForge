@@ -118,9 +118,6 @@ export default defineConfig(() => {
               if (id.includes('jszip')) {
                 return 'vendor-jszip';
               }
-              if (id.includes('jsqr') || id.includes('qrcode')) {
-                return 'vendor-qr';
-              }
               if (id.includes('dexie')) {
                 return 'vendor-dexie';
               }
