@@ -308,7 +308,7 @@ export const GuideView: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                   <ArrowRight className="w-3.5 h-3.5 text-knight-500 group-hover:text-emerald-400" />
                 </h3>
                 <p className="text-[11px] text-knight-400 leading-snug">
-                  Save PNG tEXt chunks or CHARX zip bundles compatible with SillyTavern & Agnaistic.
+                  Save PNG tEXt chunks or CHARX zip bundles compatible with SillyTavern.
                 </p>
               </div>
             </div>
